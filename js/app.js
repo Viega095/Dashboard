@@ -3186,18 +3186,22 @@ const app = {
         if (svFacultad) svFacultad.textContent = `${facPct}%`;
     },
 
-    // --- WIDGETS ---
     initClock() {
         const clockEl = document.getElementById('clock-display');
         const dateEl = document.getElementById('date-display');
+        const zenClockEl = document.getElementById('zen-clock');
 
         const update = () => {
             const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
             if (clockEl) {
-                clockEl.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                clockEl.textContent = timeStr;
             }
             if (dateEl) {
                 dateEl.textContent = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            }
+            if (zenClockEl) {
+                zenClockEl.textContent = timeStr;
             }
         };
         update();
