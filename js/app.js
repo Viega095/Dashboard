@@ -883,6 +883,7 @@ const app = {
         this.renderTareas();
         this.updateLobbyStats();
         this.updateNotificationsUI();
+        this.triggerAutoCloudSync();
     },
 
     initTareas() {
@@ -1129,6 +1130,7 @@ const app = {
         this.renderFinanzas();
         this.updateLobbyStats();
         this.updateNotificationsUI();
+        this.triggerAutoCloudSync();
     },
 
     setFinanceLayoutMode(mode) {
@@ -1709,6 +1711,7 @@ const app = {
     saveNotasData(list) {
         localStorage.setItem('userhub_notas', JSON.stringify(list));
         this.renderNotas();
+        this.triggerAutoCloudSync();
     },
 
     initNotas() {
@@ -1880,6 +1883,7 @@ const app = {
         this.renderHabitos();
         this.updateLobbyStats();
         this.updateNotificationsUI();
+        this.triggerAutoCloudSync();
     },
 
     initHabitos() {
@@ -3525,10 +3529,16 @@ const app = {
         }).catch(err => {
             if (err.code === 'auth/unauthorized-domain') {
                 this.showUnauthorizedDomainModal();
+            } else if (err.code === 'auth/operation-not-allowed') {
+                this.openConfirmModal(
+                    '⚠️ Google No Habilitado en Firebase',
+                    'Debes activar Google en Firebase Console:\n\n1. Ve a console.firebase.google.com\n2. Entra a Autenticación -> Sign-in method\n3. Haz clic en Google, activa "Habilitar", selecciona tu email de soporte y haz clic en Guardar.',
+                    () => {}
+                );
             } else if (err.code === 'auth/popup-blocked') {
                 firebase.auth().signInWithRedirect(provider);
             } else if (err.code !== 'auth/popup-closed-by-user') {
-                this.showToast('Error de Login', err.message || 'Verifica el correo de soporte en Firebase.', 'urgent');
+                this.showToast('Error de Login', err.message || 'Verifica la configuración de Google en Firebase.', 'urgent');
             }
         });
     },
@@ -3596,18 +3606,64 @@ const app = {
         return payload;
     },
 
-    applyBackupPayload(payload) {
+    isSyncingFromCloud: false,
+    cloudSyncTimer: null,
+
+    triggerAutoCloudSync() {
+        if (this.isSyncingFromCloud) return;
+        clearTimeout(this.cloudSyncTimer);
+        this.cloudSyncTimer = setTimeout(() => {
+            const payload = this.getAllBackupPayload();
+            
+            if (this.currentUser && this.db) {
+                this.db.ref(`users/${this.currentUser.uid}`).set(payload);
+            }
+            
+            const pin = localStorage.getItem('userhub_sync_pin');
+            if (pin && this.db) {
+                const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
+                this.db.ref(`sync_pins/${safePin}`).set({
+                    payload: payload,
+                    updatedAt: Date.now()
+                });
+            }
+        }, 1200);
+    },
+
+    applyBackupPayload(payload, isLive = false) {
         if (!payload || typeof payload !== 'object') return;
         let count = 0;
+        this.isSyncingFromCloud = true;
+
         Object.keys(payload).forEach(k => {
             if (k.startsWith('userhub_')) {
-                localStorage.setItem(k, payload[k]);
-                count++;
+                if (localStorage.getItem(k) !== payload[k]) {
+                    localStorage.setItem(k, payload[k]);
+                    count++;
+                }
             }
         });
+
+        this.isSyncingFromCloud = false;
+
         if (count > 0) {
-            this.showToast('Sincronizado', 'Datos actualizados desde la nube. Recargando...', 'success');
-            setTimeout(() => location.reload(), 1000);
+            this.loadSettings();
+            this.renderUserProfile();
+            this.renderBookmarks();
+            this.renderTareas();
+            this.renderFinanzas();
+            this.renderNotas();
+            this.renderHabitos();
+            this.renderFacultad();
+            this.renderHorario();
+            this.updateLobbyStats();
+            this.updateNotificationsUI();
+
+            if (!isLive) {
+                this.showToast('Sincronizado', 'Datos actualizados desde la nube.', 'success');
+            } else {
+                this.showToast('Sincronización en Vivo', 'Se actualizaron datos desde tu otro dispositivo.', 'info');
+            }
         }
     },
 
@@ -3615,18 +3671,30 @@ const app = {
         if (!this.db || !uid) return;
         const payload = this.getAllBackupPayload();
         this.db.ref(`users/${uid}`).set(payload).then(() => {
-            this.showToast('Nube Actualizada', 'Tus datos están guardados en tu cuenta de Google.', 'success');
+            this.showToast('Nube Conectada', 'Sincronización automática activada.', 'success');
         }).catch(e => console.warn(e));
     },
 
     listenToUserCloudData(uid) {
         if (!this.db || !uid) return;
-        this.db.ref(`users/${uid}`).once('value', snapshot => {
+        // Escuchar en tiempo real bidireccional (.on)
+        this.db.ref(`users/${uid}`).on('value', snapshot => {
             const val = snapshot.val();
             if (val) {
-                this.applyBackupPayload(val);
+                this.applyBackupPayload(val, true);
             } else {
                 this.syncDataToCloudUser(uid);
+            }
+        });
+    },
+
+    listenToPinCloudData(pin) {
+        if (!this.db || !pin) return;
+        const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
+        this.db.ref(`sync_pins/${safePin}`).on('value', snapshot => {
+            const data = snapshot.val();
+            if (data && data.payload) {
+                this.applyBackupPayload(data.payload, true);
             }
         });
     },
@@ -3675,6 +3743,7 @@ const app = {
                 const data = snapshot.val();
                 if (data && data.payload) {
                     this.applyBackupPayload(data.payload);
+                    this.listenToPinCloudData(pin);
                 } else {
                     this.showToast('Sin Datos', `No hay copia guardada para el PIN ${pin}.`, 'info');
                 }
@@ -3700,6 +3769,7 @@ const app = {
         localStorage.setItem('userhub_sync_pin', formattedPin);
         this.renderSyncPinUI();
         this.syncNowCloud('download');
+        this.listenToPinCloudData(formattedPin);
     },
 
     // --- CENTRO DE NOTIFICACIONES Y ALERTAS INTELIGENTES ---
