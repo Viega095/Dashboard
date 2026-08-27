@@ -1536,12 +1536,8 @@
                         <i class="ph ph-google-logo"></i> Iniciar Sesión con Google (Auto-Sync)
                     </button>
 
-                    <button type="button" class="btn-secondary" style="width:100%; justify-content:center; padding:0.7rem; font-size:0.88rem; font-weight:600;" onclick="app.finishOnboarding()">
+                    <button type="button" class="btn-secondary" style="width:100%; justify-content:center; padding:0.7rem; font-size:0.88rem; font-weight:600;" onclick="app.onboardingContinueGuest()">
                         <i class="ph ph-user"></i> Continuar sin Cuenta (Modo Invitado / PIN)
-                    </button>
-
-                    <button type="button" style="background:transparent; border:none; color:var(--accent); font-size:0.85rem; font-weight:600; cursor:pointer; text-decoration:underline; margin-top:0.35rem;" onclick="app.nextTutorialStep()">
-                        <i class="ph ph-book-open"></i> Ver Mini Tutorial Guía (6 Pasos)
                     </button>
                 </div>
             </div>
@@ -1612,12 +1608,17 @@
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; gap:0.5rem;" id="tut-nav-btns">
-                <button type="button" class="btn-secondary" id="tut-prev-btn" style="visibility:hidden; font-size:0.85rem;" onclick="app.prevTutorialStep()">
-                    <i class="ph ph-caret-left"></i> Anterior
-                </button>
+                <div style="display:flex; gap:0.4rem; align-items:center;">
+                    <button type="button" class="btn-secondary" id="tut-prev-btn" style="visibility:hidden; font-size:0.85rem;" onclick="app.prevTutorialStep()">
+                        <i class="ph ph-caret-left"></i> Anterior
+                    </button>
+                    <button type="button" style="background:transparent; border:none; color:var(--text-muted); font-size:0.82rem; cursor:pointer; text-decoration:underline; padding:0.3rem 0.5rem;" onclick="app.finishOnboarding()">
+                        Omitir Tour
+                    </button>
+                </div>
 
                 <button type="button" class="btn-primary" id="tut-next-btn" style="font-size:0.85rem;" onclick="app.nextTutorialStep()">
-                    Siguiente <i class="ph ph-caret-right"></i>
+                    Ver Mini Tutorial <i class="ph ph-caret-right"></i>
                 </button>
             </div>
         </div>

@@ -133,10 +133,17 @@ const app = {
     },
 
     onboardingLoginGoogle() {
-        this.closeModal('welcome-modal');
         localStorage.setItem('userhub_onboarded', 'true');
         localStorage.setItem('userhub_tutorial_v2', 'true');
         this.loginWithGoogle();
+        this.renderTutorialStep(1);
+    },
+
+    onboardingContinueGuest() {
+        localStorage.setItem('userhub_onboarded', 'true');
+        localStorage.setItem('userhub_tutorial_v2', 'true');
+        this.showToast('Modo Invitado', 'Sincronización por Código PIN activada.', 'info');
+        this.renderTutorialStep(1);
     },
 
     finishOnboarding() {
