@@ -3437,12 +3437,39 @@ const app = {
                         this.listenToUserCloudData(user.uid);
                     }
                 });
+
+                // Procesar resultado de redirección de Google en celulares
+                firebase.auth().getRedirectResult().then(result => {
+                    if (result && result.user) {
+                        const user = result.user;
+                        this.currentUser = user;
+                        this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
+                        if (user.displayName) {
+                            const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
+                            this.saveUserProfile(profile);
+                        }
+                        this.syncDataToCloudUser(user.uid);
+                    }
+                }).catch(err => {
+                    if (err.code === 'auth/unauthorized-domain') {
+                        this.showUnauthorizedDomainModal();
+                    }
+                });
             }
         } catch(e) {
             console.warn('Firebase init info:', e);
         }
 
         this.renderSyncPinUI();
+    },
+
+    showUnauthorizedDomainModal() {
+        const domain = window.location.hostname;
+        this.openConfirmModal(
+            '⚠️ Dominio No Autorizado en Firebase',
+            `Tu página en "${domain}" necesita permiso en Firebase para conectar con Google.\n\nPasos (10 segundos):\n1. Ve a console.firebase.google.com\n2. Entra a Autenticación -> Ajustes -> Dominios autorizados\n3. Agrega "${domain}".`,
+            () => {}
+        );
     },
 
     getSyncPin() {
@@ -3480,21 +3507,31 @@ const app = {
             return;
         }
 
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(result => {
-            const user = result.user;
-            this.currentUser = user;
-            this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
-            
-            if (user.displayName) {
-                const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
-                this.saveUserProfile(profile);
-            }
-            
-            this.syncDataToCloudUser(user.uid);
-        }).catch(err => {
-            this.showToast('Información de Login', err.message || 'No se pudo iniciar sesión.', 'info');
-        });
+
+        if (isMobile) {
+            firebase.auth().signInWithRedirect(provider);
+        } else {
+            firebase.auth().signInWithPopup(provider).then(result => {
+                const user = result.user;
+                this.currentUser = user;
+                this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
+                
+                if (user.displayName) {
+                    const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
+                    this.saveUserProfile(profile);
+                }
+                
+                this.syncDataToCloudUser(user.uid);
+            }).catch(err => {
+                if (err.code === 'auth/unauthorized-domain') {
+                    this.showUnauthorizedDomainModal();
+                } else if (err.code !== 'auth/popup-closed-by-user') {
+                    firebase.auth().signInWithRedirect(provider);
+                }
+            });
+        }
     },
 
     logoutGoogle() {
