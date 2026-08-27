@@ -3507,31 +3507,30 @@ const app = {
             return;
         }
 
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
 
-        if (isMobile) {
-            firebase.auth().signInWithRedirect(provider);
-        } else {
-            firebase.auth().signInWithPopup(provider).then(result => {
-                const user = result.user;
-                this.currentUser = user;
-                this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
-                
-                if (user.displayName) {
-                    const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
-                    this.saveUserProfile(profile);
-                }
-                
-                this.syncDataToCloudUser(user.uid);
-            }).catch(err => {
-                if (err.code === 'auth/unauthorized-domain') {
-                    this.showUnauthorizedDomainModal();
-                } else if (err.code !== 'auth/popup-closed-by-user') {
-                    firebase.auth().signInWithRedirect(provider);
-                }
-            });
-        }
+        firebase.auth().signInWithPopup(provider).then(result => {
+            const user = result.user;
+            this.currentUser = user;
+            this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
+            
+            if (user.displayName) {
+                const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
+                this.saveUserProfile(profile);
+            }
+            
+            this.syncDataToCloudUser(user.uid);
+        }).catch(err => {
+            if (err.code === 'auth/unauthorized-domain') {
+                this.showUnauthorizedDomainModal();
+            } else if (err.code === 'auth/popup-blocked') {
+                firebase.auth().signInWithRedirect(provider);
+            } else if (err.code !== 'auth/popup-closed-by-user') {
+                this.showToast('Error de Login', err.message || 'Verifica el correo de soporte en Firebase.', 'urgent');
+            }
+        });
     },
 
     logoutGoogle() {
@@ -3632,8 +3631,21 @@ const app = {
         });
     },
 
+    lastSyncTime: 0,
+    syncCooldownSeconds: 4,
+
     // OPCIÓN 2: SINCRONIZACIÓN POR CÓDIGO PIN (SIN CUENTA)
     syncNowCloud(action = 'upload') {
+        const now = Date.now();
+        if (action === 'upload') {
+            const timeDiff = (now - this.lastSyncTime) / 1000;
+            if (timeDiff < this.syncCooldownSeconds) {
+                const remaining = Math.ceil(this.syncCooldownSeconds - timeDiff);
+                this.showToast('Espera un momento', `Espera ${remaining}s antes de volver a guardar en la nube.`, 'info');
+                return;
+            }
+        }
+
         const pin = this.getSyncPin();
         if (!this.db) {
             this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
@@ -3643,14 +3655,20 @@ const app = {
         const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
 
         if (action === 'upload') {
+            this.lastSyncTime = now;
             const payload = this.getAllBackupPayload();
             this.db.ref(`sync_pins/${safePin}`).set({
                 payload: payload,
                 updatedAt: Date.now()
             }).then(() => {
                 this.showToast('Guardado en Nube', `Copia guardada con tu PIN ${pin}.`, 'success');
-            }).catch(() => {
-                this.showToast('Error de Red', 'No se pudo subir la copia.', 'urgent');
+            }).catch(err => {
+                if (err.message && err.message.includes('PERMISSION_DENIED')) {
+                    this.showToast('Permiso Denegado', 'Permite lectura/escritura en Firebase Realtime Database.', 'urgent');
+                    alert('⚠️ REGLAS DE FIREBASE:\n\nDebes permitir lectura/escritura en tu Realtime Database:\n\n1. Ve a console.firebase.google.com -> Realtime Database -> Reglas\n2. Cambia las reglas a:\n{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}');
+                } else {
+                    this.showToast('Error de Red', 'No se pudo subir la copia.', 'urgent');
+                }
             });
         } else {
             this.db.ref(`sync_pins/${safePin}`).once('value', snapshot => {
@@ -3660,6 +3678,8 @@ const app = {
                 } else {
                     this.showToast('Sin Datos', `No hay copia guardada para el PIN ${pin}.`, 'info');
                 }
+            }).catch(err => {
+                this.showToast('Error al Cargar', 'Verifica tu conexión a la nube.', 'urgent');
             });
         }
     },
