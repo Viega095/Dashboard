@@ -3071,3 +3071,32 @@ body {
         white-space: nowrap;
     }
 }
+
+/* --- AMBIENT SOUNDS REPRODUCER --- */
+.ambient-sound-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.95rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.ambient-sound-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    transform: translateY(-1px);
+}
+
+.ambient-sound-btn.active {
+    background: rgba(6, 182, 212, 0.15) !important;
+    border-color: #06b6d4 !important;
+    color: #22d3ee !important;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+}

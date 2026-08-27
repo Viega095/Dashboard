@@ -804,6 +804,35 @@
                         <button class="btn-primary" id="pomo-toggle-btn" onclick="app.togglePomodoro()"><i class="ph ph-play"></i> INICIAR</button>
                         <button class="btn-secondary" onclick="app.resetPomodoro()"><i class="ph ph-arrow-counter-clockwise"></i> REINICIAR</button>
                     </div>
+
+                    <!-- REPRODUCTOR DE SONIDOS AMBIENTALES PARA CONCENTRACIÓN -->
+                    <div class="pomo-ambient-sounds" style="margin-top:2rem; padding:1.25rem 1.5rem; border-top:1px solid var(--glass-border); text-align:left;">
+                        <h4 style="font-size:0.9rem; font-weight:700; color:var(--text-main); margin:0 0 1rem 0; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="ph ph-headphones" style="color:var(--accent);"></i>
+                            <span>Sonidos de Concentración</span>
+                        </h4>
+
+                        <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+                            <button type="button" class="ambient-sound-btn" id="ambient-btn-rain" onclick="app.toggleAmbientSound('rain')" title="Sonido de Lluvia Suave">
+                                <i class="ph ph-cloud-rain"></i> Lluvia
+                            </button>
+                            <button type="button" class="ambient-sound-btn" id="ambient-btn-waves" onclick="app.toggleAmbientSound('waves')" title="Sonido de Olas del Mar">
+                                <i class="ph ph-waves"></i> Olas
+                            </button>
+                            <button type="button" class="ambient-sound-btn" id="ambient-btn-cafe" onclick="app.toggleAmbientSound('cafe')" title="Ambiente de Cafetería">
+                                <i class="ph ph-coffee"></i> Cafetería
+                            </button>
+                            <button type="button" class="ambient-sound-btn" id="ambient-btn-brown" onclick="app.toggleAmbientSound('brown')" title="Ruido Marrón (Enfoque Profundo)">
+                                <i class="ph ph-waveform"></i> Ruido Marrón
+                            </button>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(255,255,255,0.03); padding:0.5rem 0.85rem; border-radius:10px; border:1px solid var(--glass-border);">
+                            <i class="ph ph-speaker-high" style="color:var(--text-muted); font-size:1.1rem;"></i>
+                            <input type="range" id="ambient-volume-slider" min="0" max="100" value="50" oninput="app.setAmbientVolume(this.value)" style="flex:1; height:6px; accent-color:var(--accent); cursor:pointer;">
+                            <span id="ambient-volume-val" style="font-size:0.75rem; color:var(--text-muted); min-width:28px; text-align:right;">50%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

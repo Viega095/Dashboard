@@ -635,6 +635,8 @@ const app = {
             clearInterval(this.pomoState.timerId);
             this.pomoState.timerId = null;
 
+            this.playZenBell();
+
             if (this.pomoState.mode === 'work') {
                 this.pomoState.mode = 'break';
                 this.pomoState.timeLeft = 5 * 60;
@@ -735,6 +737,135 @@ const app = {
             if (btn) btn.classList.remove('active');
             this.showToast('Lo-Fi Pausado', 'Transmisión de música detenida.', 'info');
         }
+    },
+
+    // --- AMBIENT SOUNDS ENGINE ---
+    ambientAudio: {},
+    audioCtx: null,
+    brownNoiseNode: null,
+    brownNoiseGain: null,
+
+    toggleAmbientSound(soundKey) {
+        const btn = document.getElementById(`ambient-btn-${soundKey}`);
+        
+        // Si es Ruido Marrón (Síntesis local con Web Audio API)
+        if (soundKey === 'brown') {
+            if (this.brownNoiseNode) {
+                try { this.brownNoiseNode.stop(); } catch(e) {}
+                this.brownNoiseNode = null;
+                if (btn) btn.classList.remove('active');
+                this.showToast('Ruido Marrón', 'Desactivado.', 'info');
+            } else {
+                try {
+                    if (!this.audioCtx) {
+                        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (this.audioCtx.state === 'suspended') {
+                        this.audioCtx.resume();
+                    }
+                    
+                    const bufferSize = 4 * this.audioCtx.sampleRate;
+                    const noiseBuffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    let lastOut = 0.0;
+                    
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        output[i] = (lastOut + (0.02 * white)) / 1.02;
+                        lastOut = output[i];
+                        output[i] *= 3.5;
+                    }
+                    
+                    this.brownNoiseNode = this.audioCtx.createBufferSource();
+                    this.brownNoiseNode.buffer = noiseBuffer;
+                    this.brownNoiseNode.loop = true;
+                    
+                    this.brownNoiseGain = this.audioCtx.createGain();
+                    const volVal = parseFloat(document.getElementById('ambient-volume-slider').value) / 100;
+                    this.brownNoiseGain.gain.value = volVal * 0.15;
+                    
+                    this.brownNoiseNode.connect(this.brownNoiseGain);
+                    this.brownNoiseGain.connect(this.audioCtx.destination);
+                    
+                    this.brownNoiseNode.start(0);
+                    if (btn) btn.classList.add('active');
+                    this.showToast('Ruido Marrón Activo', 'Generando señal de enfoque profundo offline.', 'success');
+                } catch(err) {
+                    this.showToast('Error de Audio', 'No se pudo iniciar el sintetizador.', 'urgent');
+                }
+            }
+            return;
+        }
+
+        // Para sonidos basados en loops
+        const urls = {
+            rain: 'https://assets.mixkit.co/active_storage/sfx/2433/2433-84.wav',
+            waves: 'https://assets.mixkit.co/active_storage/sfx/1188/1188-84.wav',
+            cafe: 'https://assets.mixkit.co/active_storage/sfx/2839/2839-84.wav'
+        };
+
+        let audio = this.ambientAudio[soundKey];
+
+        if (!audio) {
+            audio = new Audio(urls[soundKey]);
+            audio.loop = true;
+            this.ambientAudio[soundKey] = audio;
+        }
+
+        const volVal = parseFloat(document.getElementById('ambient-volume-slider').value) / 100;
+        audio.volume = volVal;
+
+        if (audio.paused) {
+            audio.play().then(() => {
+                if (btn) btn.classList.add('active');
+                const titles = { rain: 'Lluvia', waves: 'Olas', cafe: 'Cafetería' };
+                this.showToast(`${titles[soundKey]} Activo`, 'Reproduciendo sonido de fondo.', 'success');
+            }).catch(() => {
+                this.showToast('Audio Bloqueado', 'Haz clic en la pantalla antes de activar.', 'urgent');
+            });
+        } else {
+            audio.pause();
+            if (btn) btn.classList.remove('active');
+            const titles = { rain: 'Lluvia', waves: 'Olas', cafe: 'Cafetería' };
+            this.showToast(`${titles[soundKey]} Detenido`, 'Sonido pausado.', 'info');
+        }
+    },
+
+    setAmbientVolume(val) {
+        const volVal = parseFloat(val) / 100;
+        const display = document.getElementById('ambient-volume-val');
+        if (display) display.textContent = `${val}%`;
+
+        Object.keys(this.ambientAudio).forEach(key => {
+            if (this.ambientAudio[key]) {
+                this.ambientAudio[key].volume = volVal;
+            }
+        });
+
+        if (this.brownNoiseGain) {
+            this.brownNoiseGain.gain.value = volVal * 0.15;
+        }
+    },
+
+    playZenBell() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 1.5);
+            
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 2.0);
+        } catch(e) {}
     },
 
     // --- WORKSPACE MODULES LOGIC ---
