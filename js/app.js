@@ -3465,6 +3465,12 @@ const app = {
         }
 
         this.renderSyncPinUI();
+
+        // Iniciar escucha continua si hay un PIN de sincronización guardado
+        const activePin = localStorage.getItem('userhub_sync_pin');
+        if (activePin && this.db) {
+            this.listenToPinCloudData(activePin);
+        }
     },
 
     showUnauthorizedDomainModal() {
@@ -3568,7 +3574,18 @@ const app = {
                         this.showToast('Cuenta Eliminada', 'Se eliminó tu cuenta y la extensión borró los datos de la nube.', 'info');
                     }).catch(err => {
                         if (err.code === 'auth/requires-recent-login') {
-                            this.showToast('Re-autenticación Requerida', 'Por motivos de seguridad, vuelve a iniciar sesión con Google antes de eliminar.', 'urgent');
+                            const provider = new firebase.auth.GoogleAuthProvider();
+                            firebase.auth().signInWithPopup(provider).then(res => {
+                                if (res.user) {
+                                    res.user.delete().then(() => {
+                                        this.currentUser = null;
+                                        this.updateAuthUI(null);
+                                        this.showToast('Cuenta Eliminada', 'Se eliminó tu cuenta y la extensión borró los datos.', 'info');
+                                    });
+                                }
+                            }).catch(() => {
+                                this.showToast('Error', 'Se requiere verificación para eliminar.', 'urgent');
+                            });
                         } else {
                             this.showToast('Error', err.message || 'No se pudo eliminar la cuenta.', 'urgent');
                         }
@@ -3785,21 +3802,44 @@ const app = {
 
     linkDevicePin() {
         const input = document.getElementById('link-pin-input');
-        const rawPin = input ? input.value.trim().toUpperCase() : '';
+        let rawPin = input ? input.value.trim().toUpperCase() : '';
         if (!rawPin) {
             this.showToast('PIN Vacío', 'Por favor ingresa un código PIN válido (ej: PIN-123456).', 'urgent');
             return;
         }
 
-        let formattedPin = rawPin;
-        if (!formattedPin.startsWith('PIN-')) {
-            formattedPin = `PIN-${formattedPin}`;
+        if (!rawPin.startsWith('PIN-')) {
+            rawPin = `PIN-${rawPin}`;
         }
 
-        localStorage.setItem('userhub_sync_pin', formattedPin);
-        this.renderSyncPinUI();
-        this.syncNowCloud('download');
-        this.listenToPinCloudData(formattedPin);
+        if (!this.db) {
+            this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
+            return;
+        }
+
+        const safePin = rawPin.replace(/[^a-zA-Z0-9_-]/g, '');
+
+        this.db.ref(`sync_pins/${safePin}`).once('value', snapshot => {
+            const data = snapshot.val();
+            if (data && data.payload) {
+                // Reemplazar PIN local por el nuevo PIN de la compu/celu
+                localStorage.setItem('userhub_sync_pin', rawPin);
+                this.renderSyncPinUI();
+                
+                // Aplicar todos los datos recibidos del PIN de forma inmediata
+                this.applyBackupPayload(data.payload);
+                
+                // Activar la escucha continua en tiempo real (.on) para este PIN
+                this.listenToPinCloudData(rawPin);
+                
+                if (input) input.value = '';
+                this.showToast('¡Vínculo Exitoso!', `Dispositivo vinculado con el ${rawPin}. Datos actualizados.`, 'success');
+            } else {
+                this.showToast('PIN No Encontrado', `No hay datos guardados bajo el ${rawPin}. Presiona "Guardar en Nube" en tu otro dispositivo primero.`, 'urgent');
+            }
+        }).catch(() => {
+            this.showToast('Error de Conexión', 'No se pudo verificar el PIN en la nube.', 'urgent');
+        });
     },
 
     // --- CENTRO DE NOTIFICACIONES Y ALERTAS INTELIGENTES ---
