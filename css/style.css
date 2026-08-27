@@ -2999,7 +2999,7 @@ body {
         top: 0 !important;
         bottom: 0 !important;
         height: 100vh !important;
-        z-index: 3500 !important;
+        z-index: 4500 !important;
         width: 260px !important;
         transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
         transform: translate3d(-105%, 0, 0) !important;
@@ -3009,6 +3009,34 @@ body {
 
     .sidebar.mobile-open {
         transform: translate3d(0, 0, 0) !important;
+    }
+
+    .top-notif-dropdown-menu {
+        position: fixed !important;
+        top: 62px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 92% !important;
+        max-width: 360px !important;
+        right: auto !important;
+        z-index: 99999 !important;
+        background: #0f172a !important;
+        background-color: #0f172a !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .top-user-dropdown-menu {
+        position: fixed !important;
+        top: 62px !important;
+        right: 12px !important;
+        left: auto !important;
+        width: 240px !important;
+        z-index: 99999 !important;
+        background: #0f172a !important;
+        background-color: #0f172a !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
 
     .sidebar .sidebar-text,
