@@ -43,6 +43,11 @@ const app = {
         const caretIcon = document.getElementById('sidebar-caret-icon');
         if (!sidebar) return;
 
+        if (window.innerWidth <= 768) {
+            this.closeMobileSidebar();
+            return;
+        }
+
         const isCollapsed = sidebar.classList.toggle('collapsed');
         if (caretIcon) {
             caretIcon.className = isCollapsed ? 'ph ph-caret-right' : 'ph ph-caret-left';
