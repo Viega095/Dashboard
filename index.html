@@ -1006,9 +1006,12 @@
                     Usa este PIN único para vincular tus datos entre tu computadora y celular sin necesidad de registrar correos.
                 </p>
 
-                <div style="display:flex; align-items:center; gap:0.6rem; background:rgba(0,0,0,0.3); padding:0.6rem 0.85rem; border-radius:10px; border:1px solid var(--glass-border); margin-bottom:0.85rem;">
-                    <span id="profile-sync-pin" style="font-size:1.1rem; font-weight:800; font-family:monospace; color:var(--accent); letter-spacing:1px; flex:1;">PIN-XXXXXX</span>
-                    <button type="button" class="btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.8rem;" onclick="app.copySyncPin()">
+                <div style="display:flex; align-items:center; gap:0.5rem; background:rgba(0,0,0,0.3); padding:0.6rem 0.85rem; border-radius:10px; border:1px solid var(--glass-border); margin-bottom:0.85rem; flex-wrap:wrap;">
+                    <span id="profile-sync-pin" style="font-size:1.1rem; font-weight:800; font-family:monospace; color:var(--accent); letter-spacing:1px; flex:1; min-width:140px;">PIN-••••••</span>
+                    <button type="button" class="btn-secondary" id="toggle-pin-btn" style="padding:0.35rem 0.65rem; font-size:0.78rem;" onclick="app.togglePinVisibility()">
+                        <i class="ph ph-eye" id="pin-eye-icon"></i> <span id="pin-eye-label">Mostrar</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.78rem;" onclick="app.copySyncPin()">
                         <i class="ph ph-copy"></i> Copiar
                     </button>
                 </div>

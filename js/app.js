@@ -3731,9 +3731,32 @@ const app = {
         return pin;
     },
 
+    isPinVisible: false,
+
+    togglePinVisibility() {
+        this.isPinVisible = !this.isPinVisible;
+        this.renderSyncPinUI();
+    },
+
     renderSyncPinUI() {
         const pinEl = document.getElementById('profile-sync-pin');
-        if (pinEl) pinEl.textContent = this.getSyncPin();
+        const eyeIcon = document.getElementById('pin-eye-icon');
+        const eyeLabel = document.getElementById('pin-eye-label');
+
+        const pin = this.getSyncPin();
+        if (pinEl) {
+            if (this.isPinVisible) {
+                pinEl.textContent = pin;
+            } else {
+                pinEl.textContent = 'PIN-••••••';
+            }
+        }
+        if (eyeIcon) {
+            eyeIcon.className = this.isPinVisible ? 'ph ph-eye-slash' : 'ph ph-eye';
+        }
+        if (eyeLabel) {
+            eyeLabel.textContent = this.isPinVisible ? 'Ocultar' : 'Mostrar';
+        }
     },
 
     copySyncPin() {
