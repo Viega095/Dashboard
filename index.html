@@ -960,18 +960,69 @@
         </div>
     </div>
 
-    <!-- MODAL: MI PERFIL DE USUARIO -->
+    <!-- MODAL: MI PERFIL DE USUARIO Y SINCRONIZACIÓN -->
     <div class="modal-overlay" id="user-profile-modal">
-        <div class="modal-card glass-effect" style="max-width:480px;">
+        <div class="modal-card glass-effect" style="max-width:520px;">
             <div class="modal-header">
-                <h2><i class="ph ph-user-circle" style="color:var(--accent);"></i> Mi Perfil de Usuario</h2>
+                <h2><i class="ph ph-user-circle" style="color:var(--accent);"></i> Mi Perfil y Sincronización</h2>
                 <button class="close-modal-btn" onclick="app.closeModal('user-profile-modal')">&times;</button>
             </div>
-            <div style="text-align:center; margin-bottom:1.5rem;">
+            <div style="text-align:center; margin-bottom:1.25rem;">
                 <div class="user-avatar-circle" style="width:70px; height:70px; font-size:1.8rem; margin:0 auto 0.75rem auto;" id="profile-modal-avatar">U</div>
                 <h3 id="profile-modal-title" style="font-size:1.2rem; font-weight:700;">Usuario</h3>
-                <span style="font-size:0.8rem; color:var(--text-muted);">Estudiante / Planificador Personal</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);" id="profile-modal-status">Estudiante / Planificador Personal</span>
             </div>
+
+            <!-- BLOQUE 1: INICIO DE SESIÓN CON GOOGLE -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:14px; padding:1.1rem; margin-bottom:1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <strong style="font-size:0.88rem; color:var(--text-main); display:flex; align-items:center; gap:0.4rem;">
+                        <i class="ph ph-google-logo" style="color:#ea4335;"></i> Cuenta de Google
+                    </strong>
+                    <span id="google-status-badge" class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-muted);">Sin Conectar</span>
+                </div>
+
+                <div id="google-auth-container">
+                    <button type="button" class="btn-primary" style="width:100%; justify-content:center; background:#4285f4; border-color:#4285f4;" onclick="app.loginWithGoogle()">
+                        <i class="ph ph-google-logo"></i> Iniciar Sesión con Google
+                    </button>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2: SINCRONIZACIÓN POR CÓDIGO PIN (SIN CUENTA) -->
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:14px; padding:1.1rem; margin-bottom:1.25rem;">
+                <strong style="font-size:0.88rem; color:var(--text-main); display:flex; align-items:center; gap:0.4rem; margin-bottom:0.4rem;">
+                    <i class="ph ph-device-mobile" style="color:#38bdf8;"></i> Código PIN de Sincronización (Sin Cuenta)
+                </strong>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem;">
+                    Usa este PIN único para vincular tus datos entre tu computadora y celular sin necesidad de registrar correos.
+                </p>
+
+                <div style="display:flex; align-items:center; gap:0.6rem; background:rgba(0,0,0,0.3); padding:0.6rem 0.85rem; border-radius:10px; border:1px solid var(--glass-border); margin-bottom:0.85rem;">
+                    <span id="profile-sync-pin" style="font-size:1.1rem; font-weight:800; font-family:monospace; color:var(--accent); letter-spacing:1px; flex:1;">PIN-XXXXXX</span>
+                    <button type="button" class="btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.8rem;" onclick="app.copySyncPin()">
+                        <i class="ph ph-copy"></i> Copiar
+                    </button>
+                </div>
+
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.85rem;">
+                    <button type="button" class="btn-secondary" style="flex:1; font-size:0.8rem; justify-content:center;" onclick="app.syncNowCloud('upload')">
+                        <i class="ph ph-cloud-arrow-up"></i> Guardar en Nube
+                    </button>
+                    <button type="button" class="btn-secondary" style="flex:1; font-size:0.8rem; justify-content:center;" onclick="app.syncNowCloud('download')">
+                        <i class="ph ph-cloud-arrow-down"></i> Cargar de Nube
+                    </button>
+                </div>
+
+                <div style="display:flex; gap:0.4rem;">
+                    <input type="text" id="link-pin-input" class="form-input" placeholder="Ingresa PIN de otro dispositivo (ej: PIN-123456)" style="font-size:0.82rem; padding:0.55rem 0.75rem;">
+                    <button type="button" class="btn-primary" style="font-size:0.8rem; white-space:nowrap;" onclick="app.linkDevicePin()">
+                        <i class="ph ph-link"></i> Vincular
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DE EDICIÓN DE PERFIL -->
             <div class="form-group">
                 <label>Nombre de Usuario</label>
                 <input type="text" id="profile-username-input" class="form-input" placeholder="Tu Nombre..." onkeydown="if(event.key==='Enter') app.saveUserProfileModal()">
@@ -980,7 +1031,7 @@
                 <label>Estado / Frase Personal</label>
                 <input type="text" id="profile-status-input" class="form-input" placeholder="Ej: Enfocado en los exámenes..." onkeydown="if(event.key==='Enter') app.saveUserProfileModal()">
             </div>
-            <div style="text-align:right; margin-top:1.5rem;">
+            <div style="text-align:right; margin-top:1.25rem;">
                 <button class="btn-primary" onclick="app.saveUserProfileModal()"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
             </div>
         </div>
@@ -1484,6 +1535,11 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- SCRIPTS -->
+    <!-- FIREBASE COMPAT SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <script src="js/data_defaults.js"></script>
     <script src="js/app.js"></script>
 </body>

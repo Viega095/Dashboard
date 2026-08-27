@@ -34,6 +34,7 @@ const app = {
         this.updateLobbyStats();
         this.updateNotificationsUI();
         this.initKeyboardShortcuts();
+        this.initCloudSync();
     },
 
     // --- SIDEBAR COLLAPSE & EXPAND LOGIC ---
@@ -3407,6 +3408,241 @@ const app = {
         this.saveUserProfile(profile);
         this.closeModal('user-profile-modal');
         this.showToast('Perfil Actualizado', `¡Hola de nuevo, ${newName}!`, 'success');
+    },
+
+    // --- HÍBRIDO: FIREBASE GOOGLE AUTH + SINCRONIZACIÓN POR CÓDIGO PIN ---
+    firebaseConfig: {
+        apiKey: "AIzaSyBRCyd70VN4bXCrMAfMBfmwZmXJmrTPPEY",
+        authDomain: "mi-dashboard-79a54.firebaseapp.com",
+        projectId: "mi-dashboard-79a54",
+        storageBucket: "mi-dashboard-79a54.firebasestorage.app",
+        messagingSenderId: "85551588946",
+        appId: "1:85551588946:web:57daf0bf1cf04d2ff3618b",
+        measurementId: "G-CQJFEN6QWZ"
+    },
+    firebaseApp: null,
+    db: null,
+    currentUser: null,
+
+    initCloudSync() {
+        try {
+            if (window.firebase && !firebase.apps.length) {
+                this.firebaseApp = firebase.initializeApp(this.firebaseConfig);
+                this.db = firebase.database();
+                
+                firebase.auth().onAuthStateChanged(user => {
+                    this.currentUser = user;
+                    this.updateAuthUI(user);
+                    if (user) {
+                        this.listenToUserCloudData(user.uid);
+                    }
+                });
+            }
+        } catch(e) {
+            console.warn('Firebase init info:', e);
+        }
+
+        this.renderSyncPinUI();
+    },
+
+    getSyncPin() {
+        let pin = localStorage.getItem('userhub_sync_pin');
+        if (!pin) {
+            const randomCode = Math.floor(100000 + Math.random() * 900000);
+            pin = `PIN-${randomCode}`;
+            localStorage.setItem('userhub_sync_pin', pin);
+        }
+        return pin;
+    },
+
+    renderSyncPinUI() {
+        const pinEl = document.getElementById('profile-sync-pin');
+        if (pinEl) pinEl.textContent = this.getSyncPin();
+    },
+
+    copySyncPin() {
+        const pin = this.getSyncPin();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(pin).then(() => {
+                this.showToast('PIN Copiado', `Copiado: ${pin}`, 'success');
+            }).catch(() => {
+                this.showToast('Tu PIN', pin, 'info');
+            });
+        } else {
+            this.showToast('Tu PIN', pin, 'info');
+        }
+    },
+
+    // OPCIÓN 1: GOOGLE AUTH
+    loginWithGoogle() {
+        if (!window.firebase) {
+            this.showToast('Error de Conexión', 'No se pudieron cargar los componentes de Google.', 'urgent');
+            return;
+        }
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider).then(result => {
+            const user = result.user;
+            this.currentUser = user;
+            this.showToast('Sesión Iniciada', `Bienvenido/a, ${user.displayName || 'Usuario'}`, 'success');
+            
+            if (user.displayName) {
+                const profile = { name: user.displayName, status: user.email || 'Cuenta de Google' };
+                this.saveUserProfile(profile);
+            }
+            
+            this.syncDataToCloudUser(user.uid);
+        }).catch(err => {
+            this.showToast('Información de Login', err.message || 'No se pudo iniciar sesión.', 'info');
+        });
+    },
+
+    logoutGoogle() {
+        if (window.firebase && firebase.auth()) {
+            firebase.auth().signOut().then(() => {
+                this.currentUser = null;
+                this.updateAuthUI(null);
+                this.showToast('Sesión Cerrada', 'Has salido de tu cuenta de Google.', 'info');
+            });
+        }
+    },
+
+    updateAuthUI(user) {
+        const badge = document.getElementById('google-status-badge');
+        const container = document.getElementById('google-auth-container');
+
+        if (user) {
+            if (badge) {
+                badge.textContent = 'Conectado';
+                badge.style.background = 'rgba(52, 211, 153, 0.2)';
+                badge.style.color = '#34d399';
+            }
+            if (container) {
+                container.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
+                        <div style="display:flex; align-items:center; gap:0.6rem; overflow:hidden;">
+                            ${user.photoURL ? `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%;">` : '<i class="ph ph-user-circle" style="font-size:1.8rem; color:#4285f4;"></i>'}
+                            <div style="overflow:hidden;">
+                                <strong style="font-size:0.85rem; display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.displayName || 'Google User'}</strong>
+                                <span style="font-size:0.75rem; color:var(--text-muted); display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.email}</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" style="font-size:0.8rem; padding:0.4rem 0.75rem;" onclick="app.logoutGoogle()">
+                            <i class="ph ph-sign-out"></i> Salir
+                        </button>
+                    </div>
+                `;
+            }
+        } else {
+            if (badge) {
+                badge.textContent = 'Sin Conectar';
+                badge.style.background = 'rgba(255, 255, 255, 0.08)';
+                badge.style.color = 'var(--text-muted)';
+            }
+            if (container) {
+                container.innerHTML = `
+                    <button type="button" class="btn-primary" style="width:100%; justify-content:center; background:#4285f4; border-color:#4285f4;" onclick="app.loginWithGoogle()">
+                        <i class="ph ph-google-logo"></i> Iniciar Sesión con Google
+                    </button>
+                `;
+            }
+        }
+    },
+
+    getAllBackupPayload() {
+        const payload = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('userhub_')) {
+                payload[key] = localStorage.getItem(key);
+            }
+        }
+        return payload;
+    },
+
+    applyBackupPayload(payload) {
+        if (!payload || typeof payload !== 'object') return;
+        let count = 0;
+        Object.keys(payload).forEach(k => {
+            if (k.startsWith('userhub_')) {
+                localStorage.setItem(k, payload[k]);
+                count++;
+            }
+        });
+        if (count > 0) {
+            this.showToast('Sincronizado', 'Datos actualizados desde la nube. Recargando...', 'success');
+            setTimeout(() => location.reload(), 1000);
+        }
+    },
+
+    syncDataToCloudUser(uid) {
+        if (!this.db || !uid) return;
+        const payload = this.getAllBackupPayload();
+        this.db.ref(`users/${uid}`).set(payload).then(() => {
+            this.showToast('Nube Actualizada', 'Tus datos están guardados en tu cuenta de Google.', 'success');
+        }).catch(e => console.warn(e));
+    },
+
+    listenToUserCloudData(uid) {
+        if (!this.db || !uid) return;
+        this.db.ref(`users/${uid}`).once('value', snapshot => {
+            const val = snapshot.val();
+            if (val) {
+                this.applyBackupPayload(val);
+            } else {
+                this.syncDataToCloudUser(uid);
+            }
+        });
+    },
+
+    // OPCIÓN 2: SINCRONIZACIÓN POR CÓDIGO PIN (SIN CUENTA)
+    syncNowCloud(action = 'upload') {
+        const pin = this.getSyncPin();
+        if (!this.db) {
+            this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
+            return;
+        }
+
+        const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
+
+        if (action === 'upload') {
+            const payload = this.getAllBackupPayload();
+            this.db.ref(`sync_pins/${safePin}`).set({
+                payload: payload,
+                updatedAt: Date.now()
+            }).then(() => {
+                this.showToast('Guardado en Nube', `Copia guardada con tu PIN ${pin}.`, 'success');
+            }).catch(() => {
+                this.showToast('Error de Red', 'No se pudo subir la copia.', 'urgent');
+            });
+        } else {
+            this.db.ref(`sync_pins/${safePin}`).once('value', snapshot => {
+                const data = snapshot.val();
+                if (data && data.payload) {
+                    this.applyBackupPayload(data.payload);
+                } else {
+                    this.showToast('Sin Datos', `No hay copia guardada para el PIN ${pin}.`, 'info');
+                }
+            });
+        }
+    },
+
+    linkDevicePin() {
+        const input = document.getElementById('link-pin-input');
+        const rawPin = input ? input.value.trim().toUpperCase() : '';
+        if (!rawPin) {
+            this.showToast('PIN Vacío', 'Por favor ingresa un código PIN válido (ej: PIN-123456).', 'urgent');
+            return;
+        }
+
+        let formattedPin = rawPin;
+        if (!formattedPin.startsWith('PIN-')) {
+            formattedPin = `PIN-${formattedPin}`;
+        }
+
+        localStorage.setItem('userhub_sync_pin', formattedPin);
+        this.renderSyncPinUI();
+        this.syncNowCloud('download');
     },
 
     // --- CENTRO DE NOTIFICACIONES Y ALERTAS INTELIGENTES ---
