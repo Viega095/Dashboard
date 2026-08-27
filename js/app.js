@@ -3701,8 +3701,9 @@ const app = {
             this.renderFinanzas();
             this.renderNotas();
             this.renderHabitos();
-            this.renderFacultad();
+            this.initFacultad();
             this.renderHorario();
+            this.renderLobbyGlobalCalendar();
             this.updateLobbyStats();
             this.updateNotificationsUI();
 
