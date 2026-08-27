@@ -70,11 +70,11 @@ const app = {
 
     // --- ONBOARDING & MINI TUTORIAL ---
     checkOnboarding() {
-        const onboarded = localStorage.getItem('userhub_onboarded');
-        if (!onboarded) {
+        const tutorialV2 = localStorage.getItem('userhub_tutorial_v2');
+        if (!tutorialV2) {
             setTimeout(() => {
                 this.openTutorialModal(0);
-            }, 400);
+            }, 500);
         }
     },
 
@@ -135,11 +135,13 @@ const app = {
     onboardingLoginGoogle() {
         this.closeModal('welcome-modal');
         localStorage.setItem('userhub_onboarded', 'true');
+        localStorage.setItem('userhub_tutorial_v2', 'true');
         this.loginWithGoogle();
     },
 
     finishOnboarding() {
         localStorage.setItem('userhub_onboarded', 'true');
+        localStorage.setItem('userhub_tutorial_v2', 'true');
         this.closeModal('welcome-modal');
         this.showToast('¡Todo Listo!', 'Explora tu nuevo Dashboard.', 'success');
     },
