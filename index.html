@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub Personal - Mi Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div id="bg-overlay"></div>
+    
+    <div class="app-layout">
+        <!-- BARRA LATERAL CATEGORIZADA (SIDEBAR) -->
+        <aside id="sidebar" class="sidebar">
+            <div>
+                <div class="sidebar-header">
+                    <div class="sidebar-brand" onclick="app.expandSidebarIfCollapsed()" title="Expandir Sidebar">
+                        <i class="ph-fill ph-sparkle"></i>
+                        <span class="sidebar-text">Hub Personal</span>
+                    </div>
+                    <button class="sidebar-toggle-btn" onclick="app.toggleSidebar()" title="Plegar / Desplegar Sidebar">
+                        <i class="ph ph-caret-left" id="sidebar-caret-icon"></i>
+                    </button>
+                </div>
+
+                <!-- HERRAMIENTAS Y MÓDULOS EN SECCIONES COMPACTAS -->
+                <div class="sidebar-menu">
+                    <!-- SECCIÓN NAVEGACIÓN -->
+                    <div class="sidebar-category-label">Navegación</div>
+                    <button class="sidebar-btn active" id="sidebar-btn-lobby" onclick="app.navigateTo('lobby')" title="Inicio / Lobby">
+                        <i class="ph ph-house"></i>
+                        <span class="sidebar-text">Inicio / Lobby</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-tareas" onclick="app.navigateTo('tareas')" title="Lista de Tareas">
+                        <i class="ph ph-check-square"></i>
+                        <span class="sidebar-text">Lista de Tareas</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-gimnasio" onclick="app.navigateTo('gimnasio')" title="Seguimiento de Hábitos">
+                        <i class="ph ph-lightning"></i>
+                        <span class="sidebar-text">Seguimiento de Hábitos</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-notas" onclick="app.navigateTo('notas')" title="Notas Rápidas">
+                        <i class="ph ph-note"></i>
+                        <span class="sidebar-text">Notas Rápidas</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-finanzas" onclick="app.navigateTo('finanzas')" title="Finanzas">
+                        <i class="ph ph-wallet"></i>
+                        <span class="sidebar-text">Finanzas</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-facultad" onclick="app.navigateTo('facultad')" title="Estudio / Facultad">
+                        <i class="ph ph-books"></i>
+                        <span class="sidebar-text">Estudio / Facultad</span>
+                    </button>
+                    <button class="sidebar-btn" id="sidebar-btn-horario" onclick="app.navigateTo('horario')" title="Horario Semanal">
+                        <i class="ph ph-calendar-blank"></i>
+                        <span class="sidebar-text">Horario Semanal</span>
+                    </button>
+
+                    <!-- SECCIÓN ENFOQUE -->
+                    <div class="sidebar-category-label">Enfoque & Productividad</div>
+                    <button class="sidebar-btn" id="pomodoro-bar-btn" onclick="app.navigateTo('pomodoro')" title="Pomodoro">
+                        <i class="ph ph-timer"></i>
+                        <span class="sidebar-text">Pomodoro <span id="pomo-bar-display" style="display:none; margin-left:4px; font-weight:700;">20:00</span></span>
+                    </button>
+                    <button class="sidebar-btn" id="zen-btn" onclick="app.toggleZenMode()" title="Modo Zen">
+                        <i class="ph ph-mask-happy"></i>
+                        <span class="sidebar-text">Modo Zen</span>
+                    </button>
+
+                    <!-- SECCIÓN AMBIENTE -->
+                    <div class="sidebar-category-label">Ambiente & Audio</div>
+                    <button class="sidebar-btn" id="lofi-btn" onclick="app.toggleLoFi()" title="Lo-Fi Radio (Música)">
+                        <i class="ph ph-music-notes"></i>
+                        <span class="sidebar-text">Lo-Fi Radio</span>
+                    </button>
+                    <button class="sidebar-btn" id="bg-cycle-btn" onclick="app.cycleTheme()" title="Cambiar Tema Visual">
+                        <i class="ph ph-palette"></i>
+                        <span class="sidebar-text">Cambiar Tema</span>
+                    </button>
+
+                    <!-- SECCIÓN HERRAMIENTAS -->
+                    <div class="sidebar-category-label">Herramientas</div>
+                    <button class="sidebar-btn" id="search-btn" onclick="app.openSearch()" title="Buscador Rápido (Ctrl+K)">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <span class="sidebar-text">Buscar (Ctrl+K)</span>
+                    </button>
+                    <button class="sidebar-btn" id="backup-btn" onclick="app.openModal('backup-modal')" title="Copia de Seguridad y Datos">
+                        <i class="ph ph-database"></i>
+                        <span class="sidebar-text">Copia de Seguridad</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PERFIL & CONFIGURACIÓN EN SIDEBAR -->
+            <div class="sidebar-footer">
+                <button class="sidebar-btn" onclick="app.openSettingsModal()" title="Configuración Global">
+                    <i class="ph ph-gear" style="color:var(--accent); font-size:1.2rem;"></i>
+                    <span class="sidebar-text">Configuración</span>
+                </button>
+                <button class="sidebar-btn" style="color:var(--text-main); font-weight:600;" onclick="app.openUserProfileModal()" title="Mi Perfil">
+                    <i class="ph-fill ph-user-circle" style="color:var(--accent); font-size:1.4rem;"></i>
+                    <span class="sidebar-text" id="sidebar-user-name">Usuario</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL DERECHO -->
+        <main class="main-wrapper" id="main-content">
+            <!-- ENCABEZADO SUPERIOR GLOBAL (Top Bar con Perfil Arriba a la Derecha) -->
+            <div class="top-header-bar">
+                <div class="top-header-left">
+                    <button type="button" class="top-icon-btn glass-effect mobile-menu-btn" onclick="app.toggleMobileSidebar()" title="Abrir Menú">
+                        <i class="ph ph-list"></i>
+                    </button>
+                    <button type="button" class="top-search-btn glass-effect" onclick="app.openSearch()" title="Buscador Rápido (Ctrl+K)">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <span>Buscar en Dashboard...</span>
+                        <kbd class="shortcut-kbd">Ctrl K</kbd>
+                    </button>
+                </div>
+
+                <div class="top-header-right">
+                    <!-- BOTÓN Y MENÚ DE NOTIFICACIONES / ALERTAS -->
+                    <div class="top-notif-container">
+                        <button type="button" class="top-icon-btn glass-effect" id="top-notif-btn" onclick="app.toggleNotificationsMenu(event)" title="Centro de Notificaciones">
+                            <i class="ph ph-bell"></i>
+                            <span class="notif-badge-pill" id="top-notif-badge" style="display:none;">0</span>
+                        </button>
+
+                        <div class="top-notif-dropdown-menu glass-effect" id="top-notif-dropdown-menu">
+                            <div class="notif-dropdown-header">
+                                <div style="display:flex; align-items:center; gap:0.4rem;">
+                                    <i class="ph ph-bell-ringing" style="color:var(--accent);"></i>
+                                    <strong>Centro de Avisos</strong>
+                                </div>
+                                <span style="font-size:0.75rem; color:var(--text-muted);" id="notif-count-label">0 alertas</span>
+                            </div>
+                            <div class="notif-items-list" id="top-notif-items-list">
+                                <!-- Dynamic notifications injected here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="top-icon-btn glass-effect" onclick="app.toggleZenMode()" title="Modo Zen (Enfoque Total)">
+                        <i class="ph ph-circle-half"></i>
+                    </button>
+                    <button type="button" class="top-icon-btn glass-effect" onclick="app.openSettingsModal()" title="Configuración Global">
+                        <i class="ph ph-gear"></i>
+                    </button>
+
+                    <!-- MENÚ DE PERFIL DE USUARIO ARRIBA A LA DERECHA -->
+                    <div class="top-user-profile-container">
+                        <button type="button" class="top-user-pill-btn" onclick="app.toggleTopUserMenu(event)">
+                            <div class="user-avatar-circle" id="top-user-avatar-circle">U</div>
+                            <span class="user-pill-name" id="top-user-name">Usuario</span>
+                            <i class="ph ph-caret-down" style="font-size:0.8rem;"></i>
+                        </button>
+
+                        <div class="top-user-dropdown-menu glass-effect" id="top-user-dropdown-menu">
+                            <div class="user-dropdown-header">
+                                <strong id="dropdown-user-name">Usuario</strong>
+                                <span id="dropdown-user-email">Perfil Personal</span>
+                            </div>
+                            <button type="button" class="top-user-menu-item" onclick="app.openUserProfileModal()">
+                                <i class="ph ph-user"></i> Mi Perfil
+                            </button>
+                            <button type="button" class="top-user-menu-item" onclick="app.openSettingsModal()">
+                                <i class="ph ph-gear"></i> Configuración
+                            </button>
+                            <button type="button" class="top-user-menu-item" onclick="app.openModal('help-modal')">
+                                <i class="ph ph-question"></i> Ayuda & Términos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOBBY VIEW -->
+            <div id="lobby-view" class="view active">
+                <header class="lobby-header">
+                    <h1 id="user-greeting">Hola, Usuario</h1>
+
+                    <!-- BANNER DE ALERTAS URGENTES EN EL LOBBY -->
+                    <div id="lobby-urgent-alert-banner" class="glass-effect lobby-urgent-banner" style="display:none;">
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <span class="urgent-pulse-icon"><i class="ph-fill ph-warning"></i></span>
+                            <div>
+                                <strong id="lobby-urgent-alert-title" style="color:#f87171; font-size:0.92rem;">Aviso Importante</strong>
+                                <p id="lobby-urgent-alert-msg" style="color:var(--text-muted); font-size:0.82rem; margin:0.15rem 0 0 0;">Mensaje de alerta</p>
+                            </div>
+                        </div>
+                        <button class="btn-cyan-pill" id="lobby-urgent-alert-btn" style="padding:0.35rem 0.85rem; font-size:0.8rem;">Ver Detalles</button>
+                    </div>
+
+                    <div class="lobby-widget glass-effect">
+                        <div id="clock-display" class="clock-display">00:00</div>
+                        <div class="lobby-widget-row">
+                            <div class="date-section">
+                                <div id="date-display" class="date-display">Cargando fecha...</div>
+                                <div id="weather-display" class="weather-display">
+                                    <i class="ph ph-cloud-sun"></i> <span>24°C - Despejado</span>
+                                </div>
+                                <div id="quote-display" class="quote-display">"Cargando frase del día..."</div>
+                            </div>
+                            <div class="upcoming-events-section">
+                                <h4><i class="ph-fill ph-calendar-blank"></i> Próximos Compromisos</h4>
+                                <div id="upcoming-events-list" class="upcoming-events-list">
+                                    <!-- Dynamic events synced with academic events -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- STATS PANEL -->
+                <div class="stats-panel" id="stats-panel">
+                    <div class="stat-card glass-effect" id="stat-card-facultad" onclick="app.navigateTo('facultad')" title="Ir a Estudio / Facultad">
+                        <i class="ph-fill ph-books stat-icon" style="color: #60a5fa;"></i>
+                        <div class="stat-value" id="sv-facultad">0%</div>
+                        <div class="stat-label">Progreso de Estudio</div>
+                    </div>
+                    <div class="stat-card glass-effect" id="stat-card-gimnasio" onclick="app.navigateTo('gimnasio')" title="Ir a Seguimiento de Hábitos">
+                        <i class="ph-fill ph-barbell stat-icon" style="color: #f87171;"></i>
+                        <div class="stat-value" id="sv-habitos">0%</div>
+                        <div class="stat-label">Hábitos Cumplidos Hoy</div>
+                    </div>
+                    <div class="stat-card glass-effect" id="stat-card-tareas" onclick="app.navigateTo('tareas')" title="Ir a Lista de Tareas">
+                        <i class="ph-fill ph-check-square stat-icon" style="color: #34d399;"></i>
+                        <div class="stat-value" id="sv-tareas">0</div>
+                        <div class="stat-label">Tareas Pendientes</div>
+                    </div>
+                    <div class="stat-card glass-effect" id="stat-card-finanzas" onclick="app.navigateTo('finanzas')" title="Ir a Finanzas">
+                        <i class="ph-fill ph-wallet stat-icon" style="color: #fbbf24;"></i>
+                        <div class="stat-value" id="sv-finanzas">$0</div>
+                        <div class="stat-label">Balance Actual</div>
+                    </div>
+                </div>
+
+                <!-- ACCESOS RÁPIDOS / BOOKMARKS -->
+                <div class="bookmarks-section" id="mod-bookmarks">
+                    <div class="section-title-row">
+                        <h3><i class="ph ph-compass" style="color: var(--accent);"></i> Accesos Rápidos</h3>
+                        <button class="btn-icon-only" onclick="app.openModal('add-bookmark-modal')" title="Añadir Enlace"><i class="ph ph-plus"></i></button>
+                    </div>
+                    <div class="bookmarks-grid" id="bookmarks-container">
+                        <!-- Bookmarks injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- CARDS GRID (MÓDULOS DEL DASHBOARD) -->
+                <div class="cards-grid" id="main-cards-grid">
+                    <div class="card glass-effect" id="card-facultad" onclick="app.navigateTo('facultad')">
+                        <i class="ph ph-books card-icon" style="color: #60a5fa;"></i>
+                        <h2>Estudio / Facultad</h2>
+                        <p>Materias, semanas y exámenes</p>
+                    </div>
+                    <div class="card glass-effect" id="card-gimnasio" onclick="app.navigateTo('gimnasio')">
+                        <i class="ph ph-lightning card-icon" style="color: #f87171;"></i>
+                        <h2>Seguimiento de Hábitos</h2>
+                        <p>Sigue tu rutina diaria y constancia</p>
+                    </div>
+                    <div class="card glass-effect" id="card-tareas" onclick="app.navigateTo('tareas')">
+                        <i class="ph ph-check-square card-icon" style="color: #34d399;"></i>
+                        <h2>Lista de Tareas</h2>
+                        <p>Organiza tu día y pendientes</p>
+                    </div>
+                    <div class="card glass-effect" id="card-finanzas" onclick="app.navigateTo('finanzas')">
+                        <i class="ph ph-wallet card-icon" style="color: #fbbf24;"></i>
+                        <h2>Finanzas</h2>
+                        <p>Cuentas, Mercado Pago y efectivo</p>
+                    </div>
+                    <div class="card glass-effect" id="card-notas" onclick="app.navigateTo('notas')">
+                        <i class="ph ph-note card-icon" style="color: #c084fc;"></i>
+                        <h2>Notas Rápidas</h2>
+                        <p>Ideas, links o cosas para recordar</p>
+                    </div>
+                    <div class="card glass-effect" id="card-horario" onclick="app.navigateTo('horario')">
+                        <i class="ph ph-calendar-blank card-icon" style="color: #818cf8;"></i>
+                        <h2>Horario Semanal</h2>
+                        <p>Planificación de días</p>
+                    </div>
+                </div>
+
+                <!-- CALENDARIO ACADÉMICO GLOBAL EN EL LOBBY -->
+                <div class="global-calendar-section" id="global-academic-calendar-section">
+                    <div class="section-title-row">
+                        <h3><i class="ph ph-calendar-check" style="color:var(--accent);"></i> Calendario Académico & Global</h3>
+                    </div>
+
+                    <!-- Color Legend Bar -->
+                    <div class="calendar-legend-bar">
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-today"></span> Hoy</span>
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-tomorrow"></span> Mañana</span>
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-3days"></span> Menos de 3 días</span>
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-7days"></span> Menos de 7 días</span>
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-30days"></span> Menos de 1 mes</span>
+                        <span class="cal-legend-item"><span class="cal-dot cal-dot-far"></span> Más de 1 mes</span>
+                    </div>
+
+                    <div class="global-events-grid" id="global-calendar-events-grid">
+                        <!-- Events injected dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- FACULTAD / ESTUDIO VIEW -->
+            <div id="facultad-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h1>Facultad</h1>
+                            <p class="section-subtitle">Selecciona una materia para ver tu progreso</p>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                            <button class="btn-secondary" onclick="app.exportAcademicEventsICS()" title="Exportar todos tus exámenes a Google Calendar / Apple Calendar (.ics)">
+                                <i class="ph ph-calendar-plus" style="color:var(--accent);"></i> Exportar Exámenes (.ics)
+                            </button>
+                            <button class="btn-blue-pill" onclick="app.openModal('add-subject-modal')"><i class="ph ph-plus"></i> Añadir Materia</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- PESTAÑAS DE NAVEGACIÓN DE MATERIAS -->
+                <div class="subject-tabs-row" id="subjects-nav-tabs">
+                    <!-- Dynamic Subject Tabs -->
+                </div>
+
+                <!-- CONTENEDOR DE LA MATERIA SELECCIONADA -->
+                <div id="subject-detail-container">
+                    <!-- Dynamic Subject Content injected here -->
+                </div>
+            </div>
+
+            <!-- SEGUIMIENTO DE HÁBITOS VIEW -->
+            <div id="gimnasio-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <h1>Seguimiento de Hábitos</h1>
+                    <p class="section-subtitle">Sigue tu rutina diaria y mantén tu constancia</p>
+                </header>
+
+                <!-- BANNER DE RACHA & RESUMEN DE LOGROS -->
+                <div class="streak-banner">
+                    <div style="display:flex; align-items:center; gap:0.8rem;">
+                        <i class="ph-fill ph-fire streak-icon"></i>
+                        <div>
+                            <strong style="font-size:1.1rem;" id="streak-count-title">Racha Actual: 0 Días Seguidos 🔥</strong>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Completa tus hábitos diarios para mantener tu racha encendida.</p>
+                        </div>
+                    </div>
+
+                    <!-- BADGES DE LOGROS DEL MES -->
+                    <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                        <span id="perfect-days-badge" class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); padding:0.4rem 0.8rem; font-size:0.8rem;">
+                            🎯 0 Días Perfectos
+                        </span>
+                        <span id="consistent-habit-badge" class="badge" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); padding:0.4rem 0.8rem; font-size:0.8rem;">
+                            🏆 Líder: -
+                        </span>
+                    </div>
+                </div>
+
+                <div class="habits-matrix-card">
+                    <div class="habits-matrix-header">
+                        <div class="month-selector">
+                            <button class="btn-icon-only glass-effect" onclick="app.navigateHabitMonth(-1)" title="Mes Anterior"><i class="ph ph-caret-left"></i></button>
+                            <span class="month-label" id="habits-month-label">Agosto 2026</span>
+                            <button class="btn-icon-only glass-effect" onclick="app.navigateHabitMonth(1)" title="Mes Siguiente"><i class="ph ph-caret-right"></i></button>
+                        </div>
+                        <button class="btn-blue-pill" onclick="app.openModal('add-habit-modal')"><i class="ph ph-plus"></i> Añadir Hábito</button>
+                    </div>
+
+                    <div class="habit-matrix-wrapper" id="habits-matrix-container">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Progreso Mensual Chart Card -->
+                <div class="habits-matrix-card">
+                    <h4 style="margin-bottom:1rem; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="ph ph-trend-up" style="color:var(--accent);"></i> Progreso Mensual
+                    </h4>
+                    <div class="habit-chart-container" id="habits-monthly-chart"></div>
+                </div>
+            </div>
+
+            <!-- TAREAS VIEW -->
+            <div id="tareas-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <h1>Lista de Tareas</h1>
+                    <p class="section-subtitle">Organiza tu día y no te olvides de nada</p>
+                </header>
+
+                <div class="clean-task-box">
+                    <input type="text" id="new-task-input" class="clean-task-input" placeholder="¿Qué necesitas hacer hoy?" onkeydown="if(event.key==='Enter') app.addTask()">
+                    <button class="btn-add-blue" onclick="app.openTaskModal()"><i class="ph ph-plus"></i></button>
+                </div>
+
+                <div class="task-list" id="tasks-container"></div>
+            </div>
+
+            <!-- FINANZAS VIEW -->
+            <div id="finanzas-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h1>Control de Finanzas</h1>
+                            <p class="section-subtitle">Administra tu saldo en efectivo, Mercado Pago y banco</p>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button class="btn-secondary" style="padding:0.6rem 1.1rem; font-size:0.9rem;" onclick="app.openImportCSVModal()" title="Cargar transacciones desde un archivo CSV o Excel">
+                                <i class="ph ph-file-arrow-up"></i> Importar CSV
+                            </button>
+                            <button class="btn-primary" style="padding:0.6rem 1.2rem; font-size:0.9rem;" onclick="app.exportFinancesCSV()" title="Descargar reporte en formato Excel CSV">
+                                <i class="ph ph-file-csv"></i> Exportar a Excel
+                            </button>
+                        </div>
+                    </div>
+                </header>
+                <div class="glass-effect" style="padding:1.5rem;">
+                    <!-- IG-Style Profile / Account Switcher con Menú desplegable Glass y Botón Vincular Cuentas (Cadena) -->
+                    <div style="display:flex; justify-content:center; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem;">
+                        <div class="custom-account-dropdown-container">
+                            <button type="button" class="ig-account-pill-btn" onclick="app.toggleAccountDropdown(event)" title="Cambiar Cuenta / Usuario">
+                                <i class="ph-fill ph-user-circle" style="font-size:1.3rem; color:var(--accent);"></i>
+                                <span id="current-account-name-label">Finanzas de Usuario</span>
+                                <i class="ph ph-caret-down" style="font-size:0.85rem; color:var(--text-muted);"></i>
+                            </button>
+
+                            <div class="custom-account-dropdown-menu glass-effect" id="account-dropdown-menu">
+                                <div id="account-items-list">
+                                    <!-- Dynamic Account Items Injected Here -->
+                                </div>
+                                <hr style="border:0; border-top:1px solid var(--glass-border); margin:0.4rem 0;">
+                                <button type="button" class="account-menu-item add-account-item" onclick="app.openAddAccountFromMenu()">
+                                    <i class="ph ph-plus-circle"></i> Agregar Nueva Cuenta...
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SELECTOR DE DISEÑO: CLÁSICO LIMPIO VS ANALÍTICO CON GRÁFICOS -->
+                        <div class="fin-layout-switcher">
+                            <button type="button" class="fin-layout-btn active" id="fin-layout-btn-classic" onclick="app.setFinanceLayoutMode('classic')" title="Diseño Clásico Limpio">
+                                <i class="ph ph-list-dashes"></i> Clásico
+                            </button>
+                            <button type="button" class="fin-layout-btn" id="fin-layout-btn-analytics" onclick="app.setFinanceLayoutMode('analytics')" title="Diseño con Gráficos y Reportes">
+                                <i class="ph ph-chart-pie-slice"></i> Con Gráficos
+                            </button>
+                        </div>
+
+                        <!-- Botón Vincular Cuentas (Cadena ph-link) - Solo si hay >= 2 cuentas -->
+                        <button type="button" class="btn-cyan-pill" id="link-accounts-btn" style="display:none;" onclick="app.openMergeAccountsModal()" title="Vincular y Combinar Cuentas">
+                            <i class="ph-bold ph-link"></i> Vincular Cuentas
+                        </button>
+                    </div>
+
+                    <!-- WIDGET CUENTA EN CONJUNTO (Aparece cuando 2 cuentas están vinculadas) -->
+                    <div id="shared-account-widget" class="joint-account-widget" style="display:none;">
+                        <div class="joint-widget-header">
+                            <div style="display:flex; align-items:center; gap:0.6rem;">
+                                <i class="ph-bold ph-handshake" style="font-size:1.4rem; color:#38bdf8;"></i>
+                                <div>
+                                    <h3 style="font-size:1.05rem; font-weight:800; color:#ffffff; margin:0;" id="joint-widget-title">Cuenta en Conjunto</h3>
+                                    <span style="font-size:0.8rem; color:var(--text-muted);" id="joint-widget-subtitle">Fondo Común y Gastos Compartidos</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-secondary" style="padding:0.35rem 0.75rem; font-size:0.78rem; border-radius:14px;" onclick="app.unlinkAccounts()" title="Desvincular estas 2 cuentas">
+                                <i class="ph ph-link-break"></i> Desvincular Cuentas
+                            </button>
+                        </div>
+                        <div class="joint-widget-stats">
+                            <div class="joint-stat-item">
+                                <span class="joint-stat-label">💰 Saldo Fondo Común (Total)</span>
+                                <span class="joint-stat-value" id="joint-total-balance" style="color:#38bdf8;">$0</span>
+                            </div>
+                            <div class="joint-stat-item">
+                                <span class="joint-stat-label">👤 Aporte Mi Cuenta</span>
+                                <span class="joint-stat-value" id="joint-my-balance" style="color:#34d399;">$0</span>
+                            </div>
+                            <div class="joint-stat-item">
+                                <span class="joint-stat-label">👥 Aporte Cuenta Vinculada</span>
+                                <span class="joint-stat-value" id="joint-other-balance" style="color:#c084fc;">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Account Summary Cards -->
+                    <div class="fin-balances-grid">
+                        <div class="fin-method-card card-total">
+                            <span style="font-size:0.8rem; color:#60a5fa; font-weight:500;">💰 Saldo Total</span>
+                            <div id="fin-total-balance" style="font-size:1.5rem; font-weight:700; color:#3b82f6;">$0</div>
+                        </div>
+                        <div class="fin-method-card card-cash">
+                            <span style="font-size:0.8rem; color:#34d399; font-weight:500;">💵 Efectivo</span>
+                            <div id="fin-cash-balance" style="font-size:1.5rem; font-weight:700; color:#10b981;">$0</div>
+                        </div>
+                        <div class="fin-method-card card-mp">
+                            <span style="font-size:0.8rem; color:#22d3ee; font-weight:500;">📲 Mercado Pago</span>
+                            <div id="fin-mp-balance" style="font-size:1.5rem; font-weight:700; color:#06b6d4;">$0</div>
+                        </div>
+                        <div class="fin-method-card card-bank">
+                            <span style="font-size:0.8rem; color:#c084fc; font-weight:500;">🏦 Banco</span>
+                            <div id="fin-bank-balance" style="font-size:1.5rem; font-weight:700; color:#a855f7;">$0</div>
+                        </div>
+                    </div>
+
+                    <!-- Presupuesto Mensual Box -->
+                    <div style="padding:1.25rem; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid var(--glass-border); margin-bottom:1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <strong>Presupuesto Mensual</strong>
+                                <div id="budget-status-text" style="font-size:0.85rem; color:var(--text-muted);">$0 / $0</div>
+                            </div>
+                            <button class="btn-icon-only" onclick="app.openModal('set-budget-modal')" title="Definir Límite"><i class="ph ph-pencil-simple"></i></button>
+                        </div>
+                        <div class="budget-progress-bar">
+                            <div id="budget-progress-fill" class="budget-progress-fill" style="width:0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- PANEL DE ANALÍTICAS & GRÁFICOS FINANCIEROS (OCULTO POR DEFECTO EN MODO CLÁSICO) -->
+                    <div class="fin-analytics-card glass-effect" id="fin-analytics-panel" style="display:none;">
+                        <div class="fin-analytics-header">
+                            <h4 style="font-size:1.05rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; color:var(--text-main); margin:0;">
+                                <i class="ph ph-chart-pie-slice" style="color:var(--accent); font-size:1.3rem;"></i>
+                                <span>Reporte & Distribución del Mes</span>
+                            </h4>
+                            <span style="font-size:0.75rem; color:var(--text-muted);" id="fin-analytics-month-label">Mes Actual</span>
+                        </div>
+
+                        <div class="fin-analytics-grid">
+                            <!-- Comparativa Ingresos vs Gastos -->
+                            <div class="fin-analytics-col">
+                                <span class="fin-analytics-subtitle">Balance Mensual</span>
+                                <div class="fin-balance-bars-wrapper">
+                                    <div class="fin-balance-stat-row">
+                                        <span style="color:#10b981; font-size:0.82rem; font-weight:600;"><i class="ph ph-arrow-up-right"></i> Ingresos:</span>
+                                        <strong id="fin-chart-income-val" style="color:#10b981;">$0</strong>
+                                    </div>
+                                    <div class="fin-stat-bar-track">
+                                        <div class="fin-stat-bar-fill fill-income" id="fin-chart-income-bar" style="width:0%;"></div>
+                                    </div>
+
+                                    <div class="fin-balance-stat-row" style="margin-top:0.6rem;">
+                                        <span style="color:#ef4444; font-size:0.82rem; font-weight:600;"><i class="ph ph-arrow-down-left"></i> Gastos:</span>
+                                        <strong id="fin-chart-expense-val" style="color:#ef4444;">$0</strong>
+                                    </div>
+                                    <div class="fin-stat-bar-track">
+                                        <div class="fin-stat-bar-fill fill-expense" id="fin-chart-expense-bar" style="width:0%;"></div>
+                                    </div>
+
+                                    <div class="fin-balance-net-pill" id="fin-chart-net-pill">
+                                        <span>Balance Neto:</span>
+                                        <strong id="fin-chart-net-val">$0</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico de Dona SVG y Desglose por Categoría -->
+                            <div class="fin-analytics-col">
+                                <span class="fin-analytics-subtitle">Gastos por Categoría</span>
+                                <div class="fin-donut-chart-row">
+                                    <div class="fin-donut-wrapper">
+                                        <svg class="fin-donut-svg" width="120" height="120" viewBox="0 0 120 120" id="fin-donut-svg">
+                                            <!-- Dynamic SVG Slices injected here -->
+                                        </svg>
+                                        <div class="fin-donut-center" id="fin-donut-center-info">
+                                            <span style="font-size:0.65rem; color:var(--text-muted);">Mayor Gasto</span>
+                                            <strong id="fin-donut-top-cat" style="font-size:0.75rem; color:var(--accent);">-</strong>
+                                        </div>
+                                    </div>
+                                    <div class="fin-cat-breakdown-list" id="fin-cat-breakdown-list">
+                                        <!-- Dynamic categories breakdown list -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA DESPLEGABLE / ACCORDEÓN MINI PARA NUEVA TRANSACCIÓN -->
+                    <div class="fin-add-card">
+                        <div class="fin-add-card-header" onclick="app.toggleAddTransactionForm()" style="cursor:pointer; user-select:none;">
+                            <h4 style="font-size:1rem; font-weight:700; display:flex; align-items:center; gap:0.6rem; color:var(--text-main); margin:0;">
+                                <i class="ph-fill ph-plus-circle" style="color:var(--accent); font-size:1.3rem;"></i> 
+                                <span>Nueva Transacción</span>
+                                <span style="font-size:0.75rem; font-weight:500; color:var(--text-muted);" id="fin-add-hint-text">(Click para desplegar)</span>
+                            </h4>
+                            <button type="button" class="btn-icon-only" style="width:32px; height:32px; border-radius:50%; pointer-events:none;">
+                                <i class="ph ph-caret-down" id="fin-add-caret-icon"></i>
+                            </button>
+                        </div>
+
+                        <div id="fin-add-form-body" style="display:none; margin-top:1.25rem; border-top:1px solid var(--glass-border); padding-top:1.25rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+                                <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">Tipo de Operación:</span>
+                                <!-- Selector de tipo (Gasto / Ingreso) -->
+                                <div class="fin-type-pills">
+                                    <button type="button" class="fin-type-pill active-expense" id="fin-type-expense" onclick="app.setFinanceType('expense')">
+                                        <i class="ph ph-arrow-down-left"></i> Gasto (-)
+                                    </button>
+                                    <button type="button" class="fin-type-pill" id="fin-type-income" onclick="app.setFinanceType('income')">
+                                        <i class="ph ph-arrow-up-right"></i> Ingreso (+)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="fin-form-grid">
+                                <div class="fin-input-wrapper">
+                                    <label>Concepto / Descripción</label>
+                                    <div class="fin-input-icon">
+                                        <i class="ph ph-tag-simple"></i>
+                                        <input type="text" id="fin-desc-input" class="form-input" placeholder="Ej: Supermercado, Alquiler, Sueldo..." onkeydown="if(event.key==='Enter') app.addFinanceTransaction()">
+                                    </div>
+                                </div>
+
+                                <div class="fin-input-wrapper">
+                                    <label>Monto ($)</label>
+                                    <div class="fin-input-icon">
+                                        <i class="ph ph-currency-dollar"></i>
+                                        <input type="number" id="fin-amount-input" class="form-input" placeholder="0" min="0" onkeydown="if(event.key==='Enter') app.addFinanceTransaction()">
+                                    </div>
+                                </div>
+
+                                <!-- CUSTOM GLASS SELECT: MÉTODO DE PAGO -->
+                                <div class="fin-input-wrapper">
+                                    <label>Método de Pago</label>
+                                    <div class="custom-glass-select-container">
+                                        <button type="button" class="custom-glass-select-btn" onclick="app.toggleGlassSelectMenu(event, 'fin-method-menu')">
+                                            <span id="fin-method-selected-label">💵 Efectivo</span>
+                                            <i class="ph ph-caret-down"></i>
+                                        </button>
+                                        <div class="custom-glass-select-menu glass-effect" id="fin-method-menu">
+                                            <button type="button" class="custom-glass-option active" onclick="app.selectGlassOption('method', 'efectivo', '💵 Efectivo')">💵 Efectivo</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('method', 'mp', '📲 Mercado Pago')">📲 Mercado Pago</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('method', 'banco', '🏦 Banco / Tarjeta')">🏦 Banco / Tarjeta</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="fin-method-input" value="efectivo">
+                                </div>
+
+                                <!-- CUSTOM GLASS SELECT: CATEGORÍA -->
+                                <div class="fin-input-wrapper">
+                                    <label>Categoría</label>
+                                    <div class="custom-glass-select-container">
+                                        <button type="button" class="custom-glass-select-btn" onclick="app.toggleGlassSelectMenu(event, 'fin-cat-menu')">
+                                            <span id="fin-cat-selected-label">🍔 Comida / Alimentos</span>
+                                            <i class="ph ph-caret-down"></i>
+                                        </button>
+                                        <div class="custom-glass-select-menu glass-effect" id="fin-cat-menu">
+                                            <button type="button" class="custom-glass-option active" onclick="app.selectGlassOption('cat', 'comida', '🍔 Comida / Alimentos')">🍔 Comida / Alimentos</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('cat', 'transporte', '🚗 Transporte / Nafta')">🚗 Transporte / Nafta</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('cat', 'servicios', '💡 Servicios / Facturas')">💡 Servicios / Facturas</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('cat', 'ocio', '🎮 Ocio / Salidas')">🎮 Ocio / Salidas</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('cat', 'trabajo', '💼 Trabajo / Cobros')">💼 Trabajo / Cobros</button>
+                                            <button type="button" class="custom-glass-option" onclick="app.selectGlassOption('cat', 'otro', '📦 Otro / Varios')">📦 Otro / Varios</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="fin-cat-input" value="comida">
+                                </div>
+                            </div>
+
+                            <!-- Checkbox Transacción Compartida (Solo si la cuenta está vinculada) -->
+                            <div id="fin-shared-wrapper" style="display:none; margin-top:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; background:rgba(255,255,255,0.03); padding:0.6rem 0.9rem; border-radius:10px; border:1px solid var(--glass-border);">
+                                <label for="fin-shared-checkbox" style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.85rem; font-weight:600; color:var(--text-main); margin:0;">
+                                    <input type="checkbox" id="fin-shared-checkbox" style="width:16px; height:16px; accent-color:var(--accent); cursor:pointer;">
+                                    <span>👥 Transacción Compartida (Para Ambas Personas)</span>
+                                </label>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Visible en la Cuenta en Conjunto</span>
+                            </div>
+
+                            <div style="text-align:right; margin-top:1.25rem;">
+                                <button class="btn-primary-glow" onclick="app.addFinanceTransaction()">
+                                    <i class="ph ph-plus-bold"></i> Agregar Transacción
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="fin-transactions-list"></div>
+                </div>
+            </div>
+
+            <!-- NOTAS RÁPIDAS VIEW -->
+            <div id="notas-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <h1>Notas Rápidas</h1>
+                    <p class="section-subtitle">Ideas, links o cosas para recordar</p>
+                </header>
+
+                <button class="new-note-dashed-btn" onclick="app.openNoteModal()">
+                    <i class="ph ph-plus"></i> Nueva Nota
+                </button>
+
+                <div class="notes-grid" id="notes-cards-grid">
+                    <!-- Dynamic Sticky Notes Cards Injected Here -->
+                </div>
+            </div>
+
+            <!-- HORARIO VIEW REDISEÑADO ULTRALINDO -->
+            <div id="horario-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h1 style="display:flex; align-items:center; gap:0.6rem;"><i class="ph ph-clock-afternoon" style="color:var(--accent);"></i> Horario Semanal & Turnos</h1>
+                            <p class="section-subtitle">Agenda cronológica inteligente con horas exactas (ej: 18:35 - 21:00)</p>
+                        </div>
+                        <div style="display:flex; gap:0.6rem; align-items:center;">
+                            <button class="btn-blue-pill" onclick="app.openAddScheduleModal()"><i class="ph ph-plus-circle"></i> Nueva Actividad</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- BARRA DE RESUMEN Y NAVEGACIÓN DE DÍAS -->
+                <div class="sched-top-control-bar glass-effect" style="margin-bottom:1.5rem; padding:0.85rem 1.2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-radius:16px;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;" id="sched-summary-chips">
+                        <!-- Injected summary stats like 💼 2 Turnos | 🎓 3 Cursados -->
+                    </div>
+                    <div class="sched-filter-pills" style="display:flex; gap:0.35rem; background:rgba(0,0,0,0.3); padding:0.3rem; border-radius:30px; border:1px solid var(--glass-border);">
+                        <button class="sched-tab-btn active" id="sched-tab-all" onclick="app.filterScheduleDay('all')">Todos los Días</button>
+                        <button class="sched-tab-btn" id="sched-tab-lunes" onclick="app.filterScheduleDay('lunes')">Lun</button>
+                        <button class="sched-tab-btn" id="sched-tab-martes" onclick="app.filterScheduleDay('martes')">Mar</button>
+                        <button class="sched-tab-btn" id="sched-tab-miercoles" onclick="app.filterScheduleDay('miercoles')">Mié</button>
+                        <button class="sched-tab-btn" id="sched-tab-jueves" onclick="app.filterScheduleDay('jueves')">Jue</button>
+                        <button class="sched-tab-btn" id="sched-tab-viernes" onclick="app.filterScheduleDay('viernes')">Vie</button>
+                        <button class="sched-tab-btn" id="sched-tab-sabado" onclick="app.filterScheduleDay('sabado')">Sáb</button>
+                        <button class="sched-tab-btn" id="sched-tab-domingo" onclick="app.filterScheduleDay('domingo')">Dom</button>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR GRID DE DÍAS -->
+                <div class="schedule-days-grid" id="schedule-days-container">
+                    <!-- Injected dynamically for Lunes-Domingo -->
+                </div>
+            </div>
+
+            <!-- POMODORO VIEW -->
+            <div id="pomodoro-view" class="view">
+                <header class="section-header">
+                    <button class="back-btn" onclick="app.navigateTo('lobby')">
+                        <i class="ph ph-arrow-left"></i> Volver al Lobby
+                    </button>
+                    <h1>Temporizador Pomodoro</h1>
+                    <p class="section-subtitle">Técnica de enfoque por bloques de tiempo</p>
+                </header>
+                <div class="pomodoro-container glass-effect">
+                    <!-- Selector de Modos Pomodoro -->
+                    <div class="pomo-mode-selector">
+                        <button class="pomo-mode-btn active" id="pomo-mode-work20" onclick="app.setPomodoroPreset('work', 20)"><i class="ph ph-target"></i> 20m Enfoque</button>
+                        <button class="pomo-mode-btn" id="pomo-mode-work10" onclick="app.setPomodoroPreset('work', 10)"><i class="ph ph-lightning"></i> 10m Enfoque</button>
+                        <button class="pomo-mode-btn" id="pomo-mode-break5" onclick="app.setPomodoroPreset('break', 5)"><i class="ph ph-coffee"></i> 5m Descanso</button>
+                        <button class="pomo-mode-btn" id="pomo-mode-break10" onclick="app.setPomodoroPreset('longBreak', 10)"><i class="ph ph-timer"></i> 10m Descanso</button>
+                    </div>
+
+                    <h3 id="pomo-mode-label" style="color:var(--accent); margin-top:1rem; font-size:1.1rem; font-weight:700;">SESIÓN DE CONCENTRACIÓN</h3>
+                    
+                    <div class="pomo-main-timer-row">
+                        <!-- Botones de restar tiempo (Izquierda) -->
+                        <div class="pomo-adjust-group">
+                            <button class="pomo-adjust-btn btn-sub" onclick="app.adjustPomodoroTime(-10)" title="Restar 10 Minutos">-10m</button>
+                            <button class="pomo-adjust-btn btn-sub" onclick="app.adjustPomodoroTime(-5)" title="Restar 5 Minutos">-5m</button>
+                        </div>
+
+                        <!-- Círculo del Reloj -->
+                        <div class="pomo-circle-wrapper">
+                            <svg class="progress-ring" width="240" height="240" viewBox="0 0 240 240">
+                                <circle class="progress-ring__bg" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="transparent" r="105" cx="120" cy="120"/>
+                                <circle class="progress-ring__circle" stroke="var(--accent)" stroke-width="10" fill="transparent" stroke-linecap="round" r="105" cx="120" cy="120"/>
+                            </svg>
+                            <div class="pomo-time-large" id="pomo-main-display">20:00</div>
+                        </div>
+
+                        <!-- Botones de sumar tiempo (Derecha) -->
+                        <div class="pomo-adjust-group">
+                            <button class="pomo-adjust-btn btn-add" onclick="app.adjustPomodoroTime(5)" title="Sumar 5 Minutos">+5m</button>
+                            <button class="pomo-adjust-btn btn-add" onclick="app.adjustPomodoroTime(10)" title="Sumar 10 Minutos">+10m</button>
+                            <button class="pomo-adjust-btn btn-add" onclick="app.adjustPomodoroTime(30)" title="Sumar 30 Minutos">+30m</button>
+                        </div>
+                    </div>
+
+                    <div class="pomo-controls">
+                        <button class="btn-primary" id="pomo-toggle-btn" onclick="app.togglePomodoro()"><i class="ph ph-play"></i> INICIAR</button>
+                        <button class="btn-secondary" onclick="app.resetPomodoro()"><i class="ph ph-arrow-counter-clockwise"></i> REINICIAR</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL UNIVERSAL DE CONFIRMACIÓN (REEMPLAZA CONFIRM NATIVO) -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal-card glass-effect" style="max-width:420px; text-align:center;">
+            <i class="ph-fill ph-warning-circle" style="font-size:3.2rem; color:#ef4444; margin-bottom:0.75rem;"></i>
+            <h2 id="confirm-modal-title" style="font-size:1.3rem; margin-bottom:0.5rem;">¿Confirmar Acción?</h2>
+            <p id="confirm-modal-msg" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">Esta acción no se puede deshacer.</p>
+            <div style="display:flex; justify-content:center; gap:0.75rem;">
+                <button class="btn-secondary" onclick="app.closeModal('confirm-modal')">Cancelar</button>
+                <button class="btn-primary" id="confirm-modal-action-btn" style="background:#ef4444; border-color:#ef4444;"><i class="ph ph-check"></i> Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AÑADIR HÁBITO -->
+    <div class="modal-overlay" id="add-habit-modal">
+        <div class="modal-card glass-effect" style="max-width:440px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-plus-circle" style="color:var(--accent);"></i> Nuevo Hábito</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('add-habit-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nombre del Hábito</label>
+                <input type="text" id="habit-name-input" class="form-input" placeholder="Ej: Ejercicio, Lectura 20m, Meditar..." onkeydown="if(event.key==='Enter') app.saveHabitFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveHabitFromModal()"><i class="ph ph-check"></i> Añadir Hábito</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DEFINIR PRESUPUESTO FINANZAS -->
+    <div class="modal-overlay" id="set-budget-modal">
+        <div class="modal-card glass-effect" style="max-width:420px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-pencil-simple" style="color:var(--accent);"></i> Presupuesto Mensual</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('set-budget-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Límite Mensual de Gastos ($)</label>
+                <input type="number" id="budget-limit-input" class="form-input" placeholder="50000" onkeydown="if(event.key==='Enter') app.saveBudgetLimitFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveBudgetLimitFromModal()"><i class="ph ph-floppy-disk"></i> Guardar Límite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREAR NUEVA CUENTA FINANCIERA -->
+    <div class="modal-overlay" id="add-account-modal">
+        <div class="modal-card glass-effect" style="max-width:420px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-plus" style="color:var(--accent);"></i> Nueva Cuenta / Usuario</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('add-account-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nombre de la Cuenta</label>
+                <input type="text" id="acc-name-input" class="form-input" placeholder="Ej: Trabajo, Ahorros, Usuario 2..." onkeydown="if(event.key==='Enter') app.saveUserAccountFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveUserAccountFromModal()"><i class="ph ph-plus"></i> Crear Cuenta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VINCULAR / CONECTAR CUENTAS EN CONJUNTO (SIN ELIMINAR NINGUNA) -->
+    <div class="modal-overlay" id="link-accounts-modal">
+        <div class="modal-card glass-effect" style="max-width:460px;">
+            <div class="modal-header">
+                <h2><i class="ph-bold ph-link" style="color:#38bdf8;"></i> Vincular Cuentas en Conjunto</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('link-accounts-modal')">&times;</button>
+            </div>
+            <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.25rem;">
+                Conecta 2 cuentas para crear un panel de <strong>Cuenta en Conjunto</strong> (Fondo Común y gastos compartidos para ambas personas). <em>Ambas cuentas mantendrán sus transacciones separadas y ninguna será eliminada.</em>
+            </p>
+            <div class="form-group">
+                <label>Primera Cuenta</label>
+                <select id="link-acc1-select" class="form-input custom-select">
+                    <!-- Options injected dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Segunda Cuenta (Vincular con la primera)</label>
+                <select id="link-acc2-select" class="form-input custom-select">
+                    <!-- Options injected dynamically -->
+                </select>
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-cyan-pill" onclick="app.executeAccountLink()"><i class="ph-bold ph-link"></i> Confirmar Vinculación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: IMPORTAR TRANSACCIONES DESDE CSV / EXCEL -->
+    <div class="modal-overlay" id="import-csv-modal">
+        <div class="modal-card glass-effect" style="max-width:480px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-file-arrow-up" style="color:var(--accent);"></i> Importar CSV / Excel</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('import-csv-modal')">&times;</button>
+            </div>
+            <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">
+                Selecciona un archivo CSV para cargar masivamente tus transacciones a la cuenta activa.
+            </p>
+
+            <div class="backup-box" style="margin-bottom:1.25rem;">
+                <span style="font-size:0.8rem; font-weight:700; color:var(--accent); display:block; margin-bottom:0.3rem;">📌 Formato de Columnas Esperado:</span>
+                <code style="font-size:0.75rem; color:var(--text-muted); display:block; background:rgba(0,0,0,0.3); padding:0.5rem; border-radius:6px; word-break:break-all;">
+                    Fecha, Descripción, Monto, Método Pago, Categoría, Tipo
+                </code>
+            </div>
+
+            <div class="drop-zone" onclick="document.getElementById('fin-csv-file-input').click()">
+                <i class="ph ph-upload-simple" style="font-size:2rem; color:var(--accent); margin-bottom:0.5rem; display:block;"></i>
+                <span>Haz clic aquí para elegir tu archivo .csv</span>
+                <input type="file" id="fin-csv-file-input" accept=".csv,.txt" style="display:none;" onchange="app.processFinanceCSVImport(event)">
+            </div>
+
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-secondary" onclick="app.closeModal('import-csv-modal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MI PERFIL DE USUARIO -->
+    <div class="modal-overlay" id="user-profile-modal">
+        <div class="modal-card glass-effect" style="max-width:480px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-circle" style="color:var(--accent);"></i> Mi Perfil de Usuario</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('user-profile-modal')">&times;</button>
+            </div>
+            <div style="text-align:center; margin-bottom:1.5rem;">
+                <div class="user-avatar-circle" style="width:70px; height:70px; font-size:1.8rem; margin:0 auto 0.75rem auto;" id="profile-modal-avatar">U</div>
+                <h3 id="profile-modal-title" style="font-size:1.2rem; font-weight:700;">Usuario</h3>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Estudiante / Planificador Personal</span>
+            </div>
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" id="profile-username-input" class="form-input" placeholder="Tu Nombre..." onkeydown="if(event.key==='Enter') app.saveUserProfileModal()">
+            </div>
+            <div class="form-group">
+                <label>Estado / Frase Personal</label>
+                <input type="text" id="profile-status-input" class="form-input" placeholder="Ej: Enfocado en los exámenes..." onkeydown="if(event.key==='Enter') app.saveUserProfileModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveUserProfileModal()"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURACIÓN GLOBAL RENOVADA Y COMPLETA -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card glass-effect" style="max-width:560px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-gear" style="color:var(--accent);"></i> Configuración Global</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('settings-modal')">&times;</button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:1.25rem;">
+                <!-- TEMAS Y FONDO DE PANTALLA -->
+                <div class="form-group">
+                    <label style="font-weight:700; color:var(--text-main);">🎨 Tema Visual & Fondo de Pantalla</label>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem; margin-bottom:0.75rem;">
+                        <button type="button" class="btn-secondary" onclick="app.cycleTheme()"><i class="ph ph-palette"></i> Cambiar Fondo Neón</button>
+                    </div>
+                    
+                    <label style="font-size:0.8rem; color:var(--text-muted);">URL de Fondo Personalizado (Opcional)</label>
+                    <input type="text" id="settings-bg-url-input" class="form-input" placeholder="https://..." style="margin-top:0.25rem;" oninput="app.updateCustomBgUrl(this.value)">
+                </div>
+
+                <!-- OSCURECIMIENTO / OPACIDAD DEL FONDO -->
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label style="font-weight:700; color:var(--text-main);">🌙 Oscurecimiento / Opacidad del Fondo</label>
+                        <span id="bg-opacity-val" style="font-weight:700; color:var(--accent);">70%</span>
+                    </div>
+                    <input type="range" id="settings-bg-opacity-input" min="0" max="100" value="70" style="width:100%; margin-top:0.5rem; accent-color:var(--accent);" oninput="app.updateBgOpacity(this.value)">
+                </div>
+
+                <!-- ACTIVACIÓN DE MÓDULOS / WIDGETS -->
+                <div class="form-group">
+                    <label style="font-weight:700; color:var(--text-main); display:block; margin-bottom:0.5rem;">🧩 Módulos y Widgets Visibles</label>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:0.6rem; background:rgba(0,0,0,0.25); padding:0.85rem; border-radius:12px; border:1px solid var(--glass-border);">
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-facultad" checked onchange="app.toggleModuleVisibility('facultad', this.checked)"> 🎓 Facultad
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-gimnasio" checked onchange="app.toggleModuleVisibility('gimnasio', this.checked)"> 🔥 Hábitos
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-tareas" checked onchange="app.toggleModuleVisibility('tareas', this.checked)"> ✅ Tareas
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-finanzas" checked onchange="app.toggleModuleVisibility('finanzas', this.checked)"> 💰 Finanzas
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-notas" checked onchange="app.toggleModuleVisibility('notas', this.checked)"> 📝 Notas
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-horario" checked onchange="app.toggleModuleVisibility('horario', this.checked)"> 📅 Horarios
+                        </label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                            <input type="checkbox" id="toggle-mod-pomodoro" checked onchange="app.toggleModuleVisibility('pomodoro', this.checked)"> 🎯 Pomodoro
+                        </label>
+                    </div>
+                </div>
+
+                <!-- COPIAS DE SEGURIDAD & RESTAURAR -->
+                <div class="form-group" style="border-top:1px solid var(--glass-border); padding-top:1rem;">
+                    <label style="font-weight:700; color:var(--text-main); display:block; margin-bottom:0.5rem;">💾 Gestión de Datos</label>
+                    <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                        <button type="button" class="btn-secondary" onclick="app.closeModal('settings-modal'); app.openModal('backup-modal');"><i class="ph ph-database"></i> Respaldos JSON</button>
+                        <button type="button" class="btn-secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.4);" onclick="app.resetDefaultData()"><i class="ph ph-arrow-counter-clockwise"></i> Restaurar Valores por Defecto</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.closeModal('settings-modal')">Listo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AYUDA Y TÉRMINOS -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal-card glass-effect" style="max-width:520px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-question" style="color:var(--accent);"></i> Ayuda & Términos</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('help-modal')">&times;</button>
+            </div>
+            
+            <div style="font-size:0.88rem; color:var(--text-muted); line-height:1.6;">
+                <h4 style="color:var(--text-main); margin-bottom:0.4rem;">💡 ¿Cómo funciona el Dashboard?</h4>
+                <p style="margin-bottom:1rem;">
+                    Tu centro de control personal integra **Facultad**, **Finanzas**, **Tareas**, **Hábitos**, **Horarios**, **Notas** y **Pomodoro**.
+                </p>
+
+                <h4 style="color:var(--text-main); margin-bottom:0.4rem;">🔐 Privacidad y Datos</h4>
+                <p style="margin-bottom:1rem;">
+                    Todos tus datos (transacciones, notas y materias) se guardan **localmente en tu navegador (`localStorage`)** de forma privada.
+                </p>
+
+                <h4 style="color:var(--text-main); margin-bottom:0.4rem;">📄 Términos de Uso</h4>
+                <p>
+                    Uso personal libre. Puedes respaldar tu información en cualquier momento desde la sección de *Copia de Seguridad*.
+                </p>
+            </div>
+
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.closeModal('help-modal')">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CAMBIAR SEMANA ACTUAL MATERIA -->
+    <div class="modal-overlay" id="set-week-modal">
+        <div class="modal-card glass-effect" style="max-width:420px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-map-pin" style="color:#06b6d4;"></i> Semana Actual</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('set-week-modal')">&times;</button>
+            </div>
+            <input type="hidden" id="week-subject-id-input">
+            <div class="form-group">
+                <label>Número de Semana Activa (1 al 24)</label>
+                <input type="number" id="week-number-input" class="form-input" min="1" max="24" onkeydown="if(event.key==='Enter') app.saveSubjectCurrentWeekFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveSubjectCurrentWeekFromModal()"><i class="ph ph-floppy-disk"></i> Guardar Semana</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACTIVIDAD CON HORA EXACTA (EJ: 18:35) -->
+    <div class="modal-overlay" id="schedule-item-modal">
+        <div class="modal-card glass-effect" style="max-width:460px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-clock" style="color:var(--accent);"></i> Actividad con Hora Exacta</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('schedule-item-modal')">&times;</button>
+            </div>
+
+            <input type="hidden" id="sched-edit-id">
+
+            <div class="form-group">
+                <label>Día de la Semana</label>
+                <select id="sched-day-select" class="form-input custom-select">
+                    <option value="lunes">🗓️ Lunes</option>
+                    <option value="martes">🗓️ Martes</option>
+                    <option value="miercoles">🗓️ Miércoles</option>
+                    <option value="jueves">🗓️ Jueves</option>
+                    <option value="viernes">🗓️ Viernes</option>
+                    <option value="sabado">🌴 Sábado</option>
+                    <option value="domingo">🌴 Domingo</option>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div class="form-group">
+                    <label>Hora Inicio (Ej: 18:35)</label>
+                    <input type="time" id="sched-start-input" class="form-input" value="18:35">
+                </div>
+                <div class="form-group">
+                    <label>Hora Fin (Ej: 21:00)</label>
+                    <input type="time" id="sched-end-input" class="form-input" value="21:00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Título / Actividad</label>
+                <input type="text" id="sched-title-input" class="form-input" placeholder="Ej: Trabajo 18:35, Cursado Algoritmos, Gym..." onkeydown="if(event.key==='Enter') app.saveScheduleItemModal()">
+            </div>
+
+            <div class="form-group">
+                <label>Categoría / Tipo</label>
+                <select id="sched-cat-select" class="form-input custom-select">
+                    <option value="trabajo">💼 Trabajo / Turno</option>
+                    <option value="facultad">🎓 Facultad / Cursado</option>
+                    <option value="gimnasio">💪 Gimnasio / Deporte</option>
+                    <option value="estudio">📖 Estudio / Repaso</option>
+                    <option value="personal">🏠 Personal / Casa</option>
+                    <option value="otro">📦 Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Detalles / Ubicación (Opcional)</label>
+                <input type="text" id="sched-details-input" class="form-input" placeholder="Ej: Turno Tarde, Aula 204, Virtual...">
+            </div>
+
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveScheduleItemModal()"><i class="ph ph-floppy-disk"></i> Guardar Actividad</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDITAR HORARIO SEMANAL -->
+    <div class="modal-overlay" id="edit-schedule-modal">
+        <div class="modal-card glass-effect" style="max-width:440px;">
+            <div class="modal-header">
+                <h2 id="schedule-modal-title"><i class="ph ph-calendar-blank" style="color:var(--accent);"></i> Editar Horario</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('edit-schedule-modal')">&times;</button>
+            </div>
+            <input type="hidden" id="schedule-slot-key-input">
+            <div class="form-group">
+                <label>Materia / Actividad</label>
+                <input type="text" id="schedule-text-input" class="form-input" placeholder="Ej: Análisis Matemático (8:00 a 12:00)" onkeydown="if(event.key==='Enter') app.saveScheduleSlotFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveScheduleSlotFromModal()"><i class="ph ph-floppy-disk"></i> Guardar Actividad</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GESTIÓN DE ENLACES DE MATERIA -->
+    <div class="modal-overlay" id="link-modal">
+        <div class="modal-card glass-effect" style="max-width:460px;">
+            <div class="modal-header">
+                <h2 id="link-modal-title"><i class="ph ph-link" style="color:var(--accent);"></i> Gestionar Enlace</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('link-modal')">&times;</button>
+            </div>
+            <input type="hidden" id="link-subject-id-input">
+            <input type="hidden" id="link-key-input">
+            <p id="link-modal-subtitle" style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.25rem;"></p>
+            <div class="form-group">
+                <label>Dirección Web (URL)</label>
+                <input type="url" id="link-modal-url-input" class="form-input" placeholder="https://campus.uba.ar">
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; flex-wrap:wrap; gap:0.6rem;">
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="btn-primary" id="link-modal-open-btn" onclick="app.openSubjectLinkFromModal()"><i class="ph ph-arrow-square-out"></i> Abrir</button>
+                    <button class="btn-secondary" onclick="app.saveSubjectLinkFromModal()"><i class="ph ph-floppy-disk"></i> Guardar</button>
+                </div>
+                <button id="link-modal-del-btn" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#ef4444; padding:0.6rem 0.9rem; border-radius:10px; cursor:pointer; font-weight:600; font-size:0.85rem;" onclick="app.deleteSubjectLinkFromModal()"><i class="ph ph-trash"></i> Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREAR / EDITAR NOTA -->
+    <div class="modal-overlay" id="note-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2 id="note-modal-title"><i class="ph ph-note-pencil"></i> Nueva Nota</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('note-modal')">&times;</button>
+            </div>
+            <input type="hidden" id="note-id-input">
+            <div class="form-group">
+                <label>Título de la Nota</label>
+                <input type="text" id="note-title-input" class="form-input" placeholder="Ej: Horario, Ideas o Links...">
+            </div>
+            <div class="form-group">
+                <label>Contenido / Links de la Nota</label>
+                <textarea id="note-content-input" class="form-input" rows="5" placeholder="Escribe aquí tu contenido o pega URLs como https://..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Color de Borde Neón</label>
+                <div class="color-chips-row">
+                    <button class="color-chip-btn chip-green active" data-color="note-card-green" onclick="app.selectNoteColor(this)"></button>
+                    <button class="color-chip-btn chip-purple" data-color="note-card-purple" onclick="app.selectNoteColor(this)"></button>
+                    <button class="color-chip-btn chip-cyan" data-color="note-card-cyan" onclick="app.selectNoteColor(this)"></button>
+                    <button class="color-chip-btn chip-pink" data-color="note-card-pink" onclick="app.selectNoteColor(this)"></button>
+                    <button class="color-chip-btn chip-yellow" data-color="note-card-yellow" onclick="app.selectNoteColor(this)"></button>
+                    <button class="color-chip-btn chip-blue" data-color="note-card-blue" onclick="app.selectNoteColor(this)"></button>
+                </div>
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveNoteFromModal()"><i class="ph ph-floppy-disk"></i> Guardar Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREAR TAREA -->
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-card glass-effect" style="max-width:440px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-check-square"></i> Nueva Tarea</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('task-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>¿Qué necesitas hacer hoy?</label>
+                <input type="text" id="modal-task-input" class="form-input" placeholder="Ej: Ir al supermercado, Estudiar..." onkeydown="if(event.key==='Enter') app.saveTaskFromModal()">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveTaskFromModal()"><i class="ph ph-plus"></i> Añadir Tarea</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ONBOARDING / PRIMERA VEZ -->
+    <div class="modal-overlay" id="welcome-modal">
+        <div class="modal-card glass-effect" style="text-align:center; max-width:480px;">
+            <i class="ph-fill ph-sparkle" style="font-size:3.5rem; color:var(--accent); margin-bottom:1rem;"></i>
+            <h2 style="font-size:1.8rem; margin-bottom:0.5rem;">¡Bienvenido a tu Dashboard! 👋</h2>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin-bottom:1.5rem;">
+                Un espacio personal 100% tuyo para organizar tus materias, hábitos, tareas y finanzas.
+            </p>
+            <div class="form-group" style="text-align:left; margin-bottom:1.5rem;">
+                <label style="font-weight:600;">¿Cómo te llamas?</label>
+                <input type="text" id="onboarding-name-input" class="form-input" placeholder="Ingresa tu nombre..." onkeydown="if(event.key==='Enter') app.finishOnboarding()">
+            </div>
+            <button class="btn-primary" style="width:100%; padding:0.85rem; font-size:1rem;" onclick="app.finishOnboarding()">
+                Empezar a usar mi Dashboard 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: AJUSTES DEL DASHBOARD -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-gear"></i> Ajustes del Dashboard</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('settings-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" id="settings-name-input" class="form-input" placeholder="Tu nombre...">
+            </div>
+            <div class="form-group">
+                <label>Tema Visual</label>
+                <select id="settings-theme-select" class="form-input" onchange="app.setTheme(this.value)">
+                    <option value="dark">Dark Glass (Predeterminado)</option>
+                    <option value="ocean">Ocean Blue</option>
+                    <option value="sunset">Sunset Pink</option>
+                    <option value="forest">Forest Green</option>
+                    <option value="ruby">Ruby Red</option>
+                    <option value="amethyst">Amethyst Purple</option>
+                    <option value="light">Light Glass</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>URL de Imagen/Fondo Personalizado (Opcional)</label>
+                <input type="url" id="settings-bg-url-input" class="form-input" placeholder="https://ejemplo.com/imagen.gif o .jpg">
+            </div>
+            <div class="form-group">
+                <label>Oscurecimiento del Fondo (<span id="bg-opacity-val">30%</span>)</label>
+                <input type="range" id="settings-bg-opacity-input" min="0" max="100" value="30" class="form-input" oninput="app.updateBgOpacity(this.value)">
+            </div>
+            <div class="form-group">
+                <label style="margin-bottom:0.6rem;">Visibilidad de Módulos</label>
+                <div class="toggle-grid">
+                    <div class="toggle-item">
+                        <span>Estudio / Facultad</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-facultad" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Seguimiento de Hábitos</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-gimnasio" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Lista de Tareas</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-tareas" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Finanzas</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-finanzas" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Notas Rápidas</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-notas" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Horario</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-horario" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Accesos Rápidos</span>
+                        <label class="switch"><input type="checkbox" id="toggle-mod-bookmarks" checked><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveSettings()"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AÑADIR ACCESO RÁPIDO -->
+    <div class="modal-overlay" id="add-bookmark-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-plus-circle"></i> Añadir Acceso Rápido</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('add-bookmark-modal')">&times;</button>
+            </div>
+            <div style="margin-bottom: 1.25rem;">
+                <label style="font-size:0.85rem; color:var(--text-muted);">Presets Sugeridos (1-Click):</label>
+                <div class="presets-grid" id="preset-bookmarks-container"></div>
+            </div>
+            <hr style="border:0; border-top:1px solid var(--glass-border); margin: 1rem 0;">
+            <div class="form-group">
+                <label>Nombre del Sitio</label>
+                <input type="text" id="bm-name-input" class="form-input" placeholder="Ej: Mi Portal, ChatGPT, Google">
+            </div>
+            <div class="form-group">
+                <label>Dirección Web (URL)</label>
+                <input type="url" id="bm-url-input" class="form-input" placeholder="https://ejemplo.com">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveCustomBookmark()"><i class="ph ph-check"></i> Añadir Marcador</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AÑADIR MATERIA -->
+    <div class="modal-overlay" id="add-subject-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-books"></i> Añadir Materia</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('add-subject-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nombre de la Materia</label>
+                <input type="text" id="sub-name-input" class="form-input" placeholder="Ej: Análisis Matemático A (066), Programación Web">
+            </div>
+            <div class="form-group">
+                <label>Profesor / Cátedra</label>
+                <input type="text" id="sub-prof-input" class="form-input" placeholder="Ej: Cátedra Cabana">
+            </div>
+            <div class="form-group">
+                <label>Cantidad de Semanas (Ej: 16)</label>
+                <input type="number" id="sub-weeks-input" class="form-input" value="16" min="1" max="24">
+            </div>
+            <div class="form-group">
+                <label>Link del Campus / Drive (Opcional)</label>
+                <input type="url" id="sub-link-input" class="form-input" placeholder="https://campus.uba.ar">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveNewSubject()"><i class="ph ph-check"></i> Guardar Materia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AÑADIR EXAMEN / EVENTO A MATERIA -->
+    <div class="modal-overlay" id="add-event-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-calendar"></i> Añadir Examen o Entrega</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('add-event-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Título de la Evaluación / Evento</label>
+                <input type="text" id="event-title-input" class="form-input" placeholder="Ej: 1° Parcial (Presencial), Inscripción">
+            </div>
+            <div class="form-group">
+                <label>Fecha del Examen</label>
+                <input type="date" id="event-date-input" class="form-input">
+            </div>
+            <div style="text-align:right; margin-top:1.5rem;">
+                <button class="btn-primary" onclick="app.saveSubjectEvent()"><i class="ph ph-check"></i> Guardar Examen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: COPIA DE SEGURIDAD Y DATOS -->
+    <div class="modal-overlay" id="backup-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-database"></i> Copia de Seguridad y Privacidad</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('backup-modal')">&times;</button>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+                Todos tus datos están guardados 100% en tu navegador. Puedes descargarlos en un archivo de respaldo JSON o restaurarlos en cualquier momento.
+            </p>
+
+            <div class="backup-box">
+                <h4 style="margin-bottom:0.5rem;"><i class="ph ph-download-simple"></i> Exportar Datos (Descargar Respaldo)</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Genera un archivo .json con tus tareas, notas, finanzas y hábitos actualizados.</p>
+                <button class="btn-primary" onclick="app.exportBackupJSON()"><i class="ph ph-download"></i> Descargar Respaldo JSON</button>
+            </div>
+
+            <div class="backup-box">
+                <h4 style="margin-bottom:0.5rem;"><i class="ph ph-upload-simple"></i> Importar Datos (Cargar Respaldo)</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Carga tu archivo .json previamente descargado para recuperar tu información.</p>
+                <div class="drop-zone" onclick="document.getElementById('import-file-input').click()">
+                    <i class="ph ph-file-arrow-up" style="font-size:2rem; margin-bottom:0.5rem;"></i>
+                    <div>Haz clic o arrastra aquí tu archivo <strong>.json</strong></div>
+                </div>
+                <input type="file" id="import-file-input" style="display:none" accept=".json" onchange="app.importBackupJSON(event)">
+            </div>
+
+            <div style="text-align:center; margin-top:1rem;">
+                <button style="background:transparent; border:none; color:#ef4444; font-size:0.85rem; cursor:pointer; text-decoration:underline;" onclick="app.resetAllData()">
+                    <i class="ph ph-trash"></i> Restablecer Dashboard de Cero
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: BUSCADOR RÁPIDO (CTRL+K) -->
+    <div class="modal-overlay" id="search-modal">
+        <div class="modal-card glass-effect">
+            <div class="modal-header">
+                <h2><i class="ph ph-magnifying-glass"></i> Buscador Rápido</h2>
+                <button class="close-modal-btn" onclick="app.closeModal('search-modal')">&times;</button>
+            </div>
+            <input type="text" id="global-search-input" class="form-input" placeholder="Buscar en tareas, notas y materias..." oninput="app.performGlobalSearch(this.value)">
+            <div id="global-search-results" style="margin-top:1rem; max-height:300px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- ZEN OVERLAY -->
+    <div id="zen-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:3000; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; color:#fff;">
+        <div id="zen-clock" style="font-size:6rem; font-weight:700;">00:00</div>
+        <p style="color:var(--text-muted);">Modo Enfoque Absoluto</p>
+        <button class="btn-secondary" onclick="app.toggleZenMode()"><i class="ph ph-x"></i> Salir del Modo Zen</button>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="js/data_defaults.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
