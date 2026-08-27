@@ -3751,51 +3751,59 @@ const app = {
 
     // OPCIÓN 2: SINCRONIZACIÓN POR CÓDIGO PIN (SIN CUENTA)
     syncNowCloud(action = 'upload') {
+        const pin = this.getSyncPin();
+        if (!this.db) {
+            this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
+            alert('⚠️ REALTIME DATABASE NO CONFIGURADA:\n\nPara activar la sincronización:\n1. Ve a console.firebase.google.com\n2. Entra a "Realtime Database" -> "Crear base de datos"\n3. Selecciona la ubicación y en la pestaña Reglas pon:\n{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}');
+            return;
+        }
+
         const now = Date.now();
         if (action === 'upload') {
             const timeDiff = (now - this.lastSyncTime) / 1000;
             if (timeDiff < this.syncCooldownSeconds) {
                 const remaining = Math.ceil(this.syncCooldownSeconds - timeDiff);
-                this.showToast('Espera un momento', `Espera ${remaining}s antes de volver a guardar en la nube.`, 'info');
+                this.showToast('Espera un momento', `Espera ${remaining}s antes de volver a guardar.`, 'info');
                 return;
             }
-        }
-
-        const pin = this.getSyncPin();
-        if (!this.db) {
-            this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
-            return;
         }
 
         const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
 
         if (action === 'upload') {
-            this.lastSyncTime = now;
             const payload = this.getAllBackupPayload();
+            this.showToast('Subiendo...', 'Guardando copia de seguridad en la nube...', 'info');
+
             this.db.ref(`sync_pins/${safePin}`).set({
                 payload: payload,
                 updatedAt: Date.now()
             }).then(() => {
-                this.showToast('Guardado en Nube', `Copia guardada con tu PIN ${pin}.`, 'success');
+                this.lastSyncTime = Date.now();
+                this.showToast('¡Guardado en Nube!', `Copia guardada exitosamente con tu PIN ${pin}.`, 'success');
             }).catch(err => {
+                console.error('Error al subir a Firebase:', err);
                 if (err.message && err.message.includes('PERMISSION_DENIED')) {
-                    this.showToast('Permiso Denegado', 'Permite lectura/escritura en Firebase Realtime Database.', 'urgent');
+                    this.showToast('Permiso Denegado', 'Permite lectura/escritura en Realtime Database.', 'urgent');
                     alert('⚠️ REGLAS DE FIREBASE:\n\nDebes permitir lectura/escritura en tu Realtime Database:\n\n1. Ve a console.firebase.google.com -> Realtime Database -> Reglas\n2. Cambia las reglas a:\n{\n  "rules": {\n    ".read": true,\n    ".write": true\n  }\n}');
                 } else {
-                    this.showToast('Error de Red', 'No se pudo subir la copia.', 'urgent');
+                    this.showToast('Error de Red', err.message || 'No se pudo subir la copia.', 'urgent');
+                    alert(`⚠️ ERROR EN BASE DE DATOS:\n\n${err.message || 'Asegúrate de haber hecho clic en "Crear base de datos" dentro del apartado Realtime Database en console.firebase.google.com.'}`);
                 }
             });
         } else {
-            this.db.ref(`sync_pins/${safePin}`).once('value', snapshot => {
+            this.showToast('Cargando...', 'Buscando tu copia en la nube...', 'info');
+            this.db.ref(`sync_pins/${safePin}`).once('value').then(snapshot => {
                 const data = snapshot.val();
                 if (data && data.payload) {
                     this.applyBackupPayload(data.payload);
                     this.listenToPinCloudData(pin);
+                    this.showToast('¡Copia Restaurada!', 'Datos cargados exitosamente.', 'success');
                 } else {
                     this.showToast('Sin Datos', `No hay copia guardada para el PIN ${pin}.`, 'info');
                 }
             }).catch(err => {
-                this.showToast('Error al Cargar', 'Verifica tu conexión a la nube.', 'urgent');
+                console.error('Error al cargar de Firebase:', err);
+                this.showToast('Error al Cargar', err.message || 'Verifica tu conexión a la nube.', 'urgent');
             });
         }
     },
@@ -3814,31 +3822,30 @@ const app = {
 
         if (!this.db) {
             this.showToast('Sin Conexión', 'Se requiere conexión a la nube.', 'urgent');
+            alert('⚠️ REALTIME DATABASE NO CONFIGURADA:\n\nCrea tu Realtime Database en console.firebase.google.com primero.');
             return;
         }
 
         const safePin = rawPin.replace(/[^a-zA-Z0-9_-]/g, '');
+        this.showToast('Buscando PIN...', `Verificando ${rawPin} en la nube...`, 'info');
 
-        this.db.ref(`sync_pins/${safePin}`).once('value', snapshot => {
+        this.db.ref(`sync_pins/${safePin}`).once('value').then(snapshot => {
             const data = snapshot.val();
             if (data && data.payload) {
-                // Reemplazar PIN local por el nuevo PIN de la compu/celu
                 localStorage.setItem('userhub_sync_pin', rawPin);
                 this.renderSyncPinUI();
-                
-                // Aplicar todos los datos recibidos del PIN de forma inmediata
                 this.applyBackupPayload(data.payload);
-                
-                // Activar la escucha continua en tiempo real (.on) para este PIN
                 this.listenToPinCloudData(rawPin);
-                
                 if (input) input.value = '';
                 this.showToast('¡Vínculo Exitoso!', `Dispositivo vinculado con el ${rawPin}. Datos actualizados.`, 'success');
             } else {
                 this.showToast('PIN No Encontrado', `No hay datos guardados bajo el ${rawPin}. Presiona "Guardar en Nube" en tu otro dispositivo primero.`, 'urgent');
+                alert(`⚠️ NO HAY DATOS PARA ${rawPin}:\n\nPrimero presiona "Guardar en Nube" en el otro dispositivo donde creaste tus tareas para subirlas.`);
             }
-        }).catch(() => {
-            this.showToast('Error de Conexión', 'No se pudo verificar el PIN en la nube.', 'urgent');
+        }).catch(err => {
+            console.error('Error al vincular PIN:', err);
+            this.showToast('Error de Conexión', err.message || 'No se pudo verificar el PIN en la nube.', 'urgent');
+            alert(`⚠️ ERROR AL VINCULAR:\n\n${err.message || 'Verifica que la Realtime Database esté creada en console.firebase.google.com.'}`);
         });
     },
 
