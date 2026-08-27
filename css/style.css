@@ -3112,3 +3112,52 @@ body {
     color: #22d3ee !important;
     box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
 }
+
+/* --- WELCOME SPLASH & INTERACTIVE MINI TUTORIAL STYLES --- */
+.tutorial-slide-card {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0.75rem 0.25rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.tutorial-slide-card.active {
+    display: flex;
+}
+
+.tutorial-slide-icon {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    background: rgba(6, 182, 212, 0.1);
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.tutorial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0.85rem 0;
+}
+
+.tutorial-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: var(--transition);
+}
+
+.tutorial-dot.active {
+    width: 24px;
+    border-radius: 12px;
+    background: var(--accent);
+}

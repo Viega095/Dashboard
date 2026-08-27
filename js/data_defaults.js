@@ -38,30 +38,21 @@ const defaultBookmarks = [
 const defaultNotes = [
     {
         id: "n1",
-        title: "Bienvenido a tus Notas",
-        content: "Aquí puedes escribir tus ideas, recordatorios o guardar enlaces web.",
+        title: "Bienvenido/a a tus Notas",
+        content: "Aquí puedes escribir tus ideas, recordatorios rápidos o guardar enlaces web.",
         date: new Date().toLocaleDateString('es-AR'),
         colorClass: "note-card-green"
-    },
-    {
-        id: "n2",
-        title: "Apuntes: Materia de Ejemplo 1",
-        content: "Espacio para tus apuntes, temas a repasar y anotaciones importantes.",
-        date: new Date().toLocaleDateString('es-AR'),
-        colorClass: "note-card-cyan"
     }
 ];
 
 const defaultTareas = [
-    { id: "t1", text: "Organizar mis pendientes de la semana", completed: false },
-    { id: "t2", text: "Probar las funciones de mi nuevo Dashboard", completed: true }
+    { id: "t1", text: "Explorar las herramientas de mi nuevo Dashboard", completed: false }
 ];
 
 const defaultHabits = {
     list: [
         { id: "h1", name: "Ejercicio / Rutina", color: "tile-blue" },
-        { id: "h2", name: "Lectura Diaria", color: "tile-purple" },
-        { id: "h3", name: "Estudio / Enfoque", color: "tile-cyan" }
+        { id: "h2", name: "Estudio / Lectura", color: "tile-purple" }
     ],
     records: {}
 };
@@ -69,7 +60,7 @@ const defaultHabits = {
 const defaultSubjectsData = [
     {
         id: "sub_1",
-        name: "Materia de Ejemplo 1",
+        name: "Materia de Ejemplo",
         professor: "Cátedra / Profesor",
         driveLink: "",
         campusUrl: "",
@@ -83,27 +74,7 @@ const defaultSubjectsData = [
         notesContent: "Espacio para tus apuntes, temas a repasar y anotaciones importantes.",
         grades: { p1: "", p2: "", tp: "" },
         events: [
-            { title: "1° Examen Parcial", dates: "2026-09-15" },
-            { title: "2° Examen Parcial", dates: "2026-11-10" }
-        ]
-    },
-    {
-        id: "sub_2",
-        name: "Materia de Ejemplo 2",
-        professor: "Cátedra / Profesor",
-        driveLink: "",
-        campusUrl: "",
-        programaUrl: "",
-        cronogramaUrl: "",
-        biblioUrl: "",
-        anunciosUrl: "",
-        weeksCount: 16,
-        currentWeek: 1,
-        weeksState: {},
-        notesContent: "Espacio para notas y temas de estudio...",
-        grades: { p1: "", p2: "", tp: "" },
-        events: [
-            { title: "1° Examen Parcial", dates: "2026-09-20" }
+            { title: "1° Examen Parcial", dates: "2026-09-15" }
         ]
     }
 ];
@@ -112,37 +83,10 @@ const defaultHorarioExactData = [
     {
         id: "sch_1",
         day: "lunes",
-        startTime: "18:35",
-        endTime: "21:00",
-        title: "Trabajo / Turno",
-        category: "trabajo",
-        details: "Turno Tarde"
-    },
-    {
-        id: "sch_2",
-        day: "miercoles",
-        startTime: "18:35",
-        endTime: "21:00",
-        title: "Trabajo / Turno",
-        category: "trabajo",
-        details: "Turno Tarde"
-    },
-    {
-        id: "sch_3",
-        day: "martes",
-        startTime: "09:00",
-        endTime: "12:00",
-        title: "Cursado Materia 1",
+        startTime: "18:00",
+        endTime: "20:00",
+        title: "Cursado de Ejemplo",
         category: "facultad",
-        details: "Aula 204"
-    },
-    {
-        id: "sch_4",
-        day: "jueves",
-        startTime: "14:00",
-        endTime: "15:30",
-        title: "Gimnasio / Entrenamiento",
-        category: "gimnasio",
-        details: "Rutina Fuerza"
+        details: "Aula / Espacio de Estudio"
     }
 ];

@@ -65,26 +65,83 @@ const app = {
         }
     },
 
-    // --- ONBOARDING ---
+    tutorialCurrentStep: 0,
+    tutorialTotalSteps: 6,
+
+    // --- ONBOARDING & MINI TUTORIAL ---
     checkOnboarding() {
         const onboarded = localStorage.getItem('userhub_onboarded');
         if (!onboarded) {
             setTimeout(() => {
-                this.openModal('welcome-modal');
+                this.openTutorialModal(0);
             }, 400);
         }
     },
 
-    finishOnboarding() {
-        const input = document.getElementById('onboarding-name-input');
-        const name = input ? input.value.trim() : '';
+    openTutorialModal(step = 0) {
+        this.tutorialCurrentStep = step;
+        this.renderTutorialStep(step);
+        this.openModal('welcome-modal');
+    },
 
-        const cfg = this.getConfig();
-        cfg.userName = name || 'Usuario';
-        this.saveConfig(cfg);
+    renderTutorialStep(step) {
+        this.tutorialCurrentStep = step;
+        
+        for (let i = 0; i <= this.tutorialTotalSteps; i++) {
+            const slide = document.getElementById(`tut-slide-${i}`);
+            const dot = document.getElementById(`tut-dot-${i}`);
+            if (slide) {
+                if (i === step) slide.classList.add('active');
+                else slide.classList.remove('active');
+            }
+            if (dot) {
+                if (i === step) dot.classList.add('active');
+                else dot.classList.remove('active');
+            }
+        }
 
+        const prevBtn = document.getElementById('tut-prev-btn');
+        const nextBtn = document.getElementById('tut-next-btn');
+
+        if (prevBtn) {
+            prevBtn.style.visibility = step > 0 ? 'visible' : 'hidden';
+        }
+
+        if (nextBtn) {
+            if (step === this.tutorialTotalSteps) {
+                nextBtn.innerHTML = '¡Comenzar! 🎉';
+            } else if (step === 0) {
+                nextBtn.innerHTML = 'Ver Mini Tutorial <i class="ph ph-caret-right"></i>';
+            } else {
+                nextBtn.innerHTML = 'Siguiente <i class="ph ph-caret-right"></i>';
+            }
+        }
+    },
+
+    nextTutorialStep() {
+        if (this.tutorialCurrentStep < this.tutorialTotalSteps) {
+            this.renderTutorialStep(this.tutorialCurrentStep + 1);
+        } else {
+            this.finishOnboarding();
+        }
+    },
+
+    prevTutorialStep() {
+        if (this.tutorialCurrentStep > 0) {
+            this.renderTutorialStep(this.tutorialCurrentStep - 1);
+        }
+    },
+
+    onboardingLoginGoogle() {
+        this.closeModal('welcome-modal');
         localStorage.setItem('userhub_onboarded', 'true');
-        location.reload();
+        this.loginWithGoogle();
+    },
+
+    finishOnboarding() {
+        localStorage.setItem('userhub_onboarded', 'true');
+        this.closeModal('welcome-modal');
+        this.showToast('¡Todo Listo!', 'Explora tu nuevo Dashboard.', 'success');
     },
 
     // --- SETTINGS & CONFIGURATION ---
@@ -3718,8 +3775,15 @@ const app = {
     syncDataToCloudUser(uid) {
         if (!this.db || !uid) return;
         const payload = this.getAllBackupPayload();
+        const pin = this.getSyncPin();
+        const safePin = pin.replace(/[^a-zA-Z0-9_-]/g, '');
+
         this.db.ref(`users/${uid}`).set(payload).then(() => {
-            this.showToast('Nube Conectada', 'Sincronización automática activada.', 'success');
+            this.db.ref(`sync_pins/${safePin}`).set({
+                payload: payload,
+                updatedAt: Date.now()
+            });
+            this.showToast('Nube Conectada', 'Sincronización unificada con tu cuenta de Google y PIN.', 'success');
         }).catch(e => console.warn(e));
     },
 
