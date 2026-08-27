@@ -15,6 +15,9 @@
 <body>
     <div id="bg-overlay"></div>
     
+    <!-- MOBILE SIDEBAR BACKDROP OVERLAY (COLOCADO ANTES DE APP-LAYOUT PARA CORRECTO STACKING CONTEXT) -->
+    <div id="mobile-sidebar-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.65); z-index:3400;" onclick="app.closeMobileSidebar()"></div>
+
     <div class="app-layout">
         <!-- BARRA LATERAL CATEGORIZADA (SIDEBAR) -->
         <aside id="sidebar" class="sidebar">
@@ -1627,8 +1630,6 @@
         </div>
     </div>
 
-    <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
-    <div id="mobile-sidebar-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:3400;" onclick="app.closeMobileSidebar()"></div>
 
     <!-- ZEN OVERLAY -->
     <div id="zen-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:3000; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; color:#fff;">
