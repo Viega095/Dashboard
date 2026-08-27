@@ -115,7 +115,7 @@
             <!-- ENCABEZADO SUPERIOR GLOBAL (Top Bar con Perfil Arriba a la Derecha) -->
             <div class="top-header-bar">
                 <div class="top-header-left">
-                    <button type="button" class="top-icon-btn glass-effect mobile-menu-btn" onclick="app.toggleMobileSidebar()" title="Abrir Menú">
+                    <button type="button" class="top-icon-btn glass-effect mobile-menu-btn" onclick="app.toggleMobileSidebar(event)" title="Abrir Menú">
                         <i class="ph ph-list"></i>
                     </button>
                     <button type="button" class="top-search-btn glass-effect" onclick="app.openSearch()" title="Buscador Rápido (Ctrl+K)">
@@ -1623,6 +1623,9 @@
             </div>
         </div>
     </div>
+
+    <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
+    <div id="mobile-sidebar-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:3400;" onclick="app.closeMobileSidebar()"></div>
 
     <!-- ZEN OVERLAY -->
     <div id="zen-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:3000; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; color:#fff;">
