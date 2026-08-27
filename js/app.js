@@ -3553,6 +3553,31 @@ const app = {
         }
     },
 
+    deleteAccountAndCloudData() {
+        if (!this.currentUser) return;
+        const email = this.currentUser.email || 'tu cuenta';
+        this.openConfirmModal(
+            '🗑️ ¿Eliminar Cuenta y Datos Cloud?',
+            `¿ESTÁS SEGURO? Se dará de baja a ${email} y tu extensión de Firebase eliminará automáticamente todos tus datos guardados en la nube.`,
+            () => {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    user.delete().then(() => {
+                        this.currentUser = null;
+                        this.updateAuthUI(null);
+                        this.showToast('Cuenta Eliminada', 'Se eliminó tu cuenta y la extensión borró los datos de la nube.', 'info');
+                    }).catch(err => {
+                        if (err.code === 'auth/requires-recent-login') {
+                            this.showToast('Re-autenticación Requerida', 'Por motivos de seguridad, vuelve a iniciar sesión con Google antes de eliminar.', 'urgent');
+                        } else {
+                            this.showToast('Error', err.message || 'No se pudo eliminar la cuenta.', 'urgent');
+                        }
+                    });
+                }
+            }
+        );
+    },
+
     updateAuthUI(user) {
         const badge = document.getElementById('google-status-badge');
         const container = document.getElementById('google-auth-container');
@@ -3565,7 +3590,7 @@ const app = {
             }
             if (container) {
                 container.innerHTML = `
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.5rem;">
                         <div style="display:flex; align-items:center; gap:0.6rem; overflow:hidden;">
                             ${user.photoURL ? `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%;">` : '<i class="ph ph-user-circle" style="font-size:1.8rem; color:#4285f4;"></i>'}
                             <div style="overflow:hidden;">
@@ -3575,6 +3600,11 @@ const app = {
                         </div>
                         <button type="button" class="btn-secondary" style="font-size:0.8rem; padding:0.4rem 0.75rem;" onclick="app.logoutGoogle()">
                             <i class="ph ph-sign-out"></i> Salir
+                        </button>
+                    </div>
+                    <div style="text-align:right;">
+                        <button type="button" style="background:transparent; border:none; color:#ef4444; font-size:0.78rem; cursor:pointer; text-decoration:underline;" onclick="app.deleteAccountAndCloudData()">
+                            <i class="ph ph-trash"></i> Eliminar Cuenta y Datos de la Nube
                         </button>
                     </div>
                 `;
