@@ -330,20 +330,12 @@ const app = {
     toggleMobileSidebar(e) {
         if (e) e.stopPropagation();
         const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobile-sidebar-overlay');
-        if (!sidebar) return;
-
-        const isOpen = sidebar.classList.toggle('mobile-open');
-        if (overlay) {
-            overlay.style.display = isOpen ? 'block' : 'none';
-        }
+        if (sidebar) sidebar.classList.toggle('mobile-open');
     },
 
     closeMobileSidebar() {
         const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobile-sidebar-overlay');
         if (sidebar) sidebar.classList.remove('mobile-open');
-        if (overlay) overlay.style.display = 'none';
     },
 
     // --- NAVIGATION ---
