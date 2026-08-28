@@ -3145,17 +3145,37 @@ body {
     }
 
     .top-header-bar {
-        padding: 0.6rem 0.8rem;
-        flex-direction: row;
-        gap: 0.5rem;
+        padding: 0.5rem 0.75rem !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+
+    /* LIMPIEZA DE BOTONES RECARGADOS EN LA CABECERA MÓVIL (MÁXIMO 4 BOTONES LIMPIOS Y ESPACIOSOS) */
+    #save-status-indicator,
+    .desktop-only-top-btn,
+    .user-pill-name {
+        display: none !important;
+    }
+
+    .top-user-pill-btn {
+        padding: 0.2rem !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .top-user-pill-btn i.ph-caret-down {
+        display: none !important;
     }
 
     .top-search-btn span {
-        display: none;
+        display: none !important;
     }
 
     .shortcut-kbd {
-        display: none;
+        display: none !important;
     }
 
     .lobby-grid {

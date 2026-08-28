@@ -158,13 +158,13 @@
                         </div>
                     </div>
 
-                    <button type="button" class="top-icon-btn glass-effect" id="pwa-install-btn" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.3);" onclick="app.installPWA()" title="Instalar como App Nativa en Celular/PC">
+                    <button type="button" class="top-icon-btn glass-effect desktop-only-top-btn" id="pwa-install-btn" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.3);" onclick="app.installPWA()" title="Instalar como App Nativa en Celular/PC">
                         <i class="ph ph-download-simple"></i>
                     </button>
-                    <button type="button" class="top-icon-btn glass-effect" onclick="app.toggleZenMode()" title="Modo Zen (Enfoque Total)">
+                    <button type="button" class="top-icon-btn glass-effect desktop-only-top-btn" id="top-zen-btn" onclick="app.toggleZenMode()" title="Modo Zen (Enfoque Total)">
                         <i class="ph ph-circle-half"></i>
                     </button>
-                    <button type="button" class="top-icon-btn glass-effect" onclick="app.openSettingsModal()" title="Configuración Global">
+                    <button type="button" class="top-icon-btn glass-effect desktop-only-top-btn" id="top-settings-btn" onclick="app.openSettingsModal()" title="Configuración Global">
                         <i class="ph ph-gear"></i>
                     </button>
 
@@ -186,6 +186,9 @@
                             </button>
                             <button type="button" class="top-user-menu-item" style="color:var(--accent); font-weight:700;" onclick="app.openTutorialModal(0)">
                                 <i class="ph ph-sparkle"></i> Ver Mini Tutorial Guía
+                            </button>
+                            <button type="button" class="top-user-menu-item" id="dropdown-pwa-btn" style="color:#38bdf8; font-weight:600;" onclick="app.installPWA()">
+                                <i class="ph ph-download-simple"></i> Instalar App Nativa
                             </button>
                             <button type="button" class="top-user-menu-item" onclick="app.openSettingsModal()">
                                 <i class="ph ph-gear"></i> Configuración
