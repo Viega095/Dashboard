@@ -1992,7 +1992,7 @@ const app = {
             }
 
             if (hasCompletedHabit) {
-                streak++;
+streak++;
                 d.setDate(d.getDate() - 1);
             } else {
                 const todayStr = new Date().toISOString().slice(0, 10);
@@ -2006,6 +2006,50 @@ const app = {
         return streak;
     },
 
+    scrollHabitMatrix(dir) {
+        const container = document.getElementById('habits-matrix-container');
+        if (container) {
+            container.scrollBy({ left: dir * 220, behavior: 'smooth' });
+        }
+    },
+
+    renderTodayHabitsChecklist() {
+        const chipsContainer = document.getElementById('today-habits-chips-list');
+        const progressLabel = document.getElementById('today-habits-progress-label');
+        if (!chipsContainer) return;
+
+        const data = this.getHabitosData();
+        const todayStr = new Date().toISOString().slice(0, 10);
+        chipsContainer.innerHTML = '';
+
+        if (data.list.length === 0) {
+            chipsContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; margin:0;">No tienes hábitos registrados aún. ¡Haz clic en "+ Añadir Hábito" abajo!</p>';
+            if (progressLabel) progressLabel.textContent = '0 de 0 Completados (0%)';
+            return;
+        }
+
+        let doneCount = 0;
+        data.list.forEach(h => {
+            const isDone = !!(data.records[todayStr] && data.records[todayStr][h.id]);
+            if (isDone) doneCount++;
+
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = `today-habit-chip ${isDone ? 'done' : ''}`;
+            chip.innerHTML = `
+                <i class="ph-fill ${isDone ? 'ph-check-circle' : 'ph-circle'}"></i>
+                <span>${h.name}</span>
+            `;
+            chip.onclick = () => this.toggleHabitMatrix(h.id, todayStr);
+            chipsContainer.appendChild(chip);
+        });
+
+        const pct = Math.min(100, Math.round((doneCount / data.list.length) * 100));
+        if (progressLabel) {
+            progressLabel.textContent = `${doneCount} de ${data.list.length} Completados (${pct}%)`;
+        }
+    },
+
     renderHabitos() {
         const container = document.getElementById('habits-matrix-container');
         const monthLabel = document.getElementById('habits-month-label');
@@ -2014,6 +2058,8 @@ const app = {
         const leaderBadge = document.getElementById('consistent-habit-badge');
 
         if (!container) return;
+
+        this.renderTodayHabitsChecklist();
 
         const streak = this.calculateHabitsStreak();
         if (streakTitle) {
@@ -2040,12 +2086,12 @@ const app = {
         const firstDayObj = new Date(this.habitYear, this.habitMonth, 1);
         const firstDayWeekday = (firstDayObj.getDay() + 6) % 7;
 
-        let weeksHeaderHTML = '<th></th>';
-        let daysHeaderHTML = '<th></th>';
+        let weeksHeaderHTML = '<th class="habit-name-cell" style="background:transparent; border:none;"></th>';
+        let daysHeaderHTML = '<th class="habit-name-cell" style="background:transparent; border:none; font-size:0.75rem; color:var(--text-muted);">HÁBITOS DE HOY</th>';
 
         const totalWeeks = Math.ceil((daysInMonth + firstDayWeekday) / 7);
         for (let w = 1; w <= totalWeeks; w++) {
-            weeksHeaderHTML += `<th colspan="7" class="week-separator" style="font-size:0.7rem; text-align:left; color:var(--text-muted); padding:0.3rem 0.1rem;">SEM ${w}</th>`;
+            weeksHeaderHTML += `<th colspan="7" class="week-separator" style="font-size:0.7rem; text-align:center; color:var(--text-muted); padding:0.3rem 0.1rem;">SEM ${w}</th>`;
 
             const dayLetters = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
             let weekDaysHTML = '';
@@ -2054,7 +2100,7 @@ const app = {
                 const isTodayHeader = isCurrentRealMonth && dayNum === realTodayDay;
 
                 weekDaysHTML += `
-                    <th class="${dayIdx===6?'week-separator':''} ${isTodayHeader?'day-header-today':''}" style="font-size:0.7rem; color:var(--text-muted); text-align:center; font-weight:600; width:22px;">
+                    <th class="${dayIdx===6?'week-separator':''} ${isTodayHeader?'day-header-today':''}" style="font-size:0.7rem; color:var(--text-muted); text-align:center; font-weight:600; width:34px;">
                         ${dayLetters[dayIdx]}
                     </th>
                 `;
@@ -2118,7 +2164,9 @@ const app = {
 
                 tilesHTML += `
                     <td style="text-align:center;" class="${isSundayCol?'week-separator':''}">
-                        <span class="${tileClass}" title="Día ${d} ${isTodayTile?'(HOY)':''}: ${isDone?'Completado':'Pendiente'}" onclick="app.toggleHabitMatrix('${habit.id}', '${dateStr}')"></span>
+                        <span class="${tileClass}" title="Día ${d} ${isTodayTile?'(HOY)':''}: ${isDone?'Completado':'Pendiente'}" onclick="app.toggleHabitMatrix('${habit.id}', '${dateStr}')">
+                            ${isDone ? '✓' : ''}
+                        </span>
                     </td>
                 `;
             }
@@ -2131,7 +2179,7 @@ const app = {
                 tilesHTML += `<td style="text-align:center;" class="${isSundayCol?'week-separator':''}"><span class="habit-tile tile-empty-padding"></span></td>`;
             }
 
-            const pct = Math.round((totalDoneMonth / daysInMonth) * 100);
+            const pct = Math.min(100, Math.round((totalDoneMonth / daysInMonth) * 100));
 
             rowsHTML += `
                 <tr>
@@ -2183,16 +2231,18 @@ const app = {
             const dateStr = `${this.habitYear}-${String(this.habitMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             let done = 0;
             if (data.records[dateStr]) {
-                Object.values(data.records[dateStr]).forEach(v => { if (v) done++; });
+                data.list.forEach(h => {
+                    if (data.records[dateStr][h.id]) done++;
+                });
             }
 
-            const pct = numHabits > 0 ? Math.round((done / numHabits) * 100) : 0;
+            const pct = numHabits > 0 ? Math.min(100, Math.round((done / numHabits) * 100)) : 0;
             const col = document.createElement('div');
             col.className = 'habit-chart-col';
-            col.title = `Día ${d}: ${pct}% cumplido`;
+            col.title = `Día ${d}: ${pct}% cumplido (${done} de ${numHabits})`;
 
             col.innerHTML = `
-                <div class="habit-chart-bar" style="height:${pct}%; background:${pct>=80?'#10b981':(pct>=50?'#fbbf24':'#3b82f6')}"></div>
+                <div class="habit-chart-bar" style="height:${pct}%; background:${pct>=80?'#10b981':(pct>=50?'#38bdf8':'#3b82f6')}"></div>
                 <span style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">${d}</span>
             `;
             container.appendChild(col);
@@ -2450,21 +2500,21 @@ const app = {
                 <div class="grade-calc-box">
                     <div class="grade-input-group">
                         <label style="font-size:0.8rem; color:var(--text-muted);">1° Parcial</label>
-                        <input type="number" step="0.5" min="1" max="10" class="grade-input" placeholder="-" value="${sub.grades.p1 || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'p1', this.value)">
+                        <input type="number" step="0.5" min="1" max="10" class="grade-input" id="grade-input-p1-${sub.id}" placeholder="-" value="${sub.grades.p1 || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'p1', this.value, this)">
                     </div>
                     <div class="grade-input-group">
                         <label style="font-size:0.8rem; color:var(--text-muted);">2° Parcial</label>
-                        <input type="number" step="0.5" min="1" max="10" class="grade-input" placeholder="-" value="${sub.grades.p2 || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'p2', this.value)">
+                        <input type="number" step="0.5" min="1" max="10" class="grade-input" id="grade-input-p2-${sub.id}" placeholder="-" value="${sub.grades.p2 || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'p2', this.value, this)">
                     </div>
                     <div class="grade-input-group">
                         <label style="font-size:0.8rem; color:var(--text-muted);">TP / Final</label>
-                        <input type="number" step="0.5" min="1" max="10" class="grade-input" placeholder="-" value="${sub.grades.tp || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'tp', this.value)">
+                        <input type="number" step="0.5" min="1" max="10" class="grade-input" id="grade-input-tp-${sub.id}" placeholder="-" value="${sub.grades.tp || ''}" oninput="app.updateSubjectGrade('${sub.id}', 'tp', this.value, this)">
                     </div>
-                    <div class="average-badge" style="border-color:${badgeColor}; color:${badgeColor};">
+                    <div class="average-badge" id="subject-avg-badge-${sub.id}" style="border-color:${badgeColor}; color:${badgeColor};">
                         Promedio: ${avgText}
                     </div>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.75rem;">${statusBadgeText}</p>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.75rem;" id="subject-avg-status-text-${sub.id}">${statusBadgeText}</p>
             </div>
 
             <div class="facultad-section-box">
@@ -2596,13 +2646,67 @@ const app = {
         }
     },
 
-    updateSubjectGrade(subjectId, gradeKey, val) {
+    updateSubjectGrade(subjectId, gradeKey, val, inputEl) {
         const subjects = this.getSubjectsData();
         const sub = subjects.find(s => s.id === subjectId);
         if (sub) {
             sub.grades = sub.grades || {};
             sub.grades[gradeKey] = val;
-            this.saveSubjectsData(subjects);
+            localStorage.setItem('userhub_subjects', JSON.stringify(subjects));
+            
+            // Actualizar promedio en vivo sin re-renderizar todo el DOM
+            this.recalculateSubjectAverageInDOM(sub);
+
+            // Avance automático de foco al escribir una nota válida
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 1 && num <= 10 && inputEl) {
+                if (gradeKey === 'p1') {
+                    const nextInput = document.getElementById(`grade-input-p2-${subjectId}`);
+                    if (nextInput && !nextInput.value) nextInput.focus();
+                } else if (gradeKey === 'p2') {
+                    const nextInput = document.getElementById(`grade-input-tp-${subjectId}`);
+                    if (nextInput && !nextInput.value) nextInput.focus();
+                }
+            }
+        }
+    },
+
+    recalculateSubjectAverageInDOM(sub) {
+        const p1 = parseFloat(sub.grades.p1);
+        const p2 = parseFloat(sub.grades.p2);
+        const tp = parseFloat(sub.grades.tp);
+
+        const validGrades = [p1, p2, tp].filter(g => !isNaN(g));
+        let avgText = '-';
+        let statusBadgeText = 'Ingresá tus notas para calcular el promedio.';
+        let badgeColor = '#60a5fa';
+
+        if (validGrades.length > 0) {
+            const sum = validGrades.reduce((a, b) => a + b, 0);
+            const avg = (sum / validGrades.length).toFixed(2);
+            avgText = `${avg}`;
+
+            if (avg >= 7) {
+                statusBadgeText = `¡Excelente! Promedio ${avg} - 🏆 Promocionado`;
+                badgeColor = '#10b981';
+            } else if (avg >= 4) {
+                statusBadgeText = `Promedio ${avg} - 👍 Aprobado para Final`;
+                badgeColor = '#fbbf24';
+            } else {
+                statusBadgeText = `Promedio ${avg} - ⚠️ Insuficiente`;
+                badgeColor = '#ef4444';
+            }
+        }
+
+        const badgeEl = document.getElementById(`subject-avg-badge-${sub.id}`);
+        const textEl = document.getElementById(`subject-avg-status-text-${sub.id}`);
+        if (badgeEl) {
+            badgeEl.textContent = `Promedio: ${avgText}`;
+            badgeEl.style.borderColor = badgeColor;
+            badgeEl.style.color = badgeColor;
+        }
+        if (textEl) {
+            textEl.textContent = statusBadgeText;
         }
     },
 
@@ -3245,9 +3349,11 @@ const app = {
         const todayStr = new Date().toISOString().slice(0, 10);
         let done = 0;
         if (habitos.records[todayStr]) {
-            Object.values(habitos.records[todayStr]).forEach(v => { if (v) done++; });
+            habitos.list.forEach(h => {
+                if (habitos.records[todayStr][h.id]) done++;
+            });
         }
-        const pct = habitos.list.length > 0 ? Math.round((done / habitos.list.length) * 100) : 0;
+        const pct = habitos.list.length > 0 ? Math.min(100, Math.round((done / habitos.list.length) * 100)) : 0;
         const svHabitos = document.getElementById('sv-habitos');
         if (svHabitos) svHabitos.textContent = `${pct}%`;
 
