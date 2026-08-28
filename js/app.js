@@ -13,6 +13,53 @@ const app = {
     habitMonth: new Date().getMonth(), // 0-indexed
     selectedNoteColorClass: 'note-card-green',
 
+    // --- CAPA DE OPTIMIZACIÓN EXTREMA Y RENDIMIENTO RAM ---
+    _memoryCache: {},
+    _debounceTimers: {},
+
+    getFromCache(key, fetcherFn) {
+        if (this._memoryCache[key] !== undefined) {
+            return this._memoryCache[key];
+        }
+        const data = fetcherFn();
+        this._memoryCache[key] = data;
+        return data;
+    },
+
+    invalidateCache(key) {
+        delete this._memoryCache[key];
+    },
+
+    safeLocalStorageSet(key, value) {
+        this.invalidateCache(key);
+        try {
+            localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+            return true;
+        } catch (err) {
+            console.warn(`[Storage Warning] Error guardando clave "${key}":`, err);
+            this.showToast('Memoria Llena', 'El almacenamiento del navegador está al límite.', 'urgent');
+            return false;
+        }
+    },
+
+    debounce(key, func, wait = 180) {
+        if (this._debounceTimers[key]) clearTimeout(this._debounceTimers[key]);
+        this._debounceTimers[key] = setTimeout(() => {
+            func();
+            delete this._debounceTimers[key];
+        }, wait);
+    },
+
+    escapeHTML(str) {
+        if (typeof str !== 'string') return str;
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    },
+
     // --- INITIALIZATION ---
     init() {
         this.loadSettings();
@@ -949,13 +996,15 @@ const app = {
 
     // 1. TAREAS
     getTareasData() {
-        const saved = localStorage.getItem('userhub_tareas');
-        if (!saved) return defaultTareas;
-        try { return JSON.parse(saved); } catch(e) { return defaultTareas; }
+        return this.getFromCache('userhub_tareas', () => {
+            const saved = localStorage.getItem('userhub_tareas');
+            if (!saved) return defaultTareas;
+            try { return JSON.parse(saved); } catch(e) { return defaultTareas; }
+        });
     },
 
     saveTareasData(list) {
-        localStorage.setItem('userhub_tareas', JSON.stringify(list));
+        this.safeLocalStorageSet('userhub_tareas', list);
         this.renderTareas();
         this.updateLobbyStats();
         this.updateNotificationsUI();
@@ -1066,24 +1115,26 @@ const app = {
     },
 
     getUserAccounts() {
-        const saved = localStorage.getItem('userhub_accounts');
-        const cfg = this.getConfig();
-        const defaultAccName = cfg.userName ? `Finanzas de ${cfg.userName}` : 'Mi Cuenta Principal';
-        
-        if (!saved) {
-            return [{ id: 'acc_main', name: defaultAccName }];
-        }
-        try {
-            const list = JSON.parse(saved);
-            if (list.length === 0) return [{ id: 'acc_main', name: defaultAccName }];
-            return list;
-        } catch(e) {
-            return [{ id: 'acc_main', name: defaultAccName }];
-        }
+        return this.getFromCache('userhub_accounts', () => {
+            const saved = localStorage.getItem('userhub_accounts');
+            const cfg = this.getConfig();
+            const defaultAccName = cfg.userName ? `Finanzas de ${cfg.userName}` : 'Mi Cuenta Principal';
+            
+            if (!saved) {
+                return [{ id: 'acc_main', name: defaultAccName }];
+            }
+            try {
+                const list = JSON.parse(saved);
+                if (list.length === 0) return [{ id: 'acc_main', name: defaultAccName }];
+                return list;
+            } catch(e) {
+                return [{ id: 'acc_main', name: defaultAccName }];
+            }
+        });
     },
 
     saveUserAccounts(accs) {
-        localStorage.setItem('userhub_accounts', JSON.stringify(accs));
+        this.safeLocalStorageSet('userhub_accounts', accs);
         this.renderFinanzas();
     },
 
@@ -1231,13 +1282,15 @@ const app = {
     },
 
     getFinanzasData() {
-        const saved = localStorage.getItem('userhub_finanzas');
-        if (!saved) return { budgetLimit: 50000, transactions: [] };
-        try { return JSON.parse(saved); } catch(e) { return { budgetLimit: 50000, transactions: [] }; }
+        return this.getFromCache('userhub_finanzas', () => {
+            const saved = localStorage.getItem('userhub_finanzas');
+            if (!saved) return { budgetLimit: 50000, transactions: [] };
+            try { return JSON.parse(saved); } catch(e) { return { budgetLimit: 50000, transactions: [] }; }
+        });
     },
 
     saveFinanzasData(data) {
-        localStorage.setItem('userhub_finanzas', JSON.stringify(data));
+        this.safeLocalStorageSet('userhub_finanzas', data);
         this.renderFinanzas();
         this.updateLobbyStats();
         this.updateNotificationsUI();
@@ -1822,13 +1875,15 @@ const app = {
 
     // 3. NOTAS RÁPIDAS
     getNotasData() {
-        const saved = localStorage.getItem('userhub_notas');
-        if (!saved) return defaultNotes;
-        try { return JSON.parse(saved); } catch(e) { return defaultNotes; }
+        return this.getFromCache('userhub_notas', () => {
+            const saved = localStorage.getItem('userhub_notas');
+            if (!saved) return defaultNotes;
+            try { return JSON.parse(saved); } catch(e) { return defaultNotes; }
+        });
     },
 
     saveNotasData(list) {
-        localStorage.setItem('userhub_notas', JSON.stringify(list));
+        this.safeLocalStorageSet('userhub_notas', list);
         this.renderNotas();
         this.triggerAutoCloudSync();
     },
@@ -1992,13 +2047,15 @@ const app = {
 
     // 4. SEGUIMIENTO DE HÁBITOS (CON VIÑETA MODAL)
     getHabitosData() {
-        const saved = localStorage.getItem('userhub_habitos');
-        if (!saved) return defaultHabits;
-        try { return JSON.parse(saved); } catch(e) { return defaultHabits; }
+        return this.getFromCache('userhub_habitos', () => {
+            const saved = localStorage.getItem('userhub_habitos');
+            if (!saved) return defaultHabits;
+            try { return JSON.parse(saved); } catch(e) { return defaultHabits; }
+        });
     },
 
     saveHabitosData(data) {
-        localStorage.setItem('userhub_habitos', JSON.stringify(data));
+        this.safeLocalStorageSet('userhub_habitos', data);
         this.renderHabitos();
         this.updateLobbyStats();
         this.updateNotificationsUI();
@@ -2326,13 +2383,15 @@ streak++;
 
     // 5. ESTUDIO / FACULTAD (CON NAVEGACIÓN Y RESALTADO DE FECHAS SELECCIONADAS)
     getSubjectsData() {
-        const saved = localStorage.getItem('userhub_subjects');
-        if (!saved) return defaultSubjectsData;
-        try { return JSON.parse(saved); } catch(e) { return defaultSubjectsData; }
+        return this.getFromCache('userhub_subjects', () => {
+            const saved = localStorage.getItem('userhub_subjects');
+            if (!saved) return defaultSubjectsData;
+            try { return JSON.parse(saved); } catch(e) { return defaultSubjectsData; }
+        });
     },
 
     saveSubjectsData(list) {
-        localStorage.setItem('userhub_subjects', JSON.stringify(list));
+        this.safeLocalStorageSet('userhub_subjects', list);
         this.initFacultad();
         this.renderLobbyGlobalCalendar();
         this.updateLobbyStats();

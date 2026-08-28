@@ -54,6 +54,24 @@
     --accent-hover: #9333ea;
 }
 
+/* --- ACCELERACIÓN POR HARDWARE Y OPTIMIZACIÓN DE RENDERIZADO 60FPS --- */
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.view, .card, .modal-card, .sidebar, .top-header-bar, .today-habits-card {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
 [data-theme="light"] {
     --bg-base: #f1f5f9;
     --glass-bg: rgba(255, 255, 255, 0.85);
