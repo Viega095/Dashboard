@@ -82,6 +82,7 @@ const app = {
         this.updateNotificationsUI();
         this.initKeyboardShortcuts();
         this.initCloudSync();
+        this.initPopStateNavigation();
     },
 
     // --- SIDEBAR COLLAPSE & EXPAND LOGIC ---
@@ -390,9 +391,51 @@ const app = {
         if (sidebar) sidebar.classList.remove('mobile-open');
     },
 
+    initPopStateNavigation() {
+        // 1. Clic fuera de las tarjetas (en la sombra modal-overlay) para cerrar modal
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
+                this.closeModal(e.target.id);
+            }
+        });
+
+        // 2. Interceptación del botón físico / gesto de ir atrás en celulares
+        window.addEventListener('popstate', (e) => {
+            const openModals = Array.from(document.querySelectorAll('.modal-overlay')).filter(m => m.style.display === 'flex');
+            if (openModals.length > 0) {
+                const topModal = openModals[openModals.length - 1];
+                this.closeModal(topModal.id, true);
+                return;
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('mobile-open')) {
+                this.closeMobileSidebar();
+                return;
+            }
+
+            if (e.state && e.state.viewId) {
+                this.navigateTo(e.state.viewId, true);
+            } else {
+                const activeView = document.querySelector('.view.active');
+                if (activeView && activeView.id !== 'lobby-view') {
+                    this.navigateTo('lobby', true);
+                }
+            }
+        });
+    },
+
     // --- NAVIGATION ---
-    navigateTo(viewId) {
+    navigateTo(viewId, isFromPopState = false) {
         this.closeMobileSidebar();
+        
+        // Cerrar cualquier modal abierto si navegamos a una vista
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            if (m.style.display === 'flex') {
+                this.closeModal(m.id, true);
+            }
+        });
+
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         const targetView = document.getElementById(`${viewId}-view`);
         if (targetView) {
@@ -404,6 +447,10 @@ const app = {
         document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById(`sidebar-btn-${viewId}`);
         if (activeBtn) activeBtn.classList.add('active');
+
+        if (!isFromPopState && viewId !== 'lobby') {
+            history.pushState({ viewId: viewId, type: 'view' }, '');
+        }
 
         if (viewId === 'lobby') {
             this.renderLobbyGlobalCalendar();
@@ -418,12 +465,28 @@ const app = {
     // --- MODALS ENGINE & UNIVERSAL CONFIRMATION VIÑETA ---
     openModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.style.display = 'flex';
+        if (!modal) return;
+        
+        modal.style.display = 'flex';
+        
+        if (!modal.classList.contains('modal-active-pushed')) {
+            modal.classList.add('modal-active-pushed');
+            history.pushState({ modalId: modalId, type: 'modal' }, '');
+        }
     },
 
-    closeModal(modalId) {
+    closeModal(modalId, isFromPopState = false) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.style.display = 'none';
+        if (!modal) return;
+        
+        modal.style.display = 'none';
+        
+        if (modal.classList.contains('modal-active-pushed')) {
+            modal.classList.remove('modal-active-pushed');
+            if (!isFromPopState && history.state && history.state.modalId === modalId) {
+                history.back();
+            }
+        }
     },
 
     openConfirmModal(title, message, onConfirmCallback) {
