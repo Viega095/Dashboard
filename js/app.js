@@ -1107,6 +1107,41 @@ const app = {
         this.showToast('Cuenta Creada', `Cambiado a "${newAcc.name}".`, 'success');
     },
 
+    deleteAccount(e, accId) {
+        if (e) e.stopPropagation();
+
+        const userAccs = this.getUserAccounts();
+        if (userAccs.length <= 1) {
+            this.showToast('No se puede eliminar', 'Debes mantener al menos 1 cuenta activa.', 'urgent');
+            return;
+        }
+
+        const targetAcc = userAccs.find(a => a.id === accId);
+        const accName = targetAcc ? targetAcc.name : 'esta cuenta';
+
+        this.openConfirmModal(`¿Eliminar Cuenta "${accName}"?`, `Se eliminará la cuenta "${accName}" y todas sus transacciones asociadas. ¿Deseas continuar?`, () => {
+            let accs = this.getUserAccounts();
+            accs = accs.filter(a => a.id !== accId);
+
+            accs.forEach(a => {
+                if (a.linkedWith === accId) delete a.linkedWith;
+            });
+
+            localStorage.setItem('userhub_accounts', JSON.stringify(accs));
+
+            const data = this.getFinanzasData();
+            data.transactions = data.transactions.filter(t => (t.account || 'acc_main') !== accId);
+            this.saveFinanzasData(data);
+
+            if (this.activeAccountId === accId) {
+                this.activeAccountId = accs[0].id;
+            }
+
+            this.renderFinanzas();
+            this.showToast('Cuenta Eliminada', `Se eliminó "${accName}".`, 'info');
+        });
+    },
+
     openMergeAccountsModal() {
         this.openLinkAccountsModal();
     },
@@ -1393,11 +1428,19 @@ const app = {
             userAccs.forEach(acc => {
                 const isActive = acc.id === this.activeAccountId;
                 const isLinked = !!acc.linkedWith;
+                const canDelete = userAccs.length > 1;
                 html += `
-                    <button type="button" class="account-menu-item ${isActive ? 'active' : ''}" onclick="app.selectAccountFromMenu('${acc.id}')">
-                        <span>👤 ${acc.name}${isLinked ? ' <span style="font-size:0.75rem; color:#38bdf8;">🔗</span>' : ''}</span>
-                        ${isActive ? '<i class="ph-bold ph-check" style="color:var(--accent);"></i>' : ''}
-                    </button>
+                    <div style="display:flex; align-items:center; justify-content:space-between; width:100%; border-radius:10px; margin-bottom:0.25rem;">
+                        <button type="button" class="account-menu-item ${isActive ? 'active' : ''}" style="flex:1;" onclick="app.selectAccountFromMenu('${acc.id}')">
+                            <span>👤 ${acc.name}${isLinked ? ' <span style="font-size:0.75rem; color:#38bdf8;">🔗</span>' : ''}</span>
+                            ${isActive ? '<i class="ph-bold ph-check" style="color:var(--accent);"></i>' : ''}
+                        </button>
+                        ${canDelete ? `
+                            <button type="button" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25); color:#ef4444; cursor:pointer; padding:0.35rem 0.55rem; border-radius:8px; margin-left:0.4rem; font-size:0.85rem;" title="Eliminar Cuenta '${acc.name}'" onclick="app.deleteAccount(event, '${acc.id}')">
+                                <i class="ph ph-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
                 `;
             });
             listEl.innerHTML = html;
