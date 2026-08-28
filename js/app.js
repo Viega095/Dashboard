@@ -507,11 +507,21 @@ const app = {
     },
 
     // --- TOAST NOTIFICATIONS (CON LÍMITE DE 2 TOASTS CONCURRENTES) ---
-    showToast(title, message, type = 'info') {
+    updateSaveStatusIndicator() {
+        const indicator = document.getElementById('save-status-indicator');
+        if (indicator) {
+            indicator.innerHTML = '<span style="color:#10b981; font-weight:600;">✓ Guardado</span>';
+            indicator.style.opacity = '1';
+            setTimeout(() => {
+                if (indicator) indicator.style.opacity = '0.7';
+            }, 1200);
+        }
+    },
+
+    showToast(title, message, type = 'info', undoCallback = null) {
         const container = document.getElementById('toast-container');
         if (!container) return;
 
-        // Límite máximo de 2 notificaciones simultáneas para no saturar la pantalla
         const MAX_TOASTS = 2;
         while (container.children.length >= MAX_TOASTS) {
             container.removeChild(container.firstElementChild);
@@ -522,19 +532,40 @@ const app = {
         const iconClass = type === 'success' ? 'ph-check-circle' : (type === 'urgent' ? 'ph-warning-circle' : 'ph-info');
         const colorStyle = type === 'success' ? '#34d399' : (type === 'urgent' ? '#f87171' : '#60a5fa');
         
+        let undoBtnHTML = '';
+        if (typeof undoCallback === 'function') {
+            undoBtnHTML = `
+                <button type="button" class="toast-undo-btn" style="background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:0.75rem; font-weight:700; padding:0.25rem 0.55rem; border-radius:6px; cursor:pointer; margin-left:0.4rem; flex-shrink:0;">
+                    ↩️ Deshacer
+                </button>
+            `;
+        }
+
         toast.innerHTML = `
             <i class="ph-fill ${iconClass}" style="color:${colorStyle}; font-size:1.3rem; flex-shrink:0;"></i>
             <div style="flex:1;">
                 <strong style="font-size:0.85rem; display:block; line-height:1.2;">${title}</strong>
                 <span style="font-size:0.78rem; color:var(--text-muted); line-height:1.3;">${message}</span>
             </div>
+            ${undoBtnHTML}
             <button style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.9rem; padding:0 0 0 0.5rem; opacity:0.6;" onclick="event.stopPropagation(); this.closest('.toast').remove();" title="Cerrar"><i class="ph ph-x"></i></button>
         `;
 
-        toast.onclick = () => {
-            toast.classList.add('toast-fade-out');
-            setTimeout(() => toast.remove(), 200);
-        };
+        if (typeof undoCallback === 'function') {
+            const undoBtn = toast.querySelector('.toast-undo-btn');
+            if (undoBtn) {
+                undoBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toast.remove();
+                    undoCallback();
+                };
+            }
+        } else {
+            toast.onclick = () => {
+                toast.classList.add('toast-fade-out');
+                setTimeout(() => toast.remove(), 200);
+            };
+        }
 
         container.appendChild(toast);
 
@@ -543,7 +574,7 @@ const app = {
                 toast.classList.add('toast-fade-out');
                 setTimeout(() => toast.remove(), 250);
             }
-        }, 2600);
+        }, typeof undoCallback === 'function' ? 5000 : 2600);
     },
 
     // --- BOOKMARKS / ACCESOS RÁPIDOS ---
@@ -1156,8 +1187,19 @@ const app = {
 
     deleteTask(id) {
         let list = this.getTareasData();
+        const deletedTask = list.find(t => t.id === id);
+        if (!deletedTask) return;
+
+        const deletedIndex = list.findIndex(t => t.id === id);
         list = list.filter(t => t.id !== id);
         this.saveTareasData(list);
+
+        this.showToast('Tarea Eliminada', `"${this.escapeHTML(deletedTask.text)}" removida.`, 'info', () => {
+            const currentList = this.getTareasData();
+            currentList.splice(deletedIndex, 0, deletedTask);
+            this.saveTareasData(currentList);
+            this.showToast('Restaurado', 'Tarea recuperada.', 'success');
+        });
     },
 
     // 2. FINANZAS (CON VIÑETAS MODALES Y FUSIÓN DE CUENTAS)
@@ -1904,8 +1946,12 @@ const app = {
         const catInput = document.getElementById('fin-cat-input');
         const sharedCheckbox = document.getElementById('fin-shared-checkbox');
 
-        if (!descInput || !amountInput || !amountInput.value || parseFloat(amountInput.value) <= 0) {
-            this.showToast('Datos Incompletos', 'Ingresa una descripción y un monto válido.', 'urgent');
+        const rawDesc = descInput ? descInput.value.trim() : '';
+        const rawAmount = amountInput ? amountInput.value.toString().replace(/,/g, '.').replace(/[^\d.]/g, '') : '';
+        const parsedAmount = parseFloat(rawAmount);
+
+        if (!rawDesc || isNaN(parsedAmount) || parsedAmount <= 0) {
+            this.showToast('Datos Incompletos', 'Ingresa una descripción y un monto numérico válido.', 'urgent');
             return;
         }
 
@@ -1913,8 +1959,8 @@ const app = {
         data.transactions.push({
             id: 'f_' + Date.now(),
             account: this.activeAccountId,
-            desc: descInput.value.trim(),
-            amount: parseFloat(amountInput.value),
+            desc: rawDesc,
+            amount: parsedAmount,
             method: methodInput ? methodInput.value : 'efectivo',
             category: catInput ? catInput.value : 'otro',
             type: this.finTransactionType || 'expense',
@@ -1932,8 +1978,18 @@ const app = {
 
     deleteFinanceTransaction(id) {
         const data = this.getFinanzasData();
+        const deletedTx = data.transactions.find(t => t.id === id);
+        if (!deletedTx) return;
+
         data.transactions = data.transactions.filter(t => t.id !== id);
         this.saveFinanzasData(data);
+
+        this.showToast('Transacción Borrada', `$${deletedTx.amount.toLocaleString()} removido.`, 'info', () => {
+            const currentData = this.getFinanzasData();
+            currentData.transactions.push(deletedTx);
+            this.saveFinanzasData(currentData);
+            this.showToast('Restaurado', 'Transacción recuperada.', 'success');
+        });
     },
 
     // 3. NOTAS RÁPIDAS
@@ -2022,8 +2078,28 @@ const app = {
         } else {
             if (titleModalEl) titleModalEl.innerHTML = '<i class="ph ph-note-pencil"></i> Nueva Nota';
             if (idInput) idInput.value = '';
-            if (titleInput) titleInput.value = '';
-            if (contentInput) contentInput.value = '';
+            
+            const draftTitle = localStorage.getItem('userhub_draft_note_title') || '';
+            const draftContent = localStorage.getItem('userhub_draft_note_content') || '';
+            if (titleInput) titleInput.value = draftTitle;
+            if (contentInput) contentInput.value = draftContent;
+        }
+
+        if (titleInput && !titleInput._hasDraftListener) {
+            titleInput._hasDraftListener = true;
+            titleInput.addEventListener('input', () => {
+                if (!document.getElementById('note-id-input').value) {
+                    localStorage.setItem('userhub_draft_note_title', titleInput.value);
+                }
+            });
+        }
+        if (contentInput && !contentInput._hasDraftListener) {
+            contentInput._hasDraftListener = true;
+            contentInput.addEventListener('input', () => {
+                if (!document.getElementById('note-id-input').value) {
+                    localStorage.setItem('userhub_draft_note_content', contentInput.value);
+                }
+            });
         }
 
         this.openModal('note-modal');
@@ -2061,6 +2137,9 @@ const app = {
             this.showToast('Nota Vacía', 'Ingresa un título o contenido para la nota.', 'urgent');
             return;
         }
+
+        localStorage.removeItem('userhub_draft_note_title');
+        localStorage.removeItem('userhub_draft_note_content');
 
         const list = this.getNotasData();
 
@@ -2100,11 +2179,19 @@ const app = {
     },
 
     deleteNote(id) {
-        this.openConfirmModal('¿Eliminar Nota?', '¿Deseas borrar esta nota permanentemente?', () => {
-            let list = this.getNotasData();
-            list = list.filter(n => n.id !== id);
-            this.saveNotasData(list);
-            this.showToast('Nota Borrada', 'Eliminada correctamente.', 'info');
+        let list = this.getNotasData();
+        const deletedNote = list.find(n => n.id === id);
+        if (!deletedNote) return;
+
+        const deletedIndex = list.findIndex(n => n.id === id);
+        list = list.filter(n => n.id !== id);
+        this.saveNotasData(list);
+
+        this.showToast('Nota Eliminada', `"${this.escapeHTML(deletedNote.title)}" removida.`, 'info', () => {
+            const currentList = this.getNotasData();
+            currentList.splice(deletedIndex, 0, deletedNote);
+            this.saveNotasData(currentList);
+            this.showToast('Restaurado', 'Nota recuperada.', 'success');
         });
     },
 
@@ -2436,11 +2523,18 @@ streak++;
     deleteHabit(e, id) {
         if (e) e.stopPropagation();
         
-        this.openConfirmModal('¿Eliminar Hábito?', '¿Deseas borrar este hábito y todo su historial de registros?', () => {
-            const data = this.getHabitosData();
-            data.list = data.list.filter(h => h.id !== id);
-            this.saveHabitosData(data);
-            this.showToast('Hábito Eliminado', 'Removido correctamente.', 'info');
+        const data = this.getHabitosData();
+        const deletedHabit = data.list.find(h => h.id === id);
+        if (!deletedHabit) return;
+
+        data.list = data.list.filter(h => h.id !== id);
+        this.saveHabitosData(data);
+
+        this.showToast('Hábito Eliminado', `"${this.escapeHTML(deletedHabit.name)}" removido.`, 'info', () => {
+            const currentData = this.getHabitosData();
+            currentData.list.push(deletedHabit);
+            this.saveHabitosData(currentData);
+            this.showToast('Restaurado', 'Hábito recuperado.', 'success');
         });
     },
 
