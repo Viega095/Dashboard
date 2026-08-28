@@ -83,6 +83,49 @@ const app = {
         this.initKeyboardShortcuts();
         this.initCloudSync();
         this.initPopStateNavigation();
+        this.initPWA();
+    },
+
+    _deferredPwaPrompt: null,
+
+    initPWA() {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('[PWA Engine] ServiceWorker registrado con éxito:', reg.scope);
+                }).catch((err) => {
+                    console.warn('[PWA Engine] Error registrando ServiceWorker:', err);
+                });
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this._deferredPwaPrompt = e;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.style.display = 'inline-flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            this._deferredPwaPrompt = null;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.style.display = 'none';
+            this.showToast('¡App Instalada!', 'El Dashboard ya está guardado en tu pantalla de inicio.', 'success');
+        });
+    },
+
+    installPWA() {
+        if (this._deferredPwaPrompt) {
+            this._deferredPwaPrompt.prompt();
+            this._deferredPwaPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    this.showToast('Instalando App...', 'Añadiendo a la pantalla de inicio.', 'success');
+                }
+                this._deferredPwaPrompt = null;
+            });
+        } else {
+            this.showToast('Instalación de App', 'En tu celular o navegador, abre el menú de opciones (3 puntos de Chrome/Safari) y elige "Agregar a la pantalla de inicio" o "Instalar App".', 'info');
+        }
     },
 
     // --- SIDEBAR COLLAPSE & EXPAND LOGIC ---

@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub Personal - Mi Dashboard</title>
+    <!-- PWA Web App Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dashboard">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <link rel="stylesheet" href="css/style.css">
     <!-- Google Fonts: Inter & Preconnect DNS Hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,6 +158,9 @@
                         </div>
                     </div>
 
+                    <button type="button" class="top-icon-btn glass-effect" id="pwa-install-btn" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.3);" onclick="app.installPWA()" title="Instalar como App Nativa en Celular/PC">
+                        <i class="ph ph-download-simple"></i>
+                    </button>
                     <button type="button" class="top-icon-btn glass-effect" onclick="app.toggleZenMode()" title="Modo Zen (Enfoque Total)">
                         <i class="ph ph-circle-half"></i>
                     </button>
