@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404: Página No Encontrada - Hub Personal Dashboard</title>
+    <meta name="description" content="La página que buscas no existe o ha sido movida. Regresa al Hub Personal Dashboard.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <style>
+        .error-404-container {
+            max-width: 580px;
+            margin: 5rem auto;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            border-radius: var(--card-radius);
+            color: var(--text-main);
+        }
+        .error-code {
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-overlay"></div>
+    <div class="error-404-container glass-effect">
+        <div class="error-code">404</div>
+        <h1 style="font-size:1.8rem; margin-bottom:0.75rem; color:#fff;">Página No Encontrada</h1>
+        <p style="font-size:1rem; color:var(--text-muted); line-height:1.6; margin-bottom:2rem;">
+            La dirección que estás buscando no existe, ha sido movida o la ruta es incorrecta.
+        </p>
+        <div style="display:flex; justify-content:center; gap:1rem;">
+            <a href="index.html" class="btn-primary" style="text-decoration:none; padding:0.8rem 1.8rem; display:inline-flex; align-items:center; gap:0.5rem;">
+                <i class="ph ph-house"></i> Volver al Inicio
+            </a>
+            <a href="contact.html" class="btn-secondary" style="text-decoration:none; padding:0.8rem 1.5rem; display:inline-flex; align-items:center; gap:0.5rem;">
+                <i class="ph ph-question"></i> Soporte
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -84,6 +84,104 @@ const app = {
         this.initCloudSync();
         this.initPopStateNavigation();
         this.initPWA();
+        this.initCookieConsent();
+        this.renderAdSenseSlot();
+    },
+
+    // --- GOOGLE ADSENSE INTEGRATION (DESACTIVADO POR DEFECTO) ---
+    isAdsEnabled() {
+        return localStorage.getItem('userhub_ads_enabled') === 'true';
+    },
+
+    setAdsEnabled(enabled) {
+        localStorage.setItem('userhub_ads_enabled', enabled ? 'true' : 'false');
+        this.renderAdSenseSlot();
+        if (enabled) {
+            this.showToast('¡Gracias por Apoyar!', 'Anuncios activados para colaborar con el mantenimiento del Dashboard.', 'success');
+        } else {
+            this.showToast('Modo Sin Anuncios', 'Publicidad desactivada con éxito.', 'info');
+        }
+    },
+
+    renderAdSenseSlot() {
+        const adSlots = document.querySelectorAll('.adsense-slot-container');
+        const enabled = this.isAdsEnabled();
+
+        adSlots.forEach(slot => {
+            if (enabled) {
+                slot.classList.add('active');
+                if (!slot.querySelector('.adsense-ins-wrapper')) {
+                    slot.innerHTML = `
+                        <div class="adsense-header-tag">
+                            <i class="ph ph-sparkle"></i> Espacio Publicitario &bull; Apoyando el Proyecto
+                        </div>
+                        <div class="adsense-ins-wrapper">
+                            <!-- Contenedor Google AdSense -->
+                            <ins class="adsbygoogle"
+                                 style="display:block; min-height:90px;"
+                                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                                 data-ad-slot="XXXXXXXXXX"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <div class="adsense-placeholder-box">
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:0.35rem; padding:1rem;">
+                                    <i class="ph ph-heart" style="color:#ef4444; font-size:1.4rem;"></i>
+                                    <strong style="color:var(--text-main);">Espacio de Anuncios Google AdSense Activo</strong>
+                                    <span style="font-size:0.78rem; color:var(--text-muted);">Puedes desactivarlo cuando quieras desde el menú de Configuración.</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                slot.classList.remove('active');
+            }
+        });
+    },
+
+    // --- BANNER DE CONSENTIMIENTO DE COOKIES ---
+    initCookieConsent() {
+        const consent = localStorage.getItem('userhub_cookie_consent');
+        const banner = document.getElementById('cookie-banner');
+        if (!consent && banner) {
+            setTimeout(() => {
+                banner.classList.add('active');
+            }, 800);
+        }
+    },
+
+    acceptCookies() {
+        localStorage.setItem('userhub_cookie_consent', 'accepted');
+        const banner = document.getElementById('cookie-banner');
+        if (banner) banner.classList.remove('active');
+        this.showToast('Preferencias Guardadas', 'Cookies aceptadas.', 'info');
+    },
+
+    rejectCookies() {
+        localStorage.setItem('userhub_cookie_consent', 'rejected');
+        const banner = document.getElementById('cookie-banner');
+        if (banner) banner.classList.remove('active');
+        this.showToast('Modo Privado', 'Solo se usarán cookies técnicas necesarias.', 'info');
+    },
+
+    // --- VALIDACIÓN DE ESTADOS DE ERROR EN FORMULARIOS ---
+    setFormInputError(inputId, isError, errorMsg = '') {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        let errorEl = input.parentElement.querySelector('.form-error-msg');
+        if (isError) {
+            input.classList.add('input-error');
+            if (!errorEl) {
+                errorEl = document.createElement('span');
+                errorEl.className = 'form-error-msg';
+                input.parentElement.appendChild(errorEl);
+            }
+            errorEl.innerHTML = `<i class="ph ph-warning-circle"></i> ${errorMsg}`;
+        } else {
+            input.classList.remove('input-error');
+            if (errorEl) errorEl.remove();
+        }
     },
 
     _deferredPwaPrompt: null,
@@ -352,6 +450,9 @@ const app = {
             if (toggleEl) toggleEl.checked = mods[modKey] !== false;
         });
 
+        const adsToggle = document.getElementById('toggle-enable-ads');
+        if (adsToggle) adsToggle.checked = this.isAdsEnabled();
+
         this.openModal('settings-modal');
     },
 
@@ -404,9 +505,17 @@ const app = {
         });
     },
 
-    saveSettingsFromModal() {
+    saveSettings() {
+        const adsToggle = document.getElementById('toggle-enable-ads');
+        if (adsToggle) {
+            this.setAdsEnabled(adsToggle.checked);
+        }
         this.closeModal('settings-modal');
         this.showToast('Configuración Guardada', 'Se aplicaron tus preferencias correctamente.', 'success');
+    },
+
+    saveSettingsFromModal() {
+        this.saveSettings();
     },
 
     setTheme(themeName) {
@@ -4276,7 +4385,7 @@ streak++;
                 container.innerHTML = `
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.5rem;">
                         <div style="display:flex; align-items:center; gap:0.6rem; overflow:hidden;">
-                            ${user.photoURL ? `<img src="${user.photoURL}" style="width:32px; height:32px; border-radius:50%;">` : '<i class="ph ph-user-circle" style="font-size:1.8rem; color:#4285f4;"></i>'}
+                            ${user.photoURL ? `<img src="${user.photoURL}" alt="Avatar de usuario" style="width:32px; height:32px; border-radius:50%;">` : '<i class="ph ph-user-circle" style="font-size:1.8rem; color:#4285f4;"></i>'}
                             <div style="overflow:hidden;">
                                 <strong style="font-size:0.85rem; display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.displayName || 'Google User'}</strong>
                                 <span style="font-size:0.75rem; color:var(--text-muted); display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${user.email}</span>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto y Soporte - Hub Personal Dashboard</title>
+    <meta name="description" content="Ponte en contacto con el equipo de soporte y desarrollo de Hub Personal Dashboard. Envíanos tus dudas, comentarios o sugerencias.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <style>
+        .contact-container {
+            max-width: 650px;
+            margin: 2.5rem auto;
+            padding: 2.5rem;
+            border-radius: var(--card-radius);
+            color: var(--text-main);
+        }
+        .contact-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        .contact-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .contact-field-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .contact-info-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-overlay"></div>
+    <div class="contact-container glass-effect">
+        <div class="contact-header-nav">
+            <a href="index.html" class="btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;">
+                <i class="ph ph-arrow-left"></i> Volver al Dashboard
+            </a>
+            <span style="font-size:0.85rem; color:var(--text-muted);">Soporte Directo</span>
+        </div>
+
+        <h1 style="font-size:1.85rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.6rem;">
+            <i class="ph ph-envelope-simple" style="color:var(--accent);"></i> Contacto y Soporte
+        </h1>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem;">
+            ¿Tienes alguna consulta, sugerencia de nueva función o reporte técnico? Déjanos un mensaje y te responderemos a la brevedad.
+        </p>
+
+        <div class="contact-info-badge">
+            <i class="ph-fill ph-chat-centered-text" style="font-size:1.6rem; color:#60a5fa;"></i>
+            <div style="font-size:0.88rem;">
+                <strong style="display:block; color:#fff;">Atención Personalizada</strong>
+                <span style="color:var(--text-muted);">Correo oficial: <code>soporte.dashboard@gmail.com</code></span>
+            </div>
+        </div>
+
+        <form class="contact-form" id="contact-form" onsubmit="handleContactSubmit(event)">
+            <div class="contact-field-group">
+                <label for="contact-name">Tu Nombre o Apodo *</label>
+                <input type="text" id="contact-name" class="form-input" placeholder="Ej: Damian Maresco" required>
+            </div>
+
+            <div class="contact-field-group">
+                <label for="contact-email">Correo Electrónico *</label>
+                <input type="email" id="contact-email" class="form-input" placeholder="tu-email@gmail.com" required>
+            </div>
+
+            <div class="contact-field-group">
+                <label for="contact-subject">Asunto / Motivo *</label>
+                <select id="contact-subject" class="form-input" required>
+                    <option value="consulta">Consulta General</option>
+                    <option value="sugerencia">Sugerencia de Nueva Función</option>
+                    <option value="reporte">Reporte de Error o Bug</option>
+                    <option value="patrocinio">Publicidad / Colaboración</option>
+                </select>
+            </div>
+
+            <div class="contact-field-group">
+                <label for="contact-message">Mensaje *</label>
+                <textarea id="contact-message" class="form-input" rows="4" placeholder="Escribe tu consulta detallada aquí..." required style="resize:vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary" style="padding:0.8rem 1.5rem; font-size:0.95rem; justify-content:center;">
+                <i class="ph ph-paper-plane-tilt"></i> Enviar Mensaje
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('contact-email').value.trim();
+            const msg = document.getElementById('contact-message').value.trim();
+
+            if (!name || !email || !msg) {
+                alert('Por favor completa todos los campos requeridos.');
+                return;
+            }
+
+            // Redirigir a página de gracias con confirmación
+            window.location.href = 'thanks.html?from=contact&name=' + encodeURIComponent(name);
+        }
+    </script>
+</body>
+</html>

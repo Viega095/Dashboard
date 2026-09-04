@@ -3,7 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub Personal - Mi Dashboard</title>
+    <title>Hub Personal - Mi Dashboard de Productividad</title>
+    <meta name="description" content="Hub Personal Dashboard: Tu espacio de productividad definitivo. Gestiona tareas, materias universitarias, hábitos diarios, notas rápidas y finanzas personales con un diseño moderno.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+    <!-- Open Graph / Redes Sociales / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dashboard-to-use.vercel.app/">
+    <meta property="og:title" content="Hub Personal - Mi Dashboard de Productividad">
+    <meta property="og:description" content="Organiza tu día, tareas, hábitos, finanzas y estudio con una interfaz glassmorphism ultra fluida.">
+    <meta property="og:image" content="https://dashboard-to-use.vercel.app/icons/og-image.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Hub Personal - Mi Dashboard de Productividad">
+    <meta name="twitter:description" content="Organiza tu día, tareas, hábitos, finanzas y estudio con una interfaz glassmorphism ultra fluida.">
+    <meta name="twitter:image" content="https://dashboard-to-use.vercel.app/icons/og-image.png">
+
     <!-- PWA Web App Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
@@ -193,8 +212,17 @@
                             <button type="button" class="top-user-menu-item" onclick="app.openSettingsModal()">
                                 <i class="ph ph-gear"></i> Configuración
                             </button>
+                            <a href="contact.html" class="top-user-menu-item" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+                                <i class="ph ph-envelope-simple"></i> Contacto y Soporte
+                            </a>
+                            <a href="privacy.html" class="top-user-menu-item" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+                                <i class="ph ph-shield-check"></i> Política de Privacidad
+                            </a>
+                            <a href="terms.html" class="top-user-menu-item" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+                                <i class="ph ph-article"></i> Términos y Condiciones
+                            </a>
                             <button type="button" class="top-user-menu-item" onclick="app.openModal('help-modal')">
-                                <i class="ph ph-question"></i> Ayuda & Términos
+                                <i class="ph ph-question"></i> Ayuda
                             </button>
                         </div>
                     </div>
@@ -326,6 +354,11 @@
                     <div class="global-events-grid" id="global-calendar-events-grid">
                         <!-- Events injected dynamically -->
                     </div>
+                </div>
+
+                <!-- CONTENEDOR DE GOOGLE ADSENSE (DESACTIVADO POR DEFECTO) -->
+                <div class="adsense-slot-container glass-effect" id="lobby-adsense-slot">
+                    <!-- Injected dynamically if enabled by user -->
                 </div>
             </div>
 
@@ -1427,6 +1460,19 @@
                         <label class="switch"><input type="checkbox" id="toggle-mod-bookmarks" checked><span class="slider"></span></label>
                     </div>
                 </div>
+
+                <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--glass-border);">
+                    <h3 style="font-size:1rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="ph ph-heart" style="color:#ef4444;"></i> Apoyar el Proyecto (Publicidad)
+                    </h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">
+                        Activa anuncios sutiles de Google AdSense para colaborar con los servidores y desarrollo. <em>Desactivado por defecto.</em>
+                    </p>
+                    <div class="toggle-item" style="background:rgba(255,255,255,0.03); padding:0.75rem 1rem; border-radius:10px; border:1px solid var(--glass-border);">
+                        <span>Mostrar Anuncios de Apoyo</span>
+                        <label class="switch"><input type="checkbox" id="toggle-enable-ads"><span class="slider"></span></label>
+                    </div>
+                </div>
             </div>
             <div style="text-align:right; margin-top:1.5rem;">
                 <button class="btn-primary" onclick="app.saveSettings()"><i class="ph ph-floppy-disk"></i> Guardar Cambios</button>
@@ -1672,6 +1718,18 @@
         <div id="zen-clock" style="font-size:6rem; font-weight:700;">00:00</div>
         <p style="color:var(--text-muted);">Modo Enfoque Absoluto</p>
         <button class="btn-secondary" onclick="app.toggleZenMode()"><i class="ph ph-x"></i> Salir del Modo Zen</button>
+    </div>
+
+    <!-- BANNER DE COOKIES -->
+    <div class="cookie-banner glass-effect" id="cookie-banner">
+        <div class="cookie-text">
+            <i class="ph ph-cookie" style="color:var(--accent); font-size:1.25rem; vertical-align:middle; margin-right:4px;"></i>
+            Utilizamos cookies técnicas para recordar tus preferencias de diseño y optimizar la experiencia. Conoce más en nuestra <a href="privacy.html" target="_blank">Política de Privacidad</a>.
+        </div>
+        <div class="cookie-actions">
+            <button type="button" class="btn-primary" style="padding:0.45rem 1rem; font-size:0.82rem;" onclick="app.acceptCookies()">Aceptar</button>
+            <button type="button" class="btn-secondary" style="padding:0.45rem 0.85rem; font-size:0.82rem;" onclick="app.rejectCookies()">Solo Técnicas</button>
+        </div>
     </div>
 
     <!-- TOAST CONTAINER -->
