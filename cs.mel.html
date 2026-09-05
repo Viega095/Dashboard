@@ -12,9 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
     
-    <!-- Phosphor Icons & Canvas Confetti -->
+    <!-- Phosphor Icons, Canvas Confetti & HTML2Canvas for ticket image download -->
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
     <style>
         :root {
@@ -44,7 +45,7 @@
             align-items: center;
             overflow-x: hidden;
             position: relative;
-            padding: 1.5rem 1rem;
+            padding: 1.5rem 1rem 3rem 1rem;
         }
 
         /* Ambient Glow & Floating Hearts Background */
@@ -216,7 +217,7 @@
             transform: scale(0.96);
         }
 
-        /* Step 2: Main Surprise Content (Revealed on Open) */
+        /* Step 2: Main Surprise Content */
         .revealed-content {
             display: none;
             width: 100%;
@@ -270,14 +271,14 @@
         .letter-body {
             font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1.08rem;
             line-height: 1.75;
             color: #f1f5f9;
             margin-bottom: 1.2rem;
         }
 
         .letter-body p {
-            margin-bottom: 0.9rem;
+            margin-bottom: 1rem;
         }
 
         .letter-body strong {
@@ -287,7 +288,7 @@
 
         .letter-sign {
             font-family: 'Caveat', cursive;
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--rose-gold);
             text-align: right;
             margin-top: 0.5rem;
@@ -366,7 +367,7 @@
         }
 
         .ticket-desc {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             color: var(--text-dim);
             line-height: 1.45;
             margin-bottom: 1.2rem;
@@ -497,59 +498,127 @@
             transform: scale(0.97);
         }
 
-        /* Final Revealed Proposal / Love Card */
-        .proposal-card {
+        /* ==========================================
+           PASO 3: COMPROBANTE OFICIAL CANJEADO
+           ========================================== */
+        .voucher-card {
             display: none;
             width: 100%;
-            background: linear-gradient(145deg, rgba(244, 63, 94, 0.2), rgba(139, 92, 246, 0.2));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(244, 114, 182, 0.4);
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.95), rgba(30, 20, 40, 0.95));
+            border: 2px solid rgba(244, 114, 182, 0.5);
             border-radius: 24px;
-            padding: 2rem 1.5rem;
+            padding: 1.8rem 1.4rem;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(244, 63, 94, 0.3);
+            box-shadow: 0 20px 50px rgba(244, 63, 94, 0.35), 0 0 30px rgba(244, 114, 182, 0.2);
             animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
         }
 
         @keyframes popIn {
-            from { opacity: 0; transform: scale(0.85); }
+            from { opacity: 0; transform: scale(0.88); }
             to { opacity: 1; transform: scale(1); }
         }
 
-        .proposal-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 2px 10px rgba(244, 114, 182, 0.5);
-        }
-
-        .proposal-text {
-            font-size: 1.05rem;
-            color: #f1f5f9;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .love-tags-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .love-tag {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.4rem 0.9rem;
-            border-radius: 99px;
-            font-size: 0.85rem;
-            color: #fff;
+        .voucher-stamp {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 0.35rem 0.9rem;
+            border-radius: 99px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .voucher-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .voucher-text {
+            font-size: 0.98rem;
+            color: #f1f5f9;
+            line-height: 1.6;
+            margin-bottom: 1.4rem;
+        }
+
+        /* Printable / Shareable Digital Voucher Box */
+        .digital-pass-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px dashed rgba(251, 191, 36, 0.5);
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin-bottom: 1.4rem;
+            text-align: left;
+        }
+
+        .pass-meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .pass-meta-row strong {
+            color: #fff;
+        }
+
+        .pass-meta-row.highlight strong {
+            color: var(--rose-gold);
+        }
+
+        /* Action buttons for saving & sharing to WhatsApp */
+        .voucher-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .btn-whatsapp-share {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            padding: 0.85rem;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-download-pass {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.85rem;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-download-pass:active, .btn-whatsapp-share:active {
+            transform: scale(0.97);
         }
     </style>
 </head>
@@ -585,7 +654,7 @@
              ========================================== -->
         <div class="revealed-content" id="revealed-content">
 
-            <!-- Carta Romántica -->
+            <!-- Carta Romántica con Texto Personalizado -->
             <article class="romantic-letter">
                 <div class="letter-header">
                     <span class="letter-header-tag"><i class="ph ph-flower-lotus"></i> Para vos, hermosa</span>
@@ -594,7 +663,7 @@
 
                 <div class="letter-body">
                     <p>
-                        Espero que hayas disfrutado muchísimo de nuestra salida al café tanto como yo disfruté cada minuto a tu lado.
+                        Espero que hayas disfrutado muchísimo de nuestra salida al café tanto como yo disfruté cada minuto a tu lado. Y siempre te lo voy a decir, sos la mejor mujer que conocí.
                     </p>
                     <p>
                         Estar con vos hace que cualquier momento sea especial, tu risa, tu forma de ser y todo lo lindo que transmitís. Por eso quise prepararte esta sorpresa con las flores y este detalle...
@@ -610,12 +679,12 @@
             </article>
 
             <!-- Entrada de Cine VIP -->
-            <section class="cinema-ticket">
+            <section class="cinema-ticket" id="cinema-ticket-card">
                 <div class="ticket-shimmer"></div>
 
                 <div class="ticket-top">
                     <div class="ticket-badge">
-                        <i class="ph-fill ph-star"></i> Pase VIP &bull; Admit Two
+                        <i class="ph-fill ph-star"></i> Pase VIP &bull; Ilimitado
                     </div>
 
                     <h2 class="ticket-movie-title">
@@ -679,17 +748,51 @@
                 </div>
             </section>
 
-            <!-- Mensaje Final Confirmado -->
-            <div class="proposal-card" id="proposal-card">
-                <div style="font-size:2.5rem; margin-bottom:0.5rem;">💐💖</div>
-                <h3 class="proposal-title">¡Pase Canjeado!</h3>
-                <p class="proposal-text">
+            <!-- ==========================================
+                 PASO 3: COMPROBANTE OFICIAL DE CANJE
+                 ========================================== -->
+            <div class="voucher-card" id="voucher-card">
+                <div class="voucher-stamp">
+                    <i class="ph-fill ph-check-circle"></i> Canjeado Oficialmente
+                </div>
+
+                <h3 class="voucher-title">¡Pase Canjeado!</h3>
+                <p class="voucher-text">
                     Promesa de ver muchas películas juntos, pasarla hermoso y cuidarte siempre. Sos una personita increíble.
                 </p>
-                <div class="love-tags-row">
-                    <span class="love-tag"><i class="ph-fill ph-heart" style="color:#fb7185;"></i> Mels</span>
-                    <span class="love-tag">🍿 Películas & Abrazos</span>
-                    <span class="love-tag">✨ Momentos Únicos</span>
+
+                <!-- Tarjeta Digital de Comprobante Oficial -->
+                <div class="digital-pass-box" id="digital-pass-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">
+                        <span style="font-family:'Cinzel', serif; color:#fbbf24; font-weight:700; font-size:0.9rem;">🎟️ COMPROBANTE VIP</span>
+                        <span style="font-size:0.75rem; color:#10b981; font-weight:600;">ESTADO: ACTIVO</span>
+                    </div>
+                    <div class="pass-meta-row highlight">
+                        <span>Beneficiaria:</span>
+                        <strong>Mels ❤️</strong>
+                    </div>
+                    <div class="pass-meta-row">
+                        <span>Fecha de Canje:</span>
+                        <strong id="pass-date-label">Hoy</strong>
+                    </div>
+                    <div class="pass-meta-row">
+                        <span>Hora:</span>
+                        <strong id="pass-time-label">Ahora</strong>
+                    </div>
+                    <div class="pass-meta-row">
+                        <span>Incluye:</span>
+                        <strong>Pelis, Mantita & Mimos Infinitos</strong>
+                    </div>
+                </div>
+
+                <!-- Botones para Guardar o Enviar por WhatsApp -->
+                <div class="voucher-actions">
+                    <a href="#" id="whatsapp-share-btn" class="btn-whatsapp-share" target="_blank" rel="noopener noreferrer">
+                        <i class="ph-fill ph-whatsapp-logo" style="font-size:1.2rem;"></i> Enviar Pase Canjeado por WhatsApp
+                    </a>
+                    <button type="button" class="btn-download-pass" onclick="downloadPassImage()">
+                        <i class="ph ph-download-simple"></i> Guardar Imagen del Pase
+                    </button>
                 </div>
             </div>
 
@@ -743,15 +846,31 @@
         // Ticket Redeem Action
         function redeemTicket() {
             const btn = document.getElementById('redeem-btn');
-            const proposalCard = document.getElementById('proposal-card');
+            const voucherCard = document.getElementById('voucher-card');
+            const dateLabel = document.getElementById('pass-date-label');
+            const timeLabel = document.getElementById('pass-time-label');
+            const whatsappBtn = document.getElementById('whatsapp-share-btn');
 
-            btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> ¡Entrada Aceptada!';
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' hs';
+
+            if (dateLabel) dateLabel.textContent = dateStr;
+            if (timeLabel) timeLabel.textContent = timeStr;
+
+            // Configurar enlace de WhatsApp listo para enviar
+            const waMsg = encodeURIComponent(`¡Hola! ❤️ Canjeé mi Pase VIP para ver películas juntos abrazados el día ${dateStr} a las ${timeStr} 🍿✨ ¡Queda prometido! 🥰`);
+            if (whatsappBtn) {
+                whatsappBtn.href = `https://api.whatsapp.com/send?text=${waMsg}`;
+            }
+
+            btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> ¡Pase Canjeado con Éxito!';
             btn.style.background = '#10b981';
             btn.style.color = '#fff';
             btn.disabled = true;
 
-            proposalCard.style.display = 'block';
-            proposalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            voucherCard.style.display = 'block';
+            voucherCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             // Massive romantic confetti shower
             if (typeof confetti === 'function') {
@@ -778,6 +897,27 @@
                         requestAnimationFrame(frame);
                     }
                 }());
+            }
+        }
+
+        // Generate and Download Voucher Image
+        function downloadPassImage() {
+            const voucherElement = document.getElementById('voucher-card');
+            if (typeof html2canvas === 'function' && voucherElement) {
+                html2canvas(voucherElement, {
+                    backgroundColor: '#090910',
+                    scale: 2,
+                    useCORS: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'Pase_VIP_Mels_Canjeado.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }).catch(err => {
+                    alert('Podés sacarle una captura de pantalla a tu pase canjeado para guardarlo en tu galería ❤️');
+                });
+            } else {
+                alert('Podés sacarle una captura de pantalla a tu pase canjeado para guardarlo en tu galería ❤️');
             }
         }
     </script>
