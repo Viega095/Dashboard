@@ -127,10 +127,10 @@
             top: 16px;
             right: 16px;
             z-index: 100;
-            background: rgba(20, 20, 35, 0.85);
+            background: rgba(20, 20, 35, 0.88);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(244, 114, 182, 0.3);
+            border: 1px solid rgba(244, 114, 182, 0.35);
             border-radius: 99px;
             padding: 0.4rem 0.85rem;
             display: flex;
@@ -178,12 +178,21 @@
             font-weight: 700;
             color: #fff;
             line-height: 1.1;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .music-artist {
             font-size: 0.65rem;
             color: var(--rose-gold);
             line-height: 1.1;
+        }
+
+        .music-skip-hint {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            opacity: 0.8;
         }
 
         /* Container */
@@ -195,7 +204,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 1.5rem;
+            margin-top: 1.8rem;
         }
 
         /* Step 1: Interactive Envelope / Sealed Letter */
@@ -261,6 +270,60 @@
             color: var(--text-dim);
             line-height: 1.55;
             margin-bottom: 1.6rem;
+        }
+
+        /* Sound permission choice box inside envelope */
+        .sound-prompt-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(244, 114, 182, 0.25);
+            border-radius: 16px;
+            padding: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .sound-prompt-text {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sound-prompt-actions {
+            display: flex;
+            gap: 0.6rem;
+            width: 100%;
+        }
+
+        .btn-sound-opt {
+            flex: 1;
+            padding: 0.65rem 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 99px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            transition: all 0.2s;
+        }
+
+        .btn-sound-yes {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
+        }
+
+        .btn-sound-no {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .open-btn {
@@ -642,21 +705,22 @@
             width: 100%;
         }
 
-        .btn-whatsapp-share {
+        .btn-whatsapp-direct {
             background: linear-gradient(135deg, #25d366, #128c7e);
             color: #fff;
             text-decoration: none;
             border: none;
-            padding: 0.85rem;
+            padding: 0.95rem;
             border-radius: 14px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            font-size: 0.98rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+            gap: 0.6rem;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-download-pass {
@@ -675,7 +739,7 @@
             transition: all 0.2s;
         }
 
-        .btn-download-pass:active, .btn-whatsapp-share:active {
+        .btn-download-pass:active, .btn-whatsapp-direct:active {
             transform: scale(0.97);
         }
     </style>
@@ -689,22 +753,19 @@
         <div class="glow-sphere glow-3"></div>
     </div>
 
-    <!-- Floating Music Player for The Strokes -->
-    <div class="music-player-pill" id="music-pill" onclick="toggleMusic()" title="Reproducir Selfless - The Strokes">
+    <!-- Floating Music Player for The Strokes Playlist -->
+    <div class="music-player-pill" id="music-pill" onclick="nextSong()" title="Tocá para cambiar de canción">
         <div class="music-disk-icon">
             <i class="ph-fill ph-disc"></i>
         </div>
         <div class="music-info">
-            <span class="music-title">Selfless</span>
-            <span class="music-artist">The Strokes &bull; Julian C.</span>
+            <span class="music-title" id="music-title">Selfless <i class="ph ph-skip-forward" style="font-size:0.7rem;"></i></span>
+            <span class="music-artist" id="music-artist">The Strokes &bull; Julian C.</span>
         </div>
     </div>
 
-    <!-- Audio Element (Selfless / Romantic Strokes Melodic Stream) -->
-    <audio id="bg-audio" loop preload="auto">
-        <source src="https://ia801503.us.archive.org/15/items/the-strokes-the-new-abnormal/02.%20The%20Strokes%20-%20Selfless.mp3" type="audio/mpeg">
-        <source src="https://archive.org/download/the-strokes-the-new-abnormal/02.%20The%20Strokes%20-%20Selfless.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Audio Element -->
+    <audio id="bg-audio" preload="auto"></audio>
 
     <main class="surprise-wrapper">
 
@@ -712,16 +773,28 @@
              PASO 1: SOBRE CERRADO / SELLO DE CORAZÓN
              ========================================== -->
         <div class="envelope-card" id="envelope-card">
-            <button class="envelope-seal-btn" onclick="openSurprise()" aria-label="Abrir sorpresa">
+            <button class="envelope-seal-btn" onclick="requestOpen(true)" aria-label="Abrir sorpresa">
                 <i class="ph-fill ph-heart"></i>
             </button>
             <h1 class="envelope-title">Hola, Mels ✨</h1>
             <p class="envelope-subtitle">
                 Te dejé un mini mensaje para vos, con mucho amor. Tocá el corazón para abrir tu sorpresa.
             </p>
-            <button class="open-btn" onclick="openSurprise()">
-                <i class="ph ph-sparkle"></i> Abrir Carta
-            </button>
+
+            <!-- Permiso para Activar Sonido -->
+            <div class="sound-prompt-box">
+                <span class="sound-prompt-text">
+                    <i class="ph-fill ph-headphones" style="color:var(--rose-gold);"></i> ¿Querés escuchar a The Strokes de fondo?
+                </span>
+                <div class="sound-prompt-actions">
+                    <button type="button" class="btn-sound-opt btn-sound-yes" onclick="requestOpen(true)">
+                        <i class="ph ph-speaker-high"></i> Sí, con música 🎧
+                    </button>
+                    <button type="button" class="btn-sound-opt btn-sound-no" onclick="requestOpen(false)">
+                        <i class="ph ph-speaker-slash"></i> Sin sonido
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- ==========================================
@@ -821,7 +894,7 @@
             </section>
 
             <!-- ==========================================
-                 PASO 3: COMPROBANTE OFICIAL DE CANJE
+                 PASO 3: COMPROBANTE OFICIAL CANJEADO
                  ========================================== -->
             <div class="voucher-card" id="voucher-card">
                 <div class="voucher-stamp">
@@ -857,10 +930,10 @@
                     </div>
                 </div>
 
-                <!-- Botones para Guardar o Enviar por WhatsApp -->
+                <!-- Botones para Enviar Directo a tu WhatsApp y Guardar Imagen -->
                 <div class="voucher-actions">
-                    <a href="#" id="whatsapp-share-btn" class="btn-whatsapp-share" target="_blank" rel="noopener noreferrer">
-                        <i class="ph-fill ph-whatsapp-logo" style="font-size:1.2rem;"></i> Enviar Pase Canjeado por WhatsApp
+                    <a href="#" id="whatsapp-direct-btn" class="btn-whatsapp-direct" target="_blank" rel="noopener noreferrer">
+                        <i class="ph-fill ph-whatsapp-logo" style="font-size:1.3rem;"></i> Mandarle Mensaje a él por WhatsApp
                     </a>
                     <button type="button" class="btn-download-pass" onclick="downloadPassImage()">
                         <i class="ph ph-download-simple"></i> Guardar Imagen del Pase
@@ -891,36 +964,86 @@
         }
         createFloatingHearts();
 
-        // Music Controls (The Strokes - Selfless)
+        // The Strokes / Julian Casablancas Romantic Playlist
+        const playlist = [
+            {
+                title: "Selfless",
+                artist: "The Strokes • Julian C.",
+                src: "https://ia801503.us.archive.org/15/items/the-strokes-the-new-abnormal/02.%20The%20Strokes%20-%20Selfless.mp3"
+            },
+            {
+                title: "Instant Crush",
+                artist: "Daft Punk ft. Julian C.",
+                src: "https://archive.org/download/random-access-memories-daft-punk-2013-us-album/05%20Instant%20Crush%20%28feat.%20Julian%20Casablancas%29.mp3"
+            },
+            {
+                title: "I'll Try Anything Once",
+                artist: "Julian Casablancas",
+                src: "https://ia800109.us.archive.org/21/items/TheStrokesIllTryAnythingOnce/TheStrokes-IllTryAnythingOnce.mp3"
+            },
+            {
+                title: "The Adults Are Talking",
+                artist: "The Strokes • Julian C.",
+                src: "https://ia801503.us.archive.org/15/items/the-strokes-the-new-abnormal/01.%20The%20Strokes%20-%20The%20Adults%20Are%20Talking.mp3"
+            },
+            {
+                title: "Call It Fate, Call It Karma",
+                artist: "The Strokes • Comedown Machine",
+                src: "https://ia801606.us.archive.org/7/items/the-strokes-comedown-machine/11.%20The%20Strokes%20-%20Call%20It%20Fate%2C%20Call%20It%20Karma.mp3"
+            }
+        ];
+
+        let currentSongIndex = 0;
         const audio = document.getElementById('bg-audio');
         const musicPill = document.getElementById('music-pill');
-        let isPlaying = false;
+        const musicTitle = document.getElementById('music-title');
+        const musicArtist = document.getElementById('music-artist');
+        let soundEnabled = true;
 
-        function toggleMusic() {
+        function loadSong(index) {
             if (!audio) return;
-            if (isPlaying) {
-                audio.pause();
-                musicPill.classList.remove('playing');
-                isPlaying = false;
-            } else {
-                audio.play().then(() => {
-                    musicPill.classList.add('playing');
-                    isPlaying = true;
-                }).catch(() => {});
+            currentSongIndex = index % playlist.length;
+            const song = playlist[currentSongIndex];
+            audio.src = song.src;
+            musicTitle.innerHTML = `${song.title} <i class="ph ph-skip-forward" style="font-size:0.7rem;"></i>`;
+            musicArtist.textContent = song.artist;
+        }
+
+        // Initialize with first song
+        loadSong(0);
+
+        function playMusic() {
+            if (!soundEnabled || !audio) return;
+            audio.play().then(() => {
+                musicPill.classList.add('playing');
+            }).catch(() => {});
+        }
+
+        function nextSong() {
+            if (!audio) return;
+            loadSong(currentSongIndex + 1);
+            if (soundEnabled) {
+                playMusic();
             }
         }
 
-        // Step 1 -> Step 2 Reveal
-        function openSurprise() {
+        // Auto-advance when song ends
+        if (audio) {
+            audio.addEventListener('ended', () => {
+                nextSong();
+            });
+        }
+
+        // Step 1 -> Step 2 Reveal with Sound Permission Choice
+        function requestOpen(withSound) {
+            soundEnabled = withSound;
             const envelope = document.getElementById('envelope-card');
             const content = document.getElementById('revealed-content');
 
-            // Autoplay music on open click interaction
-            if (audio && !isPlaying) {
-                audio.play().then(() => {
-                    musicPill.classList.add('playing');
-                    isPlaying = true;
-                }).catch(() => {});
+            if (soundEnabled) {
+                playMusic();
+            } else {
+                musicPill.style.display = 'none';
             }
 
             envelope.style.opacity = '0';
@@ -948,7 +1071,7 @@
             const voucherCard = document.getElementById('voucher-card');
             const dateLabel = document.getElementById('pass-date-label');
             const timeLabel = document.getElementById('pass-time-label');
-            const whatsappBtn = document.getElementById('whatsapp-share-btn');
+            const whatsappBtn = document.getElementById('whatsapp-direct-btn');
 
             const now = new Date();
             const dateStr = now.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -957,10 +1080,11 @@
             if (dateLabel) dateLabel.textContent = dateStr;
             if (timeLabel) timeLabel.textContent = timeStr;
 
-            // Configurar enlace de WhatsApp listo para enviar
-            const waMsg = encodeURIComponent(`¡Hola! ❤️ Canjeé mi Pase VIP para ver películas juntos abrazados el día ${dateStr} a las ${timeStr} 🍿✨ ¡Queda prometido! 🥰`);
+            // Direct WhatsApp link to +54 11 2249-6124 (Format 5491122496124)
+            const myPhoneNumber = "5491122496124";
+            const waMsg = encodeURIComponent(`¡Hola mi amor! ❤️ Canjeé mi Pase VIP para ver películas juntos abrazados el día ${dateStr} a las ${timeStr} 🍿✨ ¡Te amo, ya es oficial! 🥰`);
             if (whatsappBtn) {
-                whatsappBtn.href = `https://api.whatsapp.com/send?text=${waMsg}`;
+                whatsappBtn.href = `https://api.whatsapp.com/send?phone=${myPhoneNumber}&text=${waMsg}`;
             }
 
             btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> ¡Pase Canjeado con Éxito!';
