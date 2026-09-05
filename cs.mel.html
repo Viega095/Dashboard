@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
     
-    <!-- Phosphor Icons, Canvas Confetti & HTML2Canvas for ticket image download -->
+    <!-- Phosphor Icons, Canvas Confetti & HTML2Canvas -->
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
@@ -45,7 +45,7 @@
             align-items: center;
             overflow-x: hidden;
             position: relative;
-            padding: 1.5rem 1rem 3rem 1rem;
+            padding: 1.5rem 1rem 3.5rem 1rem;
         }
 
         /* Ambient Glow & Floating Hearts Background */
@@ -121,7 +121,72 @@
             }
         }
 
-        /* Container & Glassmorphism Box */
+        /* Floating Music Player Pill */
+        .music-player-pill {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            background: rgba(20, 20, 35, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(244, 114, 182, 0.3);
+            border-radius: 99px;
+            padding: 0.4rem 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(244, 114, 182, 0.2);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .music-player-pill:active {
+            transform: scale(0.95);
+        }
+
+        .music-disk-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.9rem;
+            animation: spinDisk 4s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .music-player-pill.playing .music-disk-icon {
+            animation-play-state: running;
+        }
+
+        @keyframes spinDisk {
+            100% { transform: rotate(360deg); }
+        }
+
+        .music-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .music-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .music-artist {
+            font-size: 0.65rem;
+            color: var(--rose-gold);
+            line-height: 1.1;
+        }
+
+        /* Container */
         .surprise-wrapper {
             position: relative;
             z-index: 10;
@@ -130,6 +195,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 1.5rem;
         }
 
         /* Step 1: Interactive Envelope / Sealed Letter */
@@ -140,7 +206,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 24px;
-            padding: 2.2rem 1.8rem;
+            padding: 2.4rem 1.8rem;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(244, 114, 182, 0.15);
             animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -153,12 +219,12 @@
         }
 
         .envelope-seal-btn {
-            width: 90px;
-            height: 90px;
+            width: 92px;
+            height: 92px;
             border-radius: 50%;
             background: linear-gradient(135deg, #f43f5e, #be123c);
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 25px rgba(244, 63, 94, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 28px rgba(244, 63, 94, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.5);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -184,24 +250,24 @@
 
         .envelope-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: 1.85rem;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
 
         .envelope-subtitle {
             font-size: 0.95rem;
             color: var(--text-dim);
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
+            line-height: 1.55;
+            margin-bottom: 1.6rem;
         }
 
         .open-btn {
             background: linear-gradient(135deg, #f472b6, #ec4899);
             color: #fff;
             border: none;
-            padding: 0.85rem 1.8rem;
+            padding: 0.9rem 2rem;
             font-size: 0.95rem;
             font-weight: 600;
             border-radius: 99px;
@@ -271,27 +337,22 @@
         .letter-body {
             font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 1.08rem;
-            line-height: 1.75;
+            font-size: 1.1rem;
+            line-height: 1.8;
             color: #f1f5f9;
             margin-bottom: 1.2rem;
         }
 
         .letter-body p {
-            margin-bottom: 1rem;
-        }
-
-        .letter-body strong {
-            color: var(--rose-gold);
-            font-style: normal;
+            margin-bottom: 1.1rem;
         }
 
         .letter-sign {
             font-family: 'Caveat', cursive;
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: var(--rose-gold);
             text-align: right;
-            margin-top: 0.5rem;
+            margin-top: 0.6rem;
         }
 
         /* ==========================================
@@ -307,7 +368,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(251, 191, 36, 0.12);
         }
 
-        /* Golden Hologram Shimmer Ribbon */
+        /* Golden Hologram Shimmer */
         .ticket-shimmer {
             position: absolute;
             top: 0;
@@ -401,7 +462,7 @@
             color: #fff;
         }
 
-        /* Perforated Divider Line with Cutout Circles */
+        /* Perforated Divider Line */
         .ticket-divider {
             position: relative;
             height: 28px;
@@ -475,7 +536,6 @@
             margin-top: -0.5rem;
         }
 
-        /* Redeem / Accept Pass Action */
         .redeem-btn {
             width: 100%;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
@@ -550,7 +610,6 @@
             margin-bottom: 1.4rem;
         }
 
-        /* Printable / Shareable Digital Voucher Box */
         .digital-pass-box {
             background: rgba(0, 0, 0, 0.4);
             border: 1px dashed rgba(251, 191, 36, 0.5);
@@ -576,7 +635,6 @@
             color: var(--rose-gold);
         }
 
-        /* Action buttons for saving & sharing to WhatsApp */
         .voucher-actions {
             display: flex;
             flex-direction: column;
@@ -631,6 +689,23 @@
         <div class="glow-sphere glow-3"></div>
     </div>
 
+    <!-- Floating Music Player for The Strokes -->
+    <div class="music-player-pill" id="music-pill" onclick="toggleMusic()" title="Reproducir Selfless - The Strokes">
+        <div class="music-disk-icon">
+            <i class="ph-fill ph-disc"></i>
+        </div>
+        <div class="music-info">
+            <span class="music-title">Selfless</span>
+            <span class="music-artist">The Strokes &bull; Julian C.</span>
+        </div>
+    </div>
+
+    <!-- Audio Element (Selfless / Romantic Strokes Melodic Stream) -->
+    <audio id="bg-audio" loop preload="auto">
+        <source src="https://ia801503.us.archive.org/15/items/the-strokes-the-new-abnormal/02.%20The%20Strokes%20-%20Selfless.mp3" type="audio/mpeg">
+        <source src="https://archive.org/download/the-strokes-the-new-abnormal/02.%20The%20Strokes%20-%20Selfless.mp3" type="audio/mpeg">
+    </audio>
+
     <main class="surprise-wrapper">
 
         <!-- ==========================================
@@ -642,7 +717,7 @@
             </button>
             <h1 class="envelope-title">Hola, Mels ✨</h1>
             <p class="envelope-subtitle">
-                Dejaste este mensaje esperando por vos... Tocá el corazón para abrir tu sorpresa.
+                Te dejé un mini mensaje para vos, con mucho amor. Tocá el corazón para abrir tu sorpresa.
             </p>
             <button class="open-btn" onclick="openSurprise()">
                 <i class="ph ph-sparkle"></i> Abrir Carta
@@ -667,9 +742,6 @@
                     </p>
                     <p>
                         Estar con vos hace que cualquier momento sea especial, tu risa, tu forma de ser y todo lo lindo que transmitís. Por eso quise prepararte esta sorpresa con las flores y este detalle...
-                    </p>
-                    <p>
-                        Y para cuando volvamos a casa, tenés un <strong>pase exclusivo</strong> que preparé especialmente para nosotros dos:
                     </p>
                 </div>
 
@@ -819,10 +891,37 @@
         }
         createFloatingHearts();
 
+        // Music Controls (The Strokes - Selfless)
+        const audio = document.getElementById('bg-audio');
+        const musicPill = document.getElementById('music-pill');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (!audio) return;
+            if (isPlaying) {
+                audio.pause();
+                musicPill.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    musicPill.classList.add('playing');
+                    isPlaying = true;
+                }).catch(() => {});
+            }
+        }
+
         // Step 1 -> Step 2 Reveal
         function openSurprise() {
             const envelope = document.getElementById('envelope-card');
             const content = document.getElementById('revealed-content');
+
+            // Autoplay music on open click interaction
+            if (audio && !isPlaying) {
+                audio.play().then(() => {
+                    musicPill.classList.add('playing');
+                    isPlaying = true;
+                }).catch(() => {});
+            }
 
             envelope.style.opacity = '0';
             envelope.style.transform = 'scale(0.85) translateY(-20px)';
