@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Mels ✨ Una Sorpresa Especial</title>
+    <meta name="description" content="Una sorpresa especial para Mels">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons & Canvas Confetti -->
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+
+    <style>
+        :root {
+            --bg-dark: #090910;
+            --rose-gold: #f472b6;
+            --rose-glow: #fb7185;
+            --gold-shine: #fbbf24;
+            --ticket-bg: #141423;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 1.5rem 1rem;
+        }
+
+        /* Ambient Glow & Floating Hearts Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .glow-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.28;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        .glow-1 {
+            width: 320px;
+            height: 320px;
+            background: #ec4899;
+            top: -60px;
+            left: -60px;
+        }
+
+        .glow-2 {
+            width: 350px;
+            height: 350px;
+            background: #8b5cf6;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: 4s;
+        }
+
+        .glow-3 {
+            width: 250px;
+            height: 250px;
+            background: #f59e0b;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.15;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.15) translate(20px, 15px); }
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.2rem;
+            color: rgba(244, 114, 182, 0.4);
+            user-select: none;
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.6; }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Container & Glassmorphism Box */
+        .surprise-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Step 1: Interactive Envelope / Sealed Letter */
+        .envelope-card {
+            width: 100%;
+            background: rgba(20, 20, 35, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 2.2rem 1.8rem;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 40px rgba(244, 114, 182, 0.15);
+            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s ease;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .envelope-seal-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f43f5e, #be123c);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6rem;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            animation: heartBeat 1.8s infinite;
+            transition: transform 0.2s;
+        }
+
+        .envelope-seal-btn:active {
+            transform: scale(0.92);
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .envelope-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .envelope-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .open-btn {
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            color: #fff;
+            border: none;
+            padding: 0.85rem 1.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 99px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .open-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Step 2: Main Surprise Content (Revealed on Open) */
+        .revealed-content {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            animation: unfoldContent 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes unfoldContent {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Romantic Letter Card */
+        .romantic-letter {
+            width: 100%;
+            background: rgba(22, 22, 38, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(244, 114, 182, 0.25);
+            border-radius: 24px;
+            padding: 2rem 1.6rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(244, 114, 182, 0.15);
+            position: relative;
+        }
+
+        .letter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.8rem;
+        }
+
+        .letter-header-tag {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--rose-gold);
+            font-weight: 600;
+        }
+
+        .letter-body {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.75;
+            color: #f1f5f9;
+            margin-bottom: 1.2rem;
+        }
+
+        .letter-body p {
+            margin-bottom: 0.9rem;
+        }
+
+        .letter-body strong {
+            color: var(--rose-gold);
+            font-style: normal;
+        }
+
+        .letter-sign {
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: var(--rose-gold);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        /* ==========================================
+           CINEMA VIP TICKET DESIGN
+           ========================================== */
+        .cinema-ticket {
+            width: 100%;
+            background: linear-gradient(145deg, #1b1b30, #111122);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(251, 191, 36, 0.12);
+        }
+
+        /* Golden Hologram Shimmer Ribbon */
+        .ticket-shimmer {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                rgba(251, 191, 36, 0.2),
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: skewX(-25deg);
+            animation: ticketShine 4.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes ticketShine {
+            0% { left: -150%; }
+            40%, 100% { left: 150%; }
+        }
+
+        /* Ticket Top Section */
+        .ticket-top {
+            padding: 1.6rem 1.5rem 1.2rem 1.5rem;
+        }
+
+        .ticket-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            color: #fbbf24;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.9rem;
+        }
+
+        .ticket-movie-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ticket-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+            margin-bottom: 1.2rem;
+        }
+
+        .ticket-desc strong {
+            color: #fce7f3;
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .ticket-grid-item span {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+            margin-bottom: 0.2rem;
+        }
+
+        .ticket-grid-item strong {
+            font-size: 0.88rem;
+            color: #fff;
+        }
+
+        /* Perforated Divider Line with Cutout Circles */
+        .ticket-divider {
+            position: relative;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ticket-divider::before {
+            content: '';
+            position: absolute;
+            left: -14px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .ticket-divider::after {
+            content: '';
+            position: absolute;
+            right: -14px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .ticket-dashed-line {
+            width: 82%;
+            border-top: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ticket Bottom Stub */
+        .ticket-bottom {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .fake-barcode {
+            display: flex;
+            gap: 3px;
+            height: 36px;
+            align-items: center;
+            opacity: 0.75;
+        }
+
+        .bar {
+            background-color: #cbd5e1;
+            height: 100%;
+            border-radius: 1px;
+        }
+
+        .b-1 { width: 2px; }
+        .b-2 { width: 4px; }
+        .b-3 { width: 1px; }
+        .b-4 { width: 3px; }
+        .b-5 { width: 5px; }
+
+        .ticket-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            margin-top: -0.5rem;
+        }
+
+        /* Redeem / Accept Pass Action */
+        .redeem-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            border: none;
+            padding: 0.95rem;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+            transition: all 0.2s;
+        }
+
+        .redeem-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Final Revealed Proposal / Love Card */
+        .proposal-card {
+            display: none;
+            width: 100%;
+            background: linear-gradient(145deg, rgba(244, 63, 94, 0.2), rgba(139, 92, 246, 0.2));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(244, 114, 182, 0.4);
+            border-radius: 24px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(244, 63, 94, 0.3);
+            animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .proposal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 2px 10px rgba(244, 114, 182, 0.5);
+        }
+
+        .proposal-text {
+            font-size: 1.05rem;
+            color: #f1f5f9;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .love-tags-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .love-tag {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 0.9rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Glowing Spheres -->
+    <div class="ambient-bg" id="ambient-bg">
+        <div class="glow-sphere glow-1"></div>
+        <div class="glow-sphere glow-2"></div>
+        <div class="glow-sphere glow-3"></div>
+    </div>
+
+    <main class="surprise-wrapper">
+
+        <!-- ==========================================
+             PASO 1: SOBRE CERRADO / SELLO DE CORAZÓN
+             ========================================== -->
+        <div class="envelope-card" id="envelope-card">
+            <button class="envelope-seal-btn" onclick="openSurprise()" aria-label="Abrir sorpresa">
+                <i class="ph-fill ph-heart"></i>
+            </button>
+            <h1 class="envelope-title">Hola, Mels ✨</h1>
+            <p class="envelope-subtitle">
+                Dejaste este mensaje esperando por vos... Tocá el corazón para abrir tu sorpresa.
+            </p>
+            <button class="open-btn" onclick="openSurprise()">
+                <i class="ph ph-sparkle"></i> Abrir Carta
+            </button>
+        </div>
+
+        <!-- ==========================================
+             PASO 2: CONTENIDO REVELADO
+             ========================================== -->
+        <div class="revealed-content" id="revealed-content">
+
+            <!-- Carta Romántica -->
+            <article class="romantic-letter">
+                <div class="letter-header">
+                    <span class="letter-header-tag"><i class="ph ph-flower-lotus"></i> Para vos, hermosa</span>
+                    <span style="font-size:0.78rem; color:var(--text-dim);"><i class="ph ph-calendar-heart"></i> Nuestro Día</span>
+                </div>
+
+                <div class="letter-body">
+                    <p>
+                        Espero que hayas disfrutado muchísimo de nuestra salida al café tanto como yo disfruté cada minuto a tu lado.
+                    </p>
+                    <p>
+                        Estar con vos hace que cualquier momento sea especial, tu risa, tu forma de ser y todo lo lindo que transmitís. Por eso quise prepararte esta sorpresa con las flores y este detalle...
+                    </p>
+                    <p>
+                        Y para cuando volvamos a casa, tenés un <strong>pase exclusivo</strong> que preparé especialmente para nosotros dos:
+                    </p>
+                </div>
+
+                <div class="letter-sign">
+                    Con mucho cariño ❤️
+                </div>
+            </article>
+
+            <!-- Entrada de Cine VIP -->
+            <section class="cinema-ticket">
+                <div class="ticket-shimmer"></div>
+
+                <div class="ticket-top">
+                    <div class="ticket-badge">
+                        <i class="ph-fill ph-star"></i> Pase VIP &bull; Admit Two
+                    </div>
+
+                    <h2 class="ticket-movie-title">
+                        <i class="ph ph-film-slate" style="color:var(--gold-shine);"></i> Noche de Pelis
+                    </h2>
+
+                    <p class="ticket-desc">
+                        <strong>Válido por:</strong> Ver películas los dos juntos, abrazados, con mantita, cosas ricas y mimos ilimitados. 🍿✨
+                    </p>
+
+                    <div class="ticket-grid">
+                        <div class="ticket-grid-item">
+                            <span>Ubicación</span>
+                            <strong>Nuestra Pieza 🛏️</strong>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span>Asientos</span>
+                            <strong>Pegaditos 🥰</strong>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span>Horario</span>
+                            <strong>Hasta dormirnos 🌙</strong>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span>Validez</span>
+                            <strong>Para Siempre ∞</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perforated Line Divider -->
+                <div class="ticket-divider">
+                    <div class="ticket-dashed-line"></div>
+                </div>
+
+                <!-- Stub / Canjear -->
+                <div class="ticket-bottom">
+                    <div class="fake-barcode" aria-hidden="true">
+                        <div class="bar b-2"></div>
+                        <div class="bar b-1"></div>
+                        <div class="bar b-4"></div>
+                        <div class="bar b-2"></div>
+                        <div class="bar b-5"></div>
+                        <div class="bar b-1"></div>
+                        <div class="bar b-3"></div>
+                        <div class="bar b-2"></div>
+                        <div class="bar b-4"></div>
+                        <div class="bar b-1"></div>
+                        <div class="bar b-5"></div>
+                        <div class="bar b-2"></div>
+                        <div class="bar b-3"></div>
+                        <div class="bar b-1"></div>
+                        <div class="bar b-4"></div>
+                        <div class="bar b-2"></div>
+                    </div>
+                    <div class="ticket-code">TICKET-LOVE-MELS-2026</div>
+
+                    <button class="redeem-btn" id="redeem-btn" onclick="redeemTicket()">
+                        <i class="ph-fill ph-ticket"></i> Canjear Pase VIP
+                    </button>
+                </div>
+            </section>
+
+            <!-- Mensaje Final Confirmado -->
+            <div class="proposal-card" id="proposal-card">
+                <div style="font-size:2.5rem; margin-bottom:0.5rem;">💐💖</div>
+                <h3 class="proposal-title">¡Pase Canjeado!</h3>
+                <p class="proposal-text">
+                    Promesa de ver muchas películas juntos, pasarla hermoso y cuidarte siempre. Sos una personita increíble.
+                </p>
+                <div class="love-tags-row">
+                    <span class="love-tag"><i class="ph-fill ph-heart" style="color:#fb7185;"></i> Mels</span>
+                    <span class="love-tag">🍿 Películas & Abrazos</span>
+                    <span class="love-tag">✨ Momentos Únicos</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // Floating Hearts Background Generator
+        function createFloatingHearts() {
+            const container = document.getElementById('ambient-bg');
+            const hearts = ['❤️', '💖', '✨', '🌸', '💕'];
+            
+            for (let i = 0; i < 15; i++) {
+                const span = document.createElement('span');
+                span.className = 'floating-heart';
+                span.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                span.style.left = Math.random() * 100 + 'vw';
+                span.style.animationDuration = (7 + Math.random() * 8) + 's';
+                span.style.animationDelay = (Math.random() * 6) + 's';
+                span.style.fontSize = (0.9 + Math.random() * 0.9) + 'rem';
+                container.appendChild(span);
+            }
+        }
+        createFloatingHearts();
+
+        // Step 1 -> Step 2 Reveal
+        function openSurprise() {
+            const envelope = document.getElementById('envelope-card');
+            const content = document.getElementById('revealed-content');
+
+            envelope.style.opacity = '0';
+            envelope.style.transform = 'scale(0.85) translateY(-20px)';
+            
+            setTimeout(() => {
+                envelope.style.display = 'none';
+                content.style.display = 'flex';
+
+                // Confetti Explosion
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 80,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff']
+                    });
+                }
+            }, 400);
+        }
+
+        // Ticket Redeem Action
+        function redeemTicket() {
+            const btn = document.getElementById('redeem-btn');
+            const proposalCard = document.getElementById('proposal-card');
+
+            btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> ¡Entrada Aceptada!';
+            btn.style.background = '#10b981';
+            btn.style.color = '#fff';
+            btn.disabled = true;
+
+            proposalCard.style.display = 'block';
+            proposalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Massive romantic confetti shower
+            if (typeof confetti === 'function') {
+                const duration = 3 * 1000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#f472b6', '#fb7185', '#fbbf24']
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#f472b6', '#fb7185', '#fbbf24']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        }
+    </script>
+</body>
+</html>
