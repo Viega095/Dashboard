@@ -1717,7 +1717,103 @@
             ctx.restore();
         }
 
-        /* 3D Volumetric Botanical Stem */
+        /* Realistic Botanical Leaf with Natural Curve */
+        function drawBouquetLeaf(x, y, angle, length, width, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            const s = Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // Leaf Body with organic curve
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-width * 0.9, -length * 0.35, -width * 0.7, -length * 0.75, 0, -length);
+            ctx.bezierCurveTo(width * 0.7, -length * 0.75, width * 0.9, -length * 0.35, 0, 0);
+
+            const grad = ctx.createLinearGradient(0, 0, 0, -length);
+            grad.addColorStop(0, '#064e3b');
+            grad.addColorStop(0.4, '#15803d');
+            grad.addColorStop(0.85, '#22c55e');
+            grad.addColorStop(1, '#86efac');
+            ctx.fillStyle = grad;
+            ctx.shadowColor = 'rgba(21, 128, 61, 0.4)';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+
+            // Central Rib & Contour
+            ctx.strokeStyle = 'rgba(74, 222, 128, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(1, -length * 0.5, 0, -length * 0.95);
+            ctx.strokeStyle = 'rgba(187, 247, 208, 0.7)';
+            ctx.lineWidth = 1.6;
+            ctx.stroke();
+
+            // Side Veins
+            for (let v = 1; v <= 3; v++) {
+                const py = -length * (v / 4.2);
+                const span = width * 0.6 * (1 - v / 5);
+                ctx.beginPath();
+                ctx.moveTo(0, py);
+                ctx.quadraticCurveTo(-span * 0.5, py - length * 0.04, -span, py - length * 0.08);
+                ctx.moveTo(0, py);
+                ctx.quadraticCurveTo(span * 0.5, py - length * 0.04, span, py - length * 0.08);
+                ctx.strokeStyle = 'rgba(187, 247, 208, 0.28)';
+                ctx.lineWidth = 0.9;
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        /* Background Eucalyptus / Fern Filler Sprig */
+        function drawFillerFoliage(x, y, angle, length, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            const s = Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // Thin green branch
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(5, -length * 0.5, 0, -length);
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 2.4;
+            ctx.stroke();
+
+            // Alternating eucalyptus coin leaves
+            const leafCount = 5;
+            for (let i = 1; i <= leafCount; i++) {
+                const ly = -length * (i / (leafCount + 0.5));
+                const side = i % 2 === 0 ? 1 : -1;
+                ctx.save();
+                ctx.translate(side * 4, ly);
+                ctx.rotate(side * (Math.PI / 4));
+                ctx.beginPath();
+                ctx.ellipse(side * 8, 0, 10, 6, side * 0.2, 0, Math.PI * 2);
+                
+                const gradLeaf = ctx.createLinearGradient(-10, 0, 10, 0);
+                gradLeaf.addColorStop(0, '#064e3b');
+                gradLeaf.addColorStop(0.6, '#16a34a');
+                gradLeaf.addColorStop(1, '#86efac');
+                ctx.fillStyle = gradLeaf;
+                ctx.shadowColor = 'rgba(22, 163, 74, 0.35)';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        /* 3D Volumetric Botanical Stem with Light & Shadow */
         function drawBotanicalStem(startX, startY, cpX, cpY, endX, endY, progress, thickness) {
             if (progress <= 0) return;
             ctx.save();
@@ -1732,16 +1828,16 @@
             ctx.moveTo(startX, startY);
             ctx.quadraticCurveTo(curCpX, curCpY, curEndX, curEndY);
             ctx.strokeStyle = '#064e3b';
-            ctx.lineWidth = (thickness || 5) + 1.2;
+            ctx.lineWidth = (thickness || 4.8) + 1.2;
             ctx.lineCap = 'round';
             ctx.stroke();
 
-            // Main Emerald
+            // Main Emerald Body
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.quadraticCurveTo(curCpX, curCpY, curEndX, curEndY);
             ctx.strokeStyle = '#15803d';
-            ctx.lineWidth = thickness || 5;
+            ctx.lineWidth = thickness || 4.8;
             ctx.lineCap = 'round';
             ctx.shadowColor = 'rgba(21, 128, 61, 0.45)';
             ctx.shadowBlur = 8;
@@ -1752,14 +1848,14 @@
             ctx.moveTo(startX - 1, startY);
             ctx.quadraticCurveTo(curCpX - 1, curCpY, curEndX - 0.8, curEndY);
             ctx.strokeStyle = 'rgba(134, 239, 172, 0.45)';
-            ctx.lineWidth = Math.max(1, (thickness || 5) * 0.32);
+            ctx.lineWidth = Math.max(1, (thickness || 4.8) * 0.3);
             ctx.stroke();
 
             ctx.restore();
         }
 
         // ==========================================
-        // 10 UNIQUE FLOWERS SEQUENTIAL TIMELINE
+        // DENSE, LUSH 10-FLOWER BOUQUET TIMELINE
         // ==========================================
         function animateFrame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1767,19 +1863,19 @@
             drawPollen();
 
             const baseX = canvas.width / 2;
-            const baseY = canvas.height * 0.88;
+            const baseY = canvas.height * 0.84;
 
-            // 10 Distinct Plants with distributed bases & balanced heights
-            const p1  = { startX: baseX,       startY: baseY, cpX: baseX - 8,  cpY: baseY - 165, endX: baseX,        endY: baseY - 330 }; // 1. Lirio Imperial (Centro Alto)
-            const p2  = { startX: baseX - 30,  startY: baseY, cpX: baseX - 70, cpY: baseY - 120, endX: baseX - 110,  endY: baseY - 240 }; // 2. Girasol Solar (Izq Media)
-            const p3  = { startX: baseX + 30,  startY: baseY, cpX: baseX + 70, cpY: baseY - 125, endX: baseX + 110,  endY: baseY - 245 }; // 3. Rosa Inglesa (Der Media)
-            const p4  = { startX: baseX - 15,  startY: baseY, cpX: baseX - 40, cpY: baseY - 90,  endX: baseX - 55,   endY: baseY - 185 }; // 4. Amapola Carmesí (Izq Baja)
-            const p5  = { startX: baseX + 15,  startY: baseY, cpX: baseX + 40, cpY: baseY - 95,  endX: baseX + 55,   endY: baseY - 190 }; // 5. Tulipán Magenta (Der Baja)
-            const p6  = { startX: baseX - 55,  startY: baseY, cpX: baseX - 95, cpY: baseY - 80,  endX: baseX - 125,  endY: baseY - 165 }; // 6. Campanillas Violetas (Extremo Izq)
-            const p7  = { startX: baseX + 55,  startY: baseY, cpX: baseX + 95, cpY: baseY - 85,  endX: baseX + 125,  endY: baseY - 170 }; // 7. Loto Coral (Extremo Der)
-            const p8  = { startX: baseX - 20,  startY: baseY, cpX: baseX - 45, cpY: baseY - 150, endX: baseX - 75,   endY: baseY - 300 }; // 8. Orquídea Nácar (Izq Alta)
-            const p9  = { startX: baseX + 20,  startY: baseY, cpX: baseX + 45, cpY: baseY - 155, endX: baseX + 75,   endY: baseY - 305 }; // 9. No Me Olvides Celeste (Der Alta)
-            const p10 = { startX: baseX,       startY: baseY, cpX: baseX + 3,  cpY: baseY - 65,  endX: baseX,        endY: baseY - 130 }; // 10. Flor de Cerezo (Centro Frente)
+            // 10 Harmonious Plant Paths (Dense, curved dome bouquet with no empty gaps)
+            const p1  = { startX: baseX,       startY: baseY, cpX: baseX - 5,  cpY: baseY - 140, endX: baseX,        endY: baseY - 280 }; // 1. Lirio Imperial (Centro Alto)
+            const p2  = { startX: baseX - 25,  startY: baseY, cpX: baseX - 60, cpY: baseY - 100, endX: baseX - 105,  endY: baseY - 200 }; // 2. Girasol Solar (Izq Media)
+            const p3  = { startX: baseX + 25,  startY: baseY, cpX: baseX + 60, cpY: baseY - 105, endX: baseX + 105,  endY: baseY - 205 }; // 3. Rosa Inglesa (Der Media)
+            const p4  = { startX: baseX - 15,  startY: baseY, cpX: baseX - 35, cpY: baseY - 80,  endX: baseX - 50,   endY: baseY - 160 }; // 4. Amapola Carmesí (Izq Centro)
+            const p5  = { startX: baseX + 15,  startY: baseY, cpX: baseX + 35, cpY: baseY - 85,  endX: baseX + 50,   endY: baseY - 165 }; // 5. Tulipán Magenta (Der Centro)
+            const p6  = { startX: baseX - 40,  startY: baseY, cpX: baseX - 85, cpY: baseY - 70,  endX: baseX - 120,  endY: baseY - 135 }; // 6. Campanillas Violetas (Extremo Izq)
+            const p7  = { startX: baseX + 40,  startY: baseY, cpX: baseX + 85, cpY: baseY - 75,  endX: baseX + 120,  endY: baseY - 140 }; // 7. Loto Coral (Extremo Der)
+            const p8  = { startX: baseX - 18,  startY: baseY, cpX: baseX - 38, cpY: baseY - 130, endX: baseX - 65,   endY: baseY - 245 }; // 8. Orquídea Nácar (Izq Alta)
+            const p9  = { startX: baseX + 18,  startY: baseY, cpX: baseX + 38, cpY: baseY - 135, endX: baseX + 65,   endY: baseY - 250 }; // 9. No Me Olvides Celeste (Der Alta)
+            const p10 = { startX: baseX,       startY: baseY, cpX: baseX + 2,  cpY: baseY - 55,  endX: baseX,        endY: baseY - 110 }; // 10. Flor de Cerezo (Centro Frente)
 
             function getSubProgress(start, end) {
                 if (globalTime < start) return 0;
@@ -1787,36 +1883,53 @@
                 return (globalTime - start) / (end - start);
             }
 
+            // --- BACKGROUND LUSH FILLER FOLIAGE (Fills gaps early & continuously) ---
+            const fol1 = getSubProgress(0.02, 0.18);
+            const fol2 = getSubProgress(0.12, 0.28);
+            const fol3 = getSubProgress(0.22, 0.38);
+            const fol4 = getSubProgress(0.32, 0.48);
+
+            drawFillerFoliage(baseX - 35, baseY - 80, -Math.PI / 3.8, 120, fol1);
+            drawFillerFoliage(baseX + 35, baseY - 85, Math.PI / 3.8, 125, fol2);
+            drawFillerFoliage(baseX - 15, baseY - 120, -Math.PI / 6, 110, fol3);
+            drawFillerFoliage(baseX + 15, baseY - 125, Math.PI / 6, 115, fol4);
+
             // 1. Lirio Imperial (0.00 -> 0.14)
             const s1 = getSubProgress(0.00, 0.08);
-            const l1 = getSubProgress(0.04, 0.11);
-            const b1 = getSubProgress(0.07, 0.14);
-            drawBotanicalStem(p1.startX, p1.startY, p1.cpX, p1.cpY, p1.endX, p1.endY, s1, 6.5);
-            drawBotanicalLeaf(baseX - 16, baseY - 155, -Math.PI / 3.4, 75, 20, l1);
-            drawLilium(p1.endX, p1.endY, 0.95, b1);
+            const l1_a = getSubProgress(0.04, 0.10);
+            const l1_b = getSubProgress(0.07, 0.12);
+            const b1 = getSubProgress(0.08, 0.14);
+            drawBotanicalStem(p1.startX, p1.startY, p1.cpX, p1.cpY, p1.endX, p1.endY, s1, 6.0);
+            drawBouquetLeaf(baseX - 14, baseY - 130, -Math.PI / 3.2, 70, 20, l1_a);
+            drawBouquetLeaf(baseX + 14, baseY - 190, Math.PI / 3.0, 68, 19, l1_b);
+            drawLilium(p1.endX, p1.endY, 0.92, b1);
 
             // 2. Girasol Solar (0.09 -> 0.23)
             const s2 = getSubProgress(0.09, 0.17);
-            const l2 = getSubProgress(0.13, 0.20);
+            const l2_a = getSubProgress(0.12, 0.19);
+            const l2_b = getSubProgress(0.15, 0.21);
             const b2 = getSubProgress(0.16, 0.23);
-            drawBotanicalStem(p2.startX, p2.startY, p2.cpX, p2.cpY, p2.endX, p2.endY, s2, 5.5);
-            drawBotanicalLeaf(baseX - 55, baseY - 140, -Math.PI / 2.7, 65, 18, l2);
+            drawBotanicalStem(p2.startX, p2.startY, p2.cpX, p2.cpY, p2.endX, p2.endY, s2, 5.2);
+            drawBouquetLeaf(baseX - 45, baseY - 100, -Math.PI / 2.6, 62, 18, l2_a);
+            drawBouquetLeaf(baseX - 75, baseY - 150, -Math.PI / 2.8, 58, 17, l2_b);
             drawSunflower(p2.endX, p2.endY, 0.85, b2);
 
             // 3. Rosa Inglesa Pastel (0.19 -> 0.32)
             const s3 = getSubProgress(0.19, 0.27);
-            const l3 = getSubProgress(0.23, 0.29);
+            const l3_a = getSubProgress(0.22, 0.28);
+            const l3_b = getSubProgress(0.24, 0.30);
             const b3 = getSubProgress(0.25, 0.32);
-            drawBotanicalStem(p3.startX, p3.startY, p3.cpX, p3.cpY, p3.endX, p3.endY, s3, 5.5);
-            drawBotanicalLeaf(baseX + 55, baseY - 145, Math.PI / 2.8, 68, 19, l3);
+            drawBotanicalStem(p3.startX, p3.startY, p3.cpX, p3.cpY, p3.endX, p3.endY, s3, 5.2);
+            drawBouquetLeaf(baseX + 45, baseY - 105, Math.PI / 2.6, 62, 18, l3_a);
+            drawBouquetLeaf(baseX + 75, baseY - 155, Math.PI / 2.8, 58, 17, l3_b);
             drawEnglishRose(p3.endX, p3.endY, 0.85, b3);
 
             // 4. Amapola Carmesí (0.28 -> 0.41)
             const s4 = getSubProgress(0.28, 0.35);
             const l4 = getSubProgress(0.32, 0.38);
             const b4 = getSubProgress(0.35, 0.41);
-            drawBotanicalStem(p4.startX, p4.startY, p4.cpX, p4.cpY, p4.endX, p4.endY, s4, 5.0);
-            drawBotanicalLeaf(baseX - 30, baseY - 100, -Math.PI / 3.2, 55, 15, l4);
+            drawBotanicalStem(p4.startX, p4.startY, p4.cpX, p4.cpY, p4.endX, p4.endY, s4, 4.8);
+            drawBouquetLeaf(baseX - 25, baseY - 90, -Math.PI / 3.0, 56, 16, l4);
             drawCrimsonPoppy(p4.endX, p4.endY, 0.80, b4);
 
             // 5. Tulipán Magenta (0.37 -> 0.50)
@@ -1824,48 +1937,79 @@
             const l5 = getSubProgress(0.41, 0.47);
             const b5 = getSubProgress(0.44, 0.50);
             drawBotanicalStem(p5.startX, p5.startY, p5.cpX, p5.cpY, p5.endX, p5.endY, s5, 4.8);
-            drawBotanicalLeaf(baseX + 30, baseY - 105, Math.PI / 3.1, 55, 15, l5);
+            drawBouquetLeaf(baseX + 25, baseY - 95, Math.PI / 3.0, 56, 16, l5);
             drawDutchTulip(p5.endX, p5.endY, 0.78, b5);
 
             // 6. Campanillas Violetas (0.46 -> 0.59)
             const s6 = getSubProgress(0.46, 0.53);
             const l6 = getSubProgress(0.50, 0.56);
             const b6 = getSubProgress(0.53, 0.59);
-            drawBotanicalStem(p6.startX, p6.startY, p6.cpX, p6.cpY, p6.endX, p6.endY, s6, 4.6);
-            drawBotanicalLeaf(baseX - 75, baseY - 90, -Math.PI / 2.4, 50, 14, l6);
-            drawLavenderBells(p6.endX, p6.endY, 0.78, b6);
+            drawBotanicalStem(p6.startX, p6.startY, p6.cpX, p6.cpY, p6.endX, p6.endY, s6, 4.4);
+            drawBouquetLeaf(baseX - 65, baseY - 75, -Math.PI / 2.3, 50, 15, l6);
+            drawLavenderBells(p6.endX, p6.endY, 0.80, b6);
 
             // 7. Loto Coral (0.55 -> 0.68)
             const s7 = getSubProgress(0.55, 0.62);
             const l7 = getSubProgress(0.59, 0.65);
             const b7 = getSubProgress(0.62, 0.68);
-            drawBotanicalStem(p7.startX, p7.startY, p7.cpX, p7.cpY, p7.endX, p7.endY, s7, 4.6);
-            drawBotanicalLeaf(baseX + 75, baseY - 95, Math.PI / 2.4, 50, 14, l7);
-            drawCoralLotus(p7.endX, p7.endY, 0.78, b7);
+            drawBotanicalStem(p7.startX, p7.startY, p7.cpX, p7.cpY, p7.endX, p7.endY, s7, 4.4);
+            drawBouquetLeaf(baseX + 65, baseY - 80, Math.PI / 2.3, 50, 15, l7);
+            drawCoralLotus(p7.endX, p7.endY, 0.80, b7);
 
             // 8. Orquídea Nácar (0.64 -> 0.77)
             const s8 = getSubProgress(0.64, 0.71);
             const l8 = getSubProgress(0.68, 0.74);
             const b8 = getSubProgress(0.71, 0.77);
-            drawBotanicalStem(p8.startX, p8.startY, p8.cpX, p8.cpY, p8.endX, p8.endY, s8, 5.0);
-            drawBotanicalLeaf(baseX - 42, baseY - 190, -Math.PI / 3.0, 60, 16, l8);
-            drawButterflyOrchid(p8.endX, p8.endY, 0.82, b8);
+            drawBotanicalStem(p8.startX, p8.startY, p8.cpX, p8.cpY, p8.endX, p8.endY, s8, 4.8);
+            drawBouquetLeaf(baseX - 35, baseY - 160, -Math.PI / 2.9, 58, 16, l8);
+            drawButterflyOrchid(p8.endX, p8.endY, 0.85, b8);
 
             // 9. No Me Olvides Celeste (0.73 -> 0.86)
             const s9 = getSubProgress(0.73, 0.80);
             const l9 = getSubProgress(0.77, 0.83);
             const b9 = getSubProgress(0.80, 0.86);
-            drawBotanicalStem(p9.startX, p9.startY, p9.cpX, p9.cpY, p9.endX, p9.endY, s9, 5.0);
-            drawBotanicalLeaf(baseX + 45, baseY - 195, Math.PI / 2.9, 60, 16, l9);
-            drawForgetMeNot(p9.endX, p9.endY, 0.82, b9);
+            drawBotanicalStem(p9.startX, p9.startY, p9.cpX, p9.cpY, p9.endX, p9.endY, s9, 4.8);
+            drawBouquetLeaf(baseX + 35, baseY - 165, Math.PI / 2.9, 58, 16, l9);
+            drawForgetMeNot(p9.endX, p9.endY, 0.85, b9);
 
             // 10. Flor de Cerezo (0.82 -> 0.96)
             const s10 = getSubProgress(0.82, 0.89);
             const l10 = getSubProgress(0.86, 0.92);
             const b10 = getSubProgress(0.89, 0.96);
-            drawBotanicalStem(p10.startX, p10.startY, p10.cpX, p10.cpY, p10.endX, p10.endY, s10, 4.4);
-            drawBotanicalLeaf(baseX + 10, baseY - 70, Math.PI / 3.5, 45, 12, l10);
-            drawCherryBlossom(p10.endX, p10.endY, 0.85, b10);
+            drawBotanicalStem(p10.startX, p10.startY, p10.cpX, p10.cpY, p10.endX, p10.endY, s10, 4.2);
+            drawBouquetLeaf(baseX - 10, baseY - 60, -Math.PI / 3.4, 48, 14, l10);
+            drawBouquetLeaf(baseX + 10, baseY - 60, Math.PI / 3.4, 48, 14, l10);
+            drawCherryBlossom(p10.endX, p10.endY, 0.88, b10);
+
+            // Base Bouquet Ribbon / Golden Wrap Collar at Stem Bundle
+            const ribbonProg = getSubProgress(0.15, 0.40);
+            if (ribbonProg > 0) {
+                ctx.save();
+                ctx.translate(baseX, baseY + 6);
+                ctx.scale(ribbonProg, ribbonProg);
+                
+                // Silk Ribbon Knot
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 36, 12, 0, 0, Math.PI * 2);
+                const gradRibbon = ctx.createLinearGradient(-36, 0, 36, 0);
+                gradRibbon.addColorStop(0, '#f43f5e');
+                gradRibbon.addColorStop(0.5, '#ec4899');
+                gradRibbon.addColorStop(1, '#f472b6');
+                ctx.fillStyle = gradRibbon;
+                ctx.shadowColor = 'rgba(236, 72, 153, 0.5)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+
+                // Gold center clasp
+                ctx.beginPath();
+                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#fde047';
+                ctx.shadowColor = '#fbbf24';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+
+                ctx.restore();
+            }
 
             if (animStarted && globalTime < 1) {
                 globalTime += 0.0036;
