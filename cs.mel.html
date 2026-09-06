@@ -1109,54 +1109,6 @@
 
             const tint = accentColor || '#ec4899';
 
-            // Green Calyx Base at stem junction
-            ctx.beginPath();
-            ctx.ellipse(0, 12, 10, 6, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#15803d';
-            ctx.fill();
-
-            // --- Layer 1: 3 Back Petals (Slightly darker, creates 3D depth) ---
-            for (let i = 0; i < 3; i++) {
-                ctx.save();
-                ctx.rotate((i * Math.PI * 2) / 3 + Math.PI / 6);
-
-                ctx.beginPath();
-                ctx.moveTo(0, 4);
-                ctx.bezierCurveTo(-18, -25, -22, -68, 0, -90);
-                ctx.bezierCurveTo(22, -68, 18, -25, 0, 4);
-
-                const gradBack = ctx.createLinearGradient(0, 4, 0, -90);
-                gradBack.addColorStop(0, '#fef08a'); // Soft yellow base
-                gradBack.addColorStop(0.25, '#f8fafc'); // White
-                gradBack.addColorStop(0.7, '#fbcfe8'); // Pastel pink
-                gradBack.addColorStop(1, tint); // Accent pink tip
-                ctx.fillStyle = gradBack;
-                ctx.shadowColor = 'rgba(0,0,0,0.15)';
-                ctx.shadowBlur = 6;
-                ctx.fill();
-
-                // Petal Mid-Rib & Vein
-                ctx.beginPath();
-                ctx.moveTo(0, 2);
-                ctx.quadraticCurveTo(-1, -45, 0, -82);
-                ctx.strokeStyle = 'rgba(236, 72, 153, 0.4)';
-                ctx.lineWidth = 1.3;
-                ctx.stroke();
-
-                ctx.restore();
-            }
-
-            // --- Layer 2: 3 Front Petals (Broader, illuminated, with freckles) ---
-        /* 1. Realistic Lilium / Oriental Lily with Layered Petals, Veins & Stippling Freckles */
-        function drawBotanicalLily(x, y, scale, progress, baseTint, accentColor) {
-            if (progress <= 0) return;
-            ctx.save();
-            ctx.translate(x, y);
-            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
-            ctx.scale(s, s);
-
-            const tint = accentColor || '#ec4899';
-
             // Green Calyx Base
             ctx.beginPath();
             ctx.ellipse(0, 12, 10, 6, 0, 0, Math.PI * 2);
