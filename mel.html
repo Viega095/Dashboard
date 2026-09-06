@@ -1147,6 +1147,53 @@
             }
 
             // --- Layer 2: 3 Front Petals (Broader, illuminated, with freckles) ---
+        /* 1. Realistic Lilium / Oriental Lily with Layered Petals, Veins & Stippling Freckles */
+        function drawBotanicalLily(x, y, scale, progress, baseTint, accentColor) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            const tint = accentColor || '#ec4899';
+
+            // Green Calyx Base
+            ctx.beginPath();
+            ctx.ellipse(0, 12, 10, 6, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#15803d';
+            ctx.fill();
+
+            // Layer 1: 3 Back Petals
+            for (let i = 0; i < 3; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 3 + Math.PI / 6);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 4);
+                ctx.bezierCurveTo(-18, -25, -22, -68, 0, -90);
+                ctx.bezierCurveTo(22, -68, 18, -25, 0, 4);
+
+                const gradBack = ctx.createLinearGradient(0, 4, 0, -90);
+                gradBack.addColorStop(0, '#fef08a');
+                gradBack.addColorStop(0.25, '#f8fafc');
+                gradBack.addColorStop(0.7, '#fbcfe8');
+                gradBack.addColorStop(1, tint);
+                ctx.fillStyle = gradBack;
+                ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(0, 2);
+                ctx.quadraticCurveTo(-1, -45, 0, -82);
+                ctx.strokeStyle = 'rgba(236, 72, 153, 0.4)';
+                ctx.lineWidth = 1.3;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // Layer 2: 3 Front Petals with Veins & Stippling Freckles
             for (let i = 0; i < 3; i++) {
                 ctx.save();
                 ctx.rotate((i * Math.PI * 2) / 3);
@@ -1157,21 +1204,20 @@
                 ctx.bezierCurveTo(25, -72, 22, -28, 0, 0);
 
                 const gradFront = ctx.createLinearGradient(0, 0, 0, -96);
-                gradFront.addColorStop(0, '#fef9c3'); // Warm yellow base
-                gradFront.addColorStop(0.2, '#ffffff'); // Pure luminous white
+                gradFront.addColorStop(0, '#fef9c3');
+                gradFront.addColorStop(0.2, '#ffffff');
                 gradFront.addColorStop(0.72, baseTint || '#fdf2f8');
-                gradFront.addColorStop(0.95, tint); // Radiant tip
+                gradFront.addColorStop(0.95, tint);
                 ctx.fillStyle = gradFront;
                 ctx.shadowColor = 'rgba(244, 114, 182, 0.35)';
                 ctx.shadowBlur = 10;
                 ctx.fill();
 
-                // Delicate edge contour
                 ctx.strokeStyle = 'rgba(244, 114, 182, 0.4)';
                 ctx.lineWidth = 1.1;
                 ctx.stroke();
 
-                // Main central vein
+                // Main vein
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.lineTo(0, -86);
@@ -1179,7 +1225,7 @@
                 ctx.lineWidth = 1.4;
                 ctx.stroke();
 
-                // Side secondary veins
+                // Secondary veins
                 for (let v = 1; v <= 4; v++) {
                     const vy = -v * 16;
                     ctx.beginPath();
@@ -1192,7 +1238,7 @@
                     ctx.stroke();
                 }
 
-                // Stippling freckles (Botanical dots near throat)
+                // Freckles
                 const freckles = [
                     { x: -4, y: -22, r: 1.1 }, { x: 4, y: -26, r: 1.2 },
                     { x: -6, y: -38, r: 1.0 }, { x: 5, y: -42, r: 1.1 },
@@ -1209,41 +1255,32 @@
                 ctx.restore();
             }
 
-            // --- 6 Arched 3D Stamens with Anthers ---
+            // Stamens with golden anthers
             for (let j = 0; j < 6; j++) {
                 ctx.save();
                 ctx.rotate((j * Math.PI * 2) / 6 + Math.PI / 12);
-                
-                // Filament (Curved stalk)
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.quadraticCurveTo(6, -20, 2, -38);
-                ctx.strokeStyle = '#d9f99d'; // Light lime
+                ctx.strokeStyle = '#d9f99d';
                 ctx.lineWidth = 1.8;
                 ctx.stroke();
 
-                // Anther (Dual pollen lobe with golden glow)
                 ctx.save();
                 ctx.translate(2, -39);
                 ctx.rotate(Math.PI / 3.5);
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 5.5, 2.2, 0, 0, Math.PI * 2);
-                ctx.fillStyle = '#ca8a04'; // Warm saffron
+                ctx.fillStyle = '#ca8a04';
                 ctx.shadowColor = '#fde047';
                 ctx.shadowBlur = 6;
-                ctx.fill();
-
-                // Inner pollen shadow
-                ctx.beginPath();
-                ctx.ellipse(0, 0, 3.5, 1.2, 0, 0, Math.PI * 2);
-                ctx.fillStyle = '#92400e';
                 ctx.fill();
                 ctx.restore();
 
                 ctx.restore();
             }
 
-            // Central Pistil (Longer green style with 3-lobed stigma)
+            // Central Pistil
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -1252,7 +1289,6 @@
             ctx.lineWidth = 2.4;
             ctx.stroke();
 
-            // Stigma head
             ctx.beginPath();
             ctx.arc(0, -45, 3.8, 0, Math.PI * 2);
             ctx.fillStyle = '#22c55e';
@@ -1264,7 +1300,7 @@
             ctx.restore();
         }
 
-        /* 2. Velvet Crimson Rose / Peony with Multi-layer Petals & Golden Core */
+        /* 2. Velvet Crimson Rose / Poppy */
         function drawVelvetRedFlower(x, y, scale, progress) {
             if (progress <= 0) return;
             ctx.save();
@@ -1272,7 +1308,6 @@
             const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
             ctx.scale(s, s);
 
-            // Layer 1: 5 Outer Velvet Petals
             for (let i = 0; i < 5; i++) {
                 ctx.save();
                 ctx.rotate((i * Math.PI * 2) / 5);
@@ -1292,23 +1327,12 @@
                 ctx.shadowColor = 'rgba(220, 38, 38, 0.4)';
                 ctx.shadowBlur = 12;
                 ctx.fill();
-
-                // Petal texture veins
-                ctx.beginPath();
-                ctx.moveTo(0, -5);
-                ctx.lineTo(0, -52);
-                ctx.strokeStyle = 'rgba(254, 202, 202, 0.25)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
                 ctx.restore();
             }
 
-            // Layer 2: 5 Inner Alternated Petals
             for (let j = 0; j < 5; j++) {
                 ctx.save();
                 ctx.rotate((j * Math.PI * 2) / 5 + Math.PI / 5);
-
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-16, -15, -18, -42, 0, -46);
@@ -1320,11 +1344,9 @@
                 gradInner.addColorStop(1, '#fca5a5');
                 ctx.fillStyle = gradInner;
                 ctx.fill();
-
                 ctx.restore();
             }
 
-            // Crown of Golden Micro-Stamens
             for (let k = 0; k < 12; k++) {
                 ctx.save();
                 ctx.rotate((k * Math.PI * 2) / 12);
@@ -1344,7 +1366,6 @@
                 ctx.restore();
             }
 
-            // Central Luminous Pistil Core
             ctx.beginPath();
             ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
             ctx.fillStyle = '#eab308';
@@ -1355,7 +1376,7 @@
             ctx.restore();
         }
 
-        /* 3. Deep Rose / Imperial Tulip Bud with Overlapping Petal Layers */
+        /* 3. Deep Rose / Imperial Tulip Bud */
         function drawVelvetTulip(x, y, scale, progress) {
             if (progress <= 0) return;
             ctx.save();
@@ -1363,7 +1384,6 @@
             const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
             ctx.scale(s, s);
 
-            // Green Base Calyx
             ctx.beginPath();
             ctx.moveTo(-10, 8);
             ctx.quadraticCurveTo(0, 16, 10, 8);
@@ -1371,7 +1391,7 @@
             ctx.fillStyle = '#166534';
             ctx.fill();
 
-            // --- Layer 1: Back Inner Petal (Deep Shadow) ---
+            // Back Petal
             ctx.beginPath();
             ctx.moveTo(0, 5);
             ctx.bezierCurveTo(-18, -10, -20, -55, 0, -68);
@@ -1383,7 +1403,7 @@
             ctx.fillStyle = gradBack;
             ctx.fill();
 
-            // --- Layer 2: Left Wing Petal ---
+            // Left Wing
             ctx.beginPath();
             ctx.moveTo(-4, 6);
             ctx.bezierCurveTo(-28, -2, -32, -45, -12, -62);
@@ -1395,7 +1415,7 @@
             ctx.fillStyle = gradLeft;
             ctx.fill();
 
-            // --- Layer 3: Right Wing Petal ---
+            // Right Wing
             ctx.beginPath();
             ctx.moveTo(4, 6);
             ctx.bezierCurveTo(28, -2, 32, -45, 12, -62);
@@ -1407,13 +1427,12 @@
             ctx.fillStyle = gradRight;
             ctx.fill();
 
-            // --- Layer 4: Front Central Overlapping Petal with Velvet Highlight ---
+            // Front Petal
             ctx.beginPath();
             ctx.moveTo(-10, 5);
             ctx.bezierCurveTo(-22, -18, -18, -52, 0, -64);
             ctx.bezierCurveTo(18, -52, 22, -18, 10, 5);
             ctx.closePath();
-
             const gradCenter = ctx.createLinearGradient(0, 5, 0, -64);
             gradCenter.addColorStop(0, '#881337');
             gradCenter.addColorStop(0.4, '#be123c');
@@ -1424,18 +1443,340 @@
             ctx.shadowBlur = 10;
             ctx.fill();
 
-            // Tulip Sheen Line
+            ctx.restore();
+        }
+
+        /* 4. Golden Sunflower / Daisy with Radiant Petals & Chocolate Core */
+        function drawGoldenDaisy(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // 12 Radiant Golden Petals
+            const numPetals = 12;
+            for (let i = 0; i < numPetals; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / numPetals);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-9, -15, -10, -42, 0, -55);
+                ctx.bezierCurveTo(10, -42, 9, -15, 0, 0);
+
+                const gradPetal = ctx.createLinearGradient(0, 0, 0, -55);
+                gradPetal.addColorStop(0, '#d97706'); // Warm amber base
+                gradPetal.addColorStop(0.4, '#fbbf24'); // Golden yellow
+                gradPetal.addColorStop(0.9, '#fef08a'); // Bright tip
+                gradPetal.addColorStop(1, '#ffffff'); // Luminous highlight
+                ctx.fillStyle = gradPetal;
+                ctx.shadowColor = 'rgba(251, 191, 36, 0.4)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+
+                // Fine central petal groove
+                ctx.beginPath();
+                ctx.moveTo(0, -2);
+                ctx.lineTo(0, -48);
+                ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // Dark Chocolate Velvet Disk Core
             ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.quadraticCurveTo(3, -30, 0, -58);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            ctx.arc(0, 0, 16, 0, Math.PI * 2);
+            const gradCore = ctx.createRadialGradient(0, 0, 2, 0, 0, 16);
+            gradCore.addColorStop(0, '#451a03'); // Deep espresso
+            gradCore.addColorStop(0.65, '#78350f'); // Warm amber brown
+            gradCore.addColorStop(1, '#b45309'); // Golden rim
+            ctx.fillStyle = gradCore;
+            ctx.shadowColor = 'rgba(69, 26, 3, 0.5)';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+
+            // Ring of Golden Pollen Florets
+            for (let p = 0; p < 12; p++) {
+                const angle = (p * Math.PI * 2) / 12;
+                const px = Math.cos(angle) * 11;
+                const py = Math.sin(angle) * 11;
+                ctx.beginPath();
+                ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+                ctx.fillStyle = '#fde047';
+                ctx.shadowColor = '#fef08a';
+                ctx.shadowBlur = 4;
+                ctx.fill();
+            }
 
             ctx.restore();
         }
 
-        /* 4. Realistic Botanical Leaf with Ribs and Veins */
+        /* 5. Wild Violet / Lavender Bellflower with Glowing Pistils */
+        function drawVioletBellflower(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // 5 Flared Star Petals
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 5);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-15, -16, -16, -42, 0, -52);
+                ctx.bezierCurveTo(16, -42, 15, -16, 0, 0);
+
+                const gradViolet = ctx.createRadialGradient(0, -22, 4, 0, -22, 35);
+                gradViolet.addColorStop(0, '#e9d5ff'); // Soft lavender center
+                gradViolet.addColorStop(0.4, '#a855f7'); // Rich purple
+                gradViolet.addColorStop(0.85, '#7e22ce'); // Royal violet
+                gradViolet.addColorStop(1, '#581c87'); // Deep indigo rim
+                ctx.fillStyle = gradViolet;
+                ctx.shadowColor = 'rgba(168, 85, 247, 0.5)';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+
+                // Violet Vein
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -46);
+                ctx.strokeStyle = 'rgba(233, 213, 255, 0.4)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // White & Yellow Glowing Core
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#fef9c3';
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+
+            for (let j = 0; j < 5; j++) {
+                ctx.save();
+                ctx.rotate((j * Math.PI * 2) / 5 + Math.PI / 5);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -12);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, -13, 2, 0, Math.PI * 2);
+                ctx.fillStyle = '#fde047';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        /* 6. Romantic English Pastel Rose / Peony with Ruffled Petals */
+        function drawPastelPeony(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // Layer 1: Outer 6 Petals (Peach/Rose)
+            for (let i = 0; i < 6; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 6);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-22, -18, -25, -48, 0, -56);
+                ctx.bezierCurveTo(25, -48, 22, -18, 0, 0);
+
+                const grad1 = ctx.createLinearGradient(0, 0, 0, -56);
+                grad1.addColorStop(0, '#fbcfe8');
+                grad1.addColorStop(0.5, '#f472b6');
+                grad1.addColorStop(1, '#fda4af');
+                ctx.fillStyle = grad1;
+                ctx.shadowColor = 'rgba(244, 114, 182, 0.35)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Layer 2: Middle 6 Petals
+            for (let j = 0; j < 6; j++) {
+                ctx.save();
+                ctx.rotate((j * Math.PI * 2) / 6 + Math.PI / 6);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-16, -14, -18, -38, 0, -44);
+                ctx.bezierCurveTo(18, -38, 16, -14, 0, 0);
+
+                const grad2 = ctx.createLinearGradient(0, 0, 0, -44);
+                grad2.addColorStop(0, '#f43f5e');
+                grad2.addColorStop(0.6, '#fb7185');
+                grad2.addColorStop(1, '#fef08a');
+                ctx.fillStyle = grad2;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Layer 3: Swirling Center Core
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.shadowColor = '#fde047';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        /* 7. Forget-me-not / Sky Blue Blossom */
+        function drawSkyBlueBlossom(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // 5 Rounded Sky Blue Petals
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 5);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-14, -14, -15, -36, 0, -44);
+                ctx.bezierCurveTo(15, -36, 14, -14, 0, 0);
+
+                const gradBlue = ctx.createRadialGradient(0, -18, 3, 0, -18, 30);
+                gradBlue.addColorStop(0, '#e0f2fe'); // Ice white blue
+                gradBlue.addColorStop(0.5, '#38bdf8'); // Sky blue
+                gradBlue.addColorStop(1, '#0284c7'); // Ocean blue
+                ctx.fillStyle = gradBlue;
+                ctx.shadowColor = 'rgba(56, 189, 248, 0.45)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            // Yellow Star Eye
+            ctx.beginPath();
+            ctx.arc(0, 0, 7, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.shadowColor = '#facc15';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        /* 8. Delicate Peach / Coral Orchid Blossom */
+        function drawPeachOrchid(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            // Upper 3 Sepals
+            for (let i = 0; i < 3; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 3 - Math.PI / 2);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-14, -18, -14, -48, 0, -56);
+                ctx.bezierCurveTo(14, -48, 14, -18, 0, 0);
+
+                const gradSepal = ctx.createLinearGradient(0, 0, 0, -56);
+                gradSepal.addColorStop(0, '#fff7ed');
+                gradSepal.addColorStop(0.5, '#fed7aa');
+                gradSepal.addColorStop(1, '#fb923c');
+                ctx.fillStyle = gradSepal;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // 2 Lateral Broad Petals
+            for (let side of [-1, 1]) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(side * 28, -8, side * 34, -38, side * 14, -48);
+                ctx.bezierCurveTo(side * 6, -30, side * 4, -12, 0, 0);
+
+                const gradPetal = ctx.createLinearGradient(0, 0, side * 30, -40);
+                gradPetal.addColorStop(0, '#ffffff');
+                gradPetal.addColorStop(0.5, '#ffedd5');
+                gradPetal.addColorStop(1, '#f97316');
+                ctx.fillStyle = gradPetal;
+                ctx.shadowColor = 'rgba(249, 115, 22, 0.35)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Central Orchid Lip (Labellum)
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-16, 12, -18, 32, 0, 38);
+            ctx.bezierCurveTo(18, 32, 16, 12, 0, 0);
+            const gradLip = ctx.createLinearGradient(0, 0, 0, 38);
+            gradLip.addColorStop(0, '#fbbf24');
+            gradLip.addColorStop(0.5, '#ea580c');
+            gradLip.addColorStop(1, '#be123c');
+            ctx.fillStyle = gradLip;
+            ctx.shadowColor = 'rgba(234, 88, 12, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        /* 9. Glossy Golden Buttercup */
+        function drawButtercup(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            const s = scale * Math.min(1, Math.sin(progress * Math.PI * 0.5));
+            ctx.scale(s, s);
+
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / 5);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-14, -12, -16, -34, 0, -40);
+                ctx.bezierCurveTo(16, -34, 14, -12, 0, 0);
+
+                const grad = ctx.createRadialGradient(0, -18, 2, 0, -18, 26);
+                grad.addColorStop(0, '#fef08a');
+                grad.addColorStop(0.6, '#facc15');
+                grad.addColorStop(1, '#ca8a04');
+                ctx.fillStyle = grad;
+                ctx.shadowColor = 'rgba(250, 204, 21, 0.4)';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#65a30d';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        /* 10. Realistic Botanical Leaf with Ribs and Veins */
         function drawBotanicalLeaf(x, y, angle, length, width, progress) {
             if (progress <= 0) return;
             ctx.save();
@@ -1444,28 +1785,26 @@
             const s = Math.min(1, Math.sin(progress * Math.PI * 0.5));
             ctx.scale(s, s);
 
-            // Leaf Body
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.bezierCurveTo(-width * 0.95, -length * 0.35, -width * 0.75, -length * 0.75, 0, -length);
             ctx.bezierCurveTo(width * 0.75, -length * 0.75, width * 0.95, -length * 0.35, 0, 0);
 
             const grad = ctx.createLinearGradient(0, 0, 0, -length);
-            grad.addColorStop(0, '#064e3b'); // Deep forest green base
-            grad.addColorStop(0.4, '#15803d'); // Vibrant emerald
-            grad.addColorStop(0.85, '#22c55e'); // Fresh green
-            grad.addColorStop(1, '#86efac'); // Tender lime tip
+            grad.addColorStop(0, '#064e3b');
+            grad.addColorStop(0.4, '#15803d');
+            grad.addColorStop(0.85, '#22c55e');
+            grad.addColorStop(1, '#86efac');
             ctx.fillStyle = grad;
             ctx.shadowColor = 'rgba(21, 128, 61, 0.35)';
             ctx.shadowBlur = 8;
             ctx.fill();
 
-            // Leaf Contour Edge
             ctx.strokeStyle = 'rgba(74, 222, 128, 0.3)';
             ctx.lineWidth = 1;
             ctx.stroke();
 
-            // Central Main Rib
+            // Central Rib
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.quadraticCurveTo(1, -length * 0.5, 0, -length * 0.95);
@@ -1473,13 +1812,12 @@
             ctx.lineWidth = 1.6;
             ctx.stroke();
 
-            // Secondary Curved Veins
-            const veinPairs = 5;
+            // Side Veins
+            const veinPairs = 4;
             for (let v = 1; v <= veinPairs; v++) {
                 const py = -length * (v / (veinPairs + 1));
                 const span = width * 0.65 * (1 - (v / (veinPairs + 2)));
                 
-                // Left vein
                 ctx.beginPath();
                 ctx.moveTo(0, py);
                 ctx.quadraticCurveTo(-span * 0.5, py - length * 0.04, -span, py - length * 0.08);
@@ -1487,7 +1825,6 @@
                 ctx.lineWidth = 0.9;
                 ctx.stroke();
 
-                // Right vein
                 ctx.beginPath();
                 ctx.moveTo(0, py);
                 ctx.quadraticCurveTo(span * 0.5, py - length * 0.04, span, py - length * 0.08);
@@ -1499,7 +1836,7 @@
             ctx.restore();
         }
 
-        /* 5. 3D Volumetric Botanical Stem with Light & Shadow */
+        /* 11. 3D Volumetric Botanical Stem */
         function drawBotanicalStem(startX, startY, cpX, cpY, endX, endY, progress, thickness) {
             if (progress <= 0) return;
             ctx.save();
@@ -1509,39 +1846,39 @@
             const curCpX = (1 - t) * startX + t * cpX;
             const curCpY = (1 - t) * startY + t * cpY;
 
-            // Pass 1: Stem Deep Shadow / Base
+            // Base Shadow
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.quadraticCurveTo(curCpX, curCpY, curEndX, curEndY);
             ctx.strokeStyle = '#064e3b';
-            ctx.lineWidth = (thickness || 5.5) + 1.2;
+            ctx.lineWidth = (thickness || 5) + 1.2;
             ctx.lineCap = 'round';
             ctx.stroke();
 
-            // Pass 2: Main Emerald Stem Body
+            // Main Emerald
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.quadraticCurveTo(curCpX, curCpY, curEndX, curEndY);
             ctx.strokeStyle = '#15803d';
-            ctx.lineWidth = thickness || 5.5;
+            ctx.lineWidth = thickness || 5;
             ctx.lineCap = 'round';
             ctx.shadowColor = 'rgba(21, 128, 61, 0.45)';
             ctx.shadowBlur = 8;
             ctx.stroke();
 
-            // Pass 3: Specular Highlight Rim (Creates 3D cylindrical volume)
+            // Highlight Rim
             ctx.beginPath();
             ctx.moveTo(startX - 1, startY);
             ctx.quadraticCurveTo(curCpX - 1, curCpY, curEndX - 0.8, curEndY);
             ctx.strokeStyle = 'rgba(134, 239, 172, 0.45)';
-            ctx.lineWidth = Math.max(1, (thickness || 5.5) * 0.32);
+            ctx.lineWidth = Math.max(1, (thickness || 5) * 0.32);
             ctx.stroke();
 
             ctx.restore();
         }
 
         // ==========================================
-        // SEQUENTIAL ANIMATION TIMELINE ENGINE
+        // 10 FLOWERS SEQUENTIAL ANIMATION TIMELINE
         // ==========================================
         function animateFrame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1551,73 +1888,107 @@
             const baseX = canvas.width / 2;
             const baseY = canvas.height * 0.88;
 
-            // Target Positions adjusted for balanced mobile screen viewing
-            const fCenter = { x: baseX, y: baseY - 330, cpX: baseX - 8, cpY: baseY - 165 };
-            const fLeft   = { x: baseX - 90, y: baseY - 270, cpX: baseX - 55, cpY: baseY - 145 };
-            const fRight  = { x: baseX + 90, y: baseY - 280, cpX: baseX + 55, cpY: baseY - 145 };
-            const fRed    = { x: baseX + 45, y: baseY - 230, cpX: baseX + 25, cpY: baseY - 115 };
-            const fTulip  = { x: baseX + 130, y: baseY - 315, cpX: baseX + 80, cpY: baseY - 165 };
+            // 10 Balanced Plant Targets (Harmonious bouquet across the whole screen)
+            const f1  = { x: baseX,        y: baseY - 350, cpX: baseX - 10, cpY: baseY - 180 }; // Grand Center Lily
+            const f2  = { x: baseX - 110,  y: baseY - 280, cpX: baseX - 65, cpY: baseY - 150 }; // Golden Daisy Left
+            const f3  = { x: baseX + 105,  y: baseY - 290, cpX: baseX + 65, cpY: baseY - 150 }; // Pastel Peony Right
+            const f4  = { x: baseX - 45,   y: baseY - 230, cpX: baseX - 30, cpY: baseY - 120 }; // Red Velvet Inner-Left
+            const f5  = { x: baseX + 50,   y: baseY - 235, cpX: baseX + 30, cpY: baseY - 120 }; // Magenta Tulip Inner-Right
+            const f6  = { x: baseX - 145,  y: baseY - 210, cpX: baseX - 90, cpY: baseY - 110 }; // Violet Bellflower Outer-Left
+            const f7  = { x: baseX + 145,  y: baseY - 215, cpX: baseX + 90, cpY: baseY - 110 }; // Ruby Lily Outer-Right
+            const f8  = { x: baseX - 75,   y: baseY - 340, cpX: baseX - 40, cpY: baseY - 200 }; // Peach Orchid High-Left
+            const f9  = { x: baseX + 75,   y: baseY - 345, cpX: baseX + 40, cpY: baseY - 200 }; // Sky Blue Blossom High-Right
+            const f10 = { x: baseX + 5,    y: baseY - 180, cpX: baseX + 2,  cpY: baseY - 90  }; // Golden Buttercup Front-Center
 
-            // Sequential Helper: maps a sub-range [start, end] of globalTime (0..1) to (0..1)
+            // Sequential Progress Helper
             function getSubProgress(start, end) {
                 if (globalTime < start) return 0;
                 if (globalTime >= end) return 1;
                 return (globalTime - start) / (end - start);
             }
 
-            // --- STEM 1: Center Grand Lily (0.00 -> 0.22) ---
-            const s1_grow = getSubProgress(0.00, 0.13);
-            const l1_leafA = getSubProgress(0.06, 0.15);
-            const l1_leafB = getSubProgress(0.10, 0.18);
-            const b1_bloom = getSubProgress(0.12, 0.22);
+            // 1. Grand Center Lily (0.00 -> 0.14)
+            const s1 = getSubProgress(0.00, 0.08);
+            const l1 = getSubProgress(0.04, 0.11);
+            const b1 = getSubProgress(0.07, 0.14);
+            drawBotanicalStem(baseX, baseY, f1.cpX, f1.cpY, f1.x, f1.y, s1, 6.5);
+            drawBotanicalLeaf(baseX - 16, baseY - 155, -Math.PI / 3.4, 75, 20, l1);
+            drawBotanicalLily(f1.x, f1.y, 0.95, b1, '#ffffff', '#ec4899');
 
-            drawBotanicalStem(baseX, baseY, fCenter.cpX, fCenter.cpY, fCenter.x, fCenter.y, s1_grow, 6.8);
-            drawBotanicalLeaf(baseX - 18, baseY - 145, -Math.PI / 3.4, 78, 22, l1_leafA);
-            drawBotanicalLeaf(baseX + 16, baseY - 215, Math.PI / 3.2, 70, 20, l1_leafB);
-            drawBotanicalLily(fCenter.x, fCenter.y, 0.98, b1_bloom, '#ffffff', '#ec4899');
+            // 2. Golden Daisy Left (0.09 -> 0.23)
+            const s2 = getSubProgress(0.09, 0.17);
+            const l2 = getSubProgress(0.13, 0.20);
+            const b2 = getSubProgress(0.16, 0.23);
+            drawBotanicalStem(baseX, baseY, f2.cpX, f2.cpY, f2.x, f2.y, s2, 5.5);
+            drawBotanicalLeaf(baseX - 55, baseY - 160, -Math.PI / 2.7, 65, 18, l2);
+            drawGoldenDaisy(f2.x, f2.y, 0.85, b2);
 
-            // --- STEM 2: Left White/Blush Lily (0.20 -> 0.42) ---
-            const s2_grow = getSubProgress(0.20, 0.33);
-            const l2_leafA = getSubProgress(0.25, 0.36);
-            const l2_leafB = getSubProgress(0.28, 0.39);
-            const b2_bloom = getSubProgress(0.30, 0.42);
+            // 3. Pastel Peony Right (0.19 -> 0.32)
+            const s3 = getSubProgress(0.19, 0.27);
+            const l3 = getSubProgress(0.23, 0.29);
+            const b3 = getSubProgress(0.25, 0.32);
+            drawBotanicalStem(baseX, baseY, f3.cpX, f3.cpY, f3.x, f3.y, s3, 5.5);
+            drawBotanicalLeaf(baseX + 55, baseY - 165, Math.PI / 2.8, 68, 19, l3);
+            drawPastelPeony(f3.x, f3.y, 0.85, b3);
 
-            drawBotanicalStem(baseX, baseY, fLeft.cpX, fLeft.cpY, fLeft.x, fLeft.y, s2_grow, 5.8);
-            drawBotanicalLeaf(baseX - 45, baseY - 185, -Math.PI / 2.7, 68, 19, l2_leafA);
-            drawBotanicalLeaf(baseX - 25, baseY - 115, -Math.PI / 3.8, 62, 17, l2_leafB);
-            drawBotanicalLily(fLeft.x, fLeft.y, 0.82, b2_bloom, '#fdf2f8', '#f43f5e');
+            // 4. Red Velvet Inner-Left (0.28 -> 0.41)
+            const s4 = getSubProgress(0.28, 0.35);
+            const l4 = getSubProgress(0.32, 0.38);
+            const b4 = getSubProgress(0.35, 0.41);
+            drawBotanicalStem(baseX, baseY, f4.cpX, f4.cpY, f4.x, f4.y, s4, 5.0);
+            drawBotanicalLeaf(baseX - 25, baseY - 120, -Math.PI / 3.2, 60, 16, l4);
+            drawVelvetRedFlower(f4.x, f4.y, 0.78, b4);
 
-            // --- STEM 3: Right Grand Lily (0.40 -> 0.62) ---
-            const s3_grow = getSubProgress(0.40, 0.53);
-            const l3_leafA = getSubProgress(0.45, 0.56);
-            const l3_leafB = getSubProgress(0.48, 0.59);
-            const b3_bloom = getSubProgress(0.50, 0.62);
+            // 5. Magenta Tulip Inner-Right (0.37 -> 0.50)
+            const s5 = getSubProgress(0.37, 0.44);
+            const l5 = getSubProgress(0.41, 0.47);
+            const b5 = getSubProgress(0.44, 0.50);
+            drawBotanicalStem(baseX, baseY, f5.cpX, f5.cpY, f5.x, f5.y, s5, 4.8);
+            drawBotanicalLeaf(baseX + 28, baseY - 125, Math.PI / 3.1, 62, 17, l5);
+            drawVelvetTulip(f5.x, f5.y, 0.78, b5);
 
-            drawBotanicalStem(baseX, baseY, fRight.cpX, fRight.cpY, fRight.x, fRight.y, s3_grow, 5.8);
-            drawBotanicalLeaf(baseX + 45, baseY - 190, Math.PI / 2.8, 70, 20, l3_leafA);
-            drawBotanicalLeaf(baseX + 28, baseY - 120, Math.PI / 3.6, 62, 17, l3_leafB);
-            drawBotanicalLily(fRight.x, fRight.y, 0.85, b3_bloom, '#ffffff', '#f472b6');
+            // 6. Violet Bellflower Outer-Left (0.46 -> 0.59)
+            const s6 = getSubProgress(0.46, 0.53);
+            const l6 = getSubProgress(0.50, 0.56);
+            const b6 = getSubProgress(0.53, 0.59);
+            drawBotanicalStem(baseX, baseY, f6.cpX, f6.cpY, f6.x, f6.y, s6, 4.6);
+            drawBotanicalLeaf(baseX - 75, baseY - 120, -Math.PI / 2.4, 55, 15, l6);
+            drawVioletBellflower(f6.x, f6.y, 0.75, b6);
 
-            // --- STEM 4: Red Velvet Flower (0.58 -> 0.78) ---
-            const s4_grow = getSubProgress(0.58, 0.69);
-            const l4_leaf = getSubProgress(0.63, 0.73);
-            const b4_bloom = getSubProgress(0.67, 0.78);
+            // 7. Ruby Lily Outer-Right (0.55 -> 0.68)
+            const s7 = getSubProgress(0.55, 0.62);
+            const l7 = getSubProgress(0.59, 0.65);
+            const b7 = getSubProgress(0.62, 0.68);
+            drawBotanicalStem(baseX, baseY, f7.cpX, f7.cpY, f7.x, f7.y, s7, 4.6);
+            drawBotanicalLeaf(baseX + 80, baseY - 125, Math.PI / 2.4, 58, 16, l7);
+            drawBotanicalLily(f7.x, f7.y, 0.75, b7, '#ffe4e6', '#f43f5e');
 
-            drawBotanicalStem(baseX, baseY, fRed.cpX, fRed.cpY, fRed.x, fRed.y, s4_grow, 5.2);
-            drawBotanicalLeaf(baseX + 25, baseY - 130, Math.PI / 3.1, 72, 21, l4_leaf);
-            drawVelvetRedFlower(fRed.x, fRed.y, 0.82, b4_bloom);
+            // 8. Peach Orchid High-Left (0.64 -> 0.77)
+            const s8 = getSubProgress(0.64, 0.71);
+            const l8 = getSubProgress(0.68, 0.74);
+            const b8 = getSubProgress(0.71, 0.77);
+            drawBotanicalStem(baseX, baseY, f8.cpX, f8.cpY, f8.x, f8.y, s8, 5.0);
+            drawBotanicalLeaf(baseX - 42, baseY - 220, -Math.PI / 3.0, 64, 17, l8);
+            drawPeachOrchid(f8.x, f8.y, 0.82, b8);
 
-            // --- STEM 5: Deep Magenta Tulip (0.74 -> 0.95) ---
-            const s5_grow = getSubProgress(0.74, 0.85);
-            const l5_leaf = getSubProgress(0.79, 0.89);
-            const b5_bloom = getSubProgress(0.83, 0.95);
+            // 9. Sky Blue Blossom High-Right (0.73 -> 0.86)
+            const s9 = getSubProgress(0.73, 0.80);
+            const l9 = getSubProgress(0.77, 0.83);
+            const b9 = getSubProgress(0.80, 0.86);
+            drawBotanicalStem(baseX, baseY, f9.cpX, f9.cpY, f9.x, f9.y, s9, 5.0);
+            drawBotanicalLeaf(baseX + 45, baseY - 225, Math.PI / 2.9, 64, 17, l9);
+            drawSkyBlueBlossom(f9.x, f9.y, 0.82, b9);
 
-            drawBotanicalStem(baseX, baseY, fTulip.cpX, fTulip.cpY, fTulip.x, fTulip.y, s5_grow, 5.0);
-            drawBotanicalLeaf(baseX + 72, baseY - 220, Math.PI / 2.5, 64, 18, l5_leaf);
-            drawVelvetTulip(fTulip.x, fTulip.y, 0.78, b5_bloom);
+            // 10. Golden Buttercup Front-Center (0.82 -> 0.96)
+            const s10 = getSubProgress(0.82, 0.89);
+            const l10 = getSubProgress(0.86, 0.92);
+            const b10 = getSubProgress(0.89, 0.96);
+            drawBotanicalStem(baseX, baseY, f10.cpX, f10.cpY, f10.x, f10.y, s10, 4.4);
+            drawBotanicalLeaf(baseX + 12, baseY - 100, Math.PI / 3.5, 52, 14, l10);
+            drawButtercup(f10.x, f10.y, 0.80, b10);
 
             if (animStarted && globalTime < 1) {
-                globalTime += 0.0035;
+                globalTime += 0.0036;
                 requestAnimationFrame(animateFrame);
             } else if (animStarted && globalTime >= 1) {
                 // Show "Abrir Carta" button with celebratory confetti
@@ -1626,10 +1997,10 @@
                     btnBox.style.display = 'block';
                     if (typeof confetti === 'function') {
                         confetti({
-                            particleCount: 80,
-                            spread: 70,
+                            particleCount: 90,
+                            spread: 75,
                             origin: { y: 0.55 },
-                            colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff', '#ec4899']
+                            colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff', '#38bdf8', '#a855f7']
                         });
                     }
                 }
