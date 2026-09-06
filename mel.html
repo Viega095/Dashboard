@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-    <!-- YouTube IFrame API for 100% Guaranteed Audio Playback on iOS & Android -->
+    <!-- YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
@@ -50,7 +50,7 @@
             padding: 1rem;
         }
 
-        /* Ambient Glow & Starry Night */
+        /* Ambient Glow & Starry Background */
         .ambient-bg {
             position: fixed;
             top: 0;
@@ -115,7 +115,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.78);
             backdrop-filter: blur(8px);
             z-index: 99999;
             display: flex;
@@ -254,7 +254,7 @@
         }
 
         /* ==========================================
-           STAGE 0: HAND-DRAWN BLOOMING FLOWERS (VIRAL)
+           STAGE 0: CANVAS BLOOMING FLOWERS (REALISTIC & EXACT)
            ========================================== */
         .flowers-stage-wrapper {
             position: fixed;
@@ -266,74 +266,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: center;
             pointer-events: auto;
-            transition: opacity 1s ease, transform 1s ease;
+            transition: opacity 0.8s ease, transform 0.8s ease;
             overflow: hidden;
         }
 
         .flowers-stage-wrapper.fade-out {
             opacity: 0;
             pointer-events: none;
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
-        .flower-svg-main {
-            width: 100%;
-            max-width: 440px;
-            height: 75vh;
-            max-height: 560px;
-        }
-
-        /* SVG Bloom Animation Paths */
-        .stem-path {
-            stroke-dasharray: 600;
-            stroke-dashoffset: 600;
-            transition: stroke-dashoffset 2.6s cubic-bezier(0.3, 0, 0.2, 1);
-        }
-
-        .leaf-path {
-            transform-origin: center;
-            transform: scale(0);
-            opacity: 0;
-            transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
-        }
-
-        .flower-cluster {
-            transform-origin: center;
-            transform: scale(0) rotate(-40deg);
-            opacity: 0;
-            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
-        }
-
-        .blossom-active .stem-path { stroke-dashoffset: 0; }
-        .blossom-active .s-center { transition-delay: 0.1s; }
-        .blossom-active .s-left { transition-delay: 0.5s; }
-        .blossom-active .s-right { transition-delay: 0.8s; }
-        .blossom-active .s-far-l { transition-delay: 1.1s; }
-        .blossom-active .s-far-r { transition-delay: 1.4s; }
-
-        .blossom-active .leaf-path { transform: scale(1); opacity: 1; }
-        .blossom-active .l-1 { transition-delay: 1.2s; }
-        .blossom-active .l-2 { transition-delay: 1.5s; }
-        .blossom-active .l-3 { transition-delay: 1.8s; }
-        .blossom-active .l-4 { transition-delay: 2.1s; }
-
-        .blossom-active .flower-cluster { transform: scale(1) rotate(0deg); opacity: 1; }
-        .blossom-active .f-center { transition-delay: 2.4s; }
-        .blossom-active .f-left { transition-delay: 2.8s; }
-        .blossom-active .f-right { transition-delay: 3.2s; }
-        .blossom-active .f-far-l { transition-delay: 3.6s; }
-        .blossom-active .f-far-r { transition-delay: 4.0s; }
-
-        .glow-bloom {
-            filter: drop-shadow(0 0 14px rgba(251, 113, 133, 0.6)) drop-shadow(0 0 28px rgba(251, 191, 36, 0.35));
+        #flowers-canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
 
         .see-letter-btn-box {
             position: absolute;
-            bottom: 30px;
-            z-index: 50;
+            bottom: 35px;
+            z-index: 60;
             display: none;
             animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -342,15 +296,24 @@
             background: linear-gradient(135deg, #f472b6, #ec4899);
             color: #fff;
             border: none;
-            padding: 0.95rem 2rem;
+            padding: 0.95rem 2.2rem;
             border-radius: 99px;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 30px rgba(236, 72, 153, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.55rem;
+            animation: heartBeat 2s infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.06); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
         }
 
         /* ==========================================
@@ -409,14 +372,6 @@
             animation: heartBeat 1.8s infinite;
         }
 
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            14% { transform: scale(1.1); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.15); }
-            70% { transform: scale(1); }
-        }
-
         .envelope-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.85rem;
@@ -458,7 +413,7 @@
 
         @keyframes unfoldContent {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .romantic-letter {
@@ -771,7 +726,6 @@
             cursor: pointer;
         }
 
-        /* Invisible YouTube Player */
         #youtube-audio-player {
             position: absolute;
             top: -9999px;
@@ -791,7 +745,7 @@
         <div class="glow-sphere glow-2"></div>
     </div>
 
-    <!-- YouTube Audio Player for 100% Reliable Playback (The Strokes - Selfless) -->
+    <!-- YouTube Audio Player (The Strokes) -->
     <div id="youtube-audio-player"></div>
 
     <!-- HTML5 Audio Fallback -->
@@ -830,98 +784,11 @@
     </div>
 
     <!-- ==========================================
-         STAGE 0: HAND-DRAWN BLOOMING FLOWERS STAGE
+         STAGE 0: CANVAS BLOOMING FLOWERS STAGE
          ========================================== -->
     <div class="flowers-stage-wrapper" id="flowers-stage">
-        <!-- Botanical Hand-Drawn SVG Flowers connected directly to stems -->
-        <svg class="flower-svg-main glow-bloom" viewBox="0 0 400 550" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <radialGradient id="grad-lily" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#fff" />
-                    <stop offset="60%" stop-color="#fdf2f8" />
-                    <stop offset="100%" stop-color="#f472b6" />
-                </radialGradient>
-                <radialGradient id="grad-center" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#fef08a" />
-                    <stop offset="70%" stop-color="#fbbf24" />
-                    <stop offset="100%" stop-color="#f59e0b" />
-                </radialGradient>
-                <radialGradient id="grad-rose" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#f43f5e" />
-                    <stop offset="80%" stop-color="#be123c" />
-                    <stop offset="100%" stop-color="#881337" />
-                </radialGradient>
-            </defs>
+        <canvas id="flowers-canvas"></canvas>
 
-            <!-- 1. Stems (Growing from bottom x:200 y:540) -->
-            <path class="stem-path s-center" d="M200 540 Q195 360 200 190" stroke="#15803d" stroke-width="7" stroke-linecap="round"/>
-            <path class="stem-path s-left" d="M200 540 Q180 390 120 260" stroke="#16a34a" stroke-width="6" stroke-linecap="round"/>
-            <path class="stem-path s-right" d="M200 540 Q225 380 280 250" stroke="#16a34a" stroke-width="6" stroke-linecap="round"/>
-            <path class="stem-path s-far-l" d="M200 540 Q160 430 65 340" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
-            <path class="stem-path s-far-r" d="M200 540 Q240 430 335 330" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
-
-            <!-- 2. Leaves spreading along stems -->
-            <path class="leaf-path l-1" d="M190 420 Q130 390 110 410 Q150 445 190 420Z" fill="#166534"/>
-            <path class="leaf-path l-2" d="M210 390 Q270 360 290 380 Q250 415 210 390Z" fill="#15803d"/>
-            <path class="leaf-path l-3" d="M195 320 Q140 290 120 310 Q160 340 195 320Z" fill="#15803d"/>
-            <path class="leaf-path l-4" d="M205 280 Q260 250 280 270 Q240 300 205 280Z" fill="#166534"/>
-
-            <!-- 3. Flower Heads Attached Directly on Stem Endpoints -->
-
-            <!-- Far Left Rosebud at (65, 340) -->
-            <g class="flower-cluster f-far-l" transform="translate(65, 340)">
-                <circle cx="0" cy="0" r="16" fill="url(#grad-rose)"/>
-                <path d="M-12 -5 C-15 -22 15 -22 12 -5 C16 12 -16 12 -12 -5Z" fill="#e11d48"/>
-                <circle cx="0" cy="0" r="6" fill="#fde047"/>
-            </g>
-
-            <!-- Far Right Blossom at (335, 330) -->
-            <g class="flower-cluster f-far-r" transform="translate(335, 330)">
-                <circle cx="0" cy="0" r="18" fill="#f97316"/>
-                <path d="M0 -24 C14 -12 14 12 0 24 C-14 12 -14 -12 0 -24Z" fill="#ea580c"/>
-                <path d="M-24 0 C-12 14 12 14 24 0 C12 -14 -12 -14 -24 0Z" fill="#ea580c"/>
-                <circle cx="0" cy="0" r="8" fill="#fef08a"/>
-            </g>
-
-            <!-- Left Pink/White Lily at (120, 260) -->
-            <g class="flower-cluster f-left" transform="translate(120, 260)">
-                <path d="M0 0 C-14 -38 14 -38 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <path d="M0 0 C34 -20 34 14 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <path d="M0 0 C30 25 8 40 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <path d="M0 0 C-14 40 14 40 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <path d="M0 0 C-30 25 -8 40 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <path d="M0 0 C-34 -20 -34 14 0 0Z" fill="url(#grad-lily)" stroke="#f472b6" stroke-width="1.5"/>
-                <circle cx="0" cy="0" r="7" fill="url(#grad-center)"/>
-            </g>
-
-            <!-- Right Glowing Lily at (280, 250) -->
-            <g class="flower-cluster f-right" transform="translate(280, 250)">
-                <path d="M0 0 C-15 -42 15 -42 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <path d="M0 0 C36 -22 36 15 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <path d="M0 0 C32 28 9 42 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <path d="M0 0 C-15 42 15 42 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <path d="M0 0 C-32 28 -9 42 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <path d="M0 0 C-36 -22 -36 15 0 0Z" fill="url(#grad-lily)" stroke="#fb7185" stroke-width="1.5"/>
-                <circle cx="0" cy="0" r="8" fill="url(#grad-center)"/>
-            </g>
-
-            <!-- Center Royal Blooming White Lily at (200, 190) -->
-            <g class="flower-cluster f-center" transform="translate(200, 190)">
-                <path d="M0 0 C-20 -55 20 -55 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-                <path d="M0 0 C48 -28 48 18 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-                <path d="M0 0 C42 35 12 55 0 0Z" fill="#fff1f2" stroke="#f472b6" stroke-width="2"/>
-                <path d="M0 0 C-20 55 20 55 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-                <path d="M0 0 C-42 35 -12 55 0 0Z" fill="#fff1f2" stroke="#f472b6" stroke-width="2"/>
-                <path d="M0 0 C-48 -28 -48 18 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-                <!-- Golden Pistils -->
-                <circle cx="0" cy="0" r="10" fill="url(#grad-center)"/>
-                <circle cx="-5" cy="-6" r="3" fill="#e11d48"/>
-                <circle cx="5" cy="-6" r="3" fill="#e11d48"/>
-                <circle cx="0" cy="6" r="3" fill="#e11d48"/>
-            </g>
-        </svg>
-
-        <!-- Button that appears once flowers bloom -->
         <div class="see-letter-btn-box" id="see-letter-box">
             <button class="btn-view-card" onclick="transitionToLetter()">
                 <i class="ph-fill ph-heart"></i> Abrir Carta de Amor
@@ -1157,15 +1024,21 @@
             musicTitle.innerHTML = `${song.title} <i class="ph ph-skip-forward" style="font-size:0.65rem;"></i>`;
             musicArtist.textContent = song.artist;
 
-            // Try YouTube Player first (always reliable on mobile)
             if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
-                ytPlayer.loadVideoById(song.ytId);
-                ytPlayer.playVideo();
+                try {
+                    ytPlayer.loadVideoById(song.ytId);
+                    ytPlayer.playVideo();
+                } catch(e) {
+                    fallbackHtmlAudio(song);
+                }
             } else {
-                // Fallback to HTML5 audio
-                htmlAudio.src = song.fallbackSrc;
-                htmlAudio.play().catch(e => console.log('HTML5 fallback audio error:', e));
+                fallbackHtmlAudio(song);
             }
+        }
+
+        function fallbackHtmlAudio(song) {
+            htmlAudio.src = song.fallbackSrc;
+            htmlAudio.play().catch(e => console.log('HTML5 fallback:', e));
         }
 
         function nextSong() {
@@ -1174,7 +1047,286 @@
         }
 
         // ==========================================
-        // PERMISSION POPUP & FLOWER BLOOM TRIGGER
+        // CANVAS FLOWER DRAWING & BLOOM ENGINE (EXACT MATCH)
+        // ==========================================
+        const canvas = document.getElementById('flowers-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let animProgress = 0;
+        let animStarted = false;
+
+        function drawLily(x, y, scale, progress, petalColor, centerColor, glowColor) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale * progress, scale * progress);
+
+            // Glow Effect
+            ctx.shadowColor = glowColor || 'rgba(244, 114, 182, 0.6)';
+            ctx.shadowBlur = 18;
+
+            const numPetals = 6;
+            for (let i = 0; i < numPetals; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / numPetals);
+
+                // Lily Petal Path
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-18, -35, -12, -75, 0, -85);
+                ctx.bezierCurveTo(12, -75, 18, -35, 0, 0);
+                
+                const grad = ctx.createLinearGradient(0, 0, 0, -85);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.7, petalColor || '#fdf2f8');
+                grad.addColorStop(1, '#f472b6');
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(244, 114, 182, 0.4)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Petal Center Vein
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -65);
+                ctx.strokeStyle = 'rgba(244, 114, 182, 0.5)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // Stamens and Anthers
+            for (let j = 0; j < 6; j++) {
+                ctx.save();
+                ctx.rotate((j * Math.PI * 2) / 6 + Math.PI / 6);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -32);
+                ctx.strokeStyle = '#fef08a';
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+
+                // Red/Orange Anther Head
+                ctx.beginPath();
+                ctx.arc(0, -34, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#e11d48';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Center Golden Core
+            ctx.beginPath();
+            ctx.arc(0, 0, 9, 0, Math.PI * 2);
+            ctx.fillStyle = centerColor || '#fbbf24';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawRedFlower(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale * progress, scale * progress);
+
+            ctx.shadowColor = 'rgba(239, 68, 68, 0.7)';
+            ctx.shadowBlur = 18;
+
+            const petals = 5;
+            for (let i = 0; i < petals; i++) {
+                ctx.save();
+                ctx.rotate((i * Math.PI * 2) / petals);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-22, -25, -20, -55, 0, -58);
+                ctx.bezierCurveTo(20, -55, 22, -25, 0, 0);
+
+                const grad = ctx.createRadialGradient(0, -25, 5, 0, -25, 45);
+                grad.addColorStop(0, '#f87171');
+                grad.addColorStop(0.7, '#dc2626');
+                grad.addColorStop(1, '#991b1b');
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            // Glowing Golden Yellow Center
+            ctx.beginPath();
+            ctx.arc(0, 0, 11, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.shadowColor = '#fef08a';
+            ctx.shadowBlur = 15;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawTulipBud(x, y, scale, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale * progress, scale * progress);
+
+            ctx.shadowColor = 'rgba(244, 63, 94, 0.6)';
+            ctx.shadowBlur = 16;
+
+            // Tulip Cup Shape
+            ctx.beginPath();
+            ctx.moveTo(0, 10);
+            ctx.bezierCurveTo(-28, 5, -30, -45, -15, -60);
+            ctx.bezierCurveTo(-8, -40, 8, -40, 15, -60);
+            ctx.bezierCurveTo(30, -45, 28, 5, 0, 10);
+            
+            const grad = ctx.createLinearGradient(0, 10, 0, -60);
+            grad.addColorStop(0, '#881337');
+            grad.addColorStop(0.5, '#be123c');
+            grad.addColorStop(1, '#fb7185');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawLeaf(x, y, angle, length, width, progress) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.scale(progress, progress);
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(-width, -length / 2, 0, -length);
+            ctx.quadraticCurveTo(width, -length / 2, 0, 0);
+
+            const grad = ctx.createLinearGradient(0, 0, 0, -length);
+            grad.addColorStop(0, '#14532d');
+            grad.addColorStop(0.6, '#16a34a');
+            grad.addColorStop(1, '#22c55e');
+            ctx.fillStyle = grad;
+            ctx.shadowColor = 'rgba(34, 197, 94, 0.4)';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawStem(startX, startY, cpX, cpY, endX, endY, progress, width) {
+            if (progress <= 0) return;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+
+            // Interpolate quadratic curve for smooth upward growth
+            const currentEndX = startX + (endX - startX) * progress;
+            const currentEndY = startY + (endY - startY) * progress;
+            const currentCpX = startX + (cpX - startX) * progress;
+            const currentCpY = startY + (cpY - startY) * progress;
+
+            ctx.quadraticCurveTo(currentCpX, currentCpY, currentEndX, currentEndY);
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = width || 6;
+            ctx.lineCap = 'round';
+            ctx.shadowColor = 'rgba(34, 197, 94, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function renderFrame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const baseX = canvas.width / 2;
+            const baseY = canvas.height * 0.88;
+
+            // Target Flower Positions (Scaled to mobile screen)
+            const fCenter = { x: baseX, y: baseY - 320 };
+            const fLeft = { x: baseX - 80, y: baseY - 260 };
+            const fRight = { x: baseX + 85, y: baseY - 275 };
+            const fTulip = { x: baseX + 130, y: baseY - 310 };
+            const fRed = { x: baseX + 45, y: baseY - 230 };
+            const fFarLeft = { x: baseX - 125, y: baseY - 200 };
+
+            // 1. Draw Green Stems
+            const stemP = Math.min(1, animProgress / 0.55);
+            drawStem(baseX, baseY, baseX - 10, baseY - 160, fCenter.x, fCenter.y, stemP, 7);
+            drawStem(baseX, baseY, baseX - 45, baseY - 140, fLeft.x, fLeft.y, Math.min(1, animProgress / 0.5), 6);
+            drawStem(baseX, baseY, baseX + 50, baseY - 150, fRight.x, fRight.y, Math.min(1, animProgress / 0.52), 6);
+            drawStem(baseX, baseY, baseX + 75, baseY - 170, fTulip.x, fTulip.y, Math.min(1, animProgress / 0.58), 5);
+            drawStem(baseX, baseY, baseX + 25, baseY - 120, fRed.x, fRed.y, Math.min(1, animProgress / 0.48), 5.5);
+            drawStem(baseX, baseY, baseX - 70, baseY - 110, fFarLeft.x, fFarLeft.y, Math.min(1, animProgress / 0.46), 5);
+
+            // 2. Draw Botanical Leaves
+            const leafP = Math.max(0, (animProgress - 0.35) / 0.3);
+            drawLeaf(baseX - 25, baseY - 130, -Math.PI / 3.2, 75, 22, Math.min(1, leafP * 1.2));
+            drawLeaf(baseX + 28, baseY - 140, Math.PI / 3.1, 80, 24, Math.min(1, leafP * 1.1));
+            drawLeaf(baseX - 45, baseY - 200, -Math.PI / 2.6, 70, 20, Math.min(1, leafP));
+            drawLeaf(baseX + 48, baseY - 210, Math.PI / 2.8, 72, 20, Math.min(1, leafP * 0.9));
+            drawLeaf(baseX - 10, baseY - 240, -Math.PI / 3.8, 65, 18, Math.min(1, leafP * 0.8));
+
+            // 3. Draw Beautiful Hand-Drawn Colorful Flowers (As seen in viral reel)
+            const bloomP1 = Math.max(0, (animProgress - 0.5) / 0.35); // White Lilies
+            const bloomP2 = Math.max(0, (animProgress - 0.6) / 0.3);  // Red & Tulip
+            const bloomP3 = Math.max(0, (animProgress - 0.65) / 0.3); // Side Flowers
+
+            // Left White Lily
+            drawLily(fLeft.x, fLeft.y, 0.75, Math.min(1, bloomP1), '#fdf2f8', '#fbbf24', 'rgba(255, 255, 255, 0.8)');
+            
+            // Right Side White Lily
+            drawLily(fRight.x, fRight.y, 0.8, Math.min(1, bloomP1), '#ffffff', '#f59e0b', 'rgba(255, 255, 255, 0.8)');
+
+            // Red/Coral 5-Petal Flower with Yellow Core
+            drawRedFlower(fRed.x, fRed.y, 0.78, Math.min(1, bloomP2));
+
+            // Deep Magenta Tulip Bud
+            drawTulipBud(fTulip.x, fTulip.y, 0.72, Math.min(1, bloomP2));
+
+            // Center Grand Majestic White Lily (Main Centerpiece)
+            drawLily(fCenter.x, fCenter.y, 0.95, Math.min(1, bloomP1 * 1.1), '#ffffff', '#fbbf24', 'rgba(254, 240, 138, 0.8)');
+
+            // Far Left Small Pink Lily
+            drawLily(fFarLeft.x, fFarLeft.y, 0.6, Math.min(1, bloomP3), '#f472b6', '#fde047', 'rgba(244, 114, 182, 0.7)');
+
+            if (animStarted && animProgress < 1) {
+                animProgress += 0.0055;
+                requestAnimationFrame(renderFrame);
+            } else if (animStarted && animProgress >= 1) {
+                // Show "Abrir Carta" button & launch confetti
+                const btnBox = document.getElementById('see-letter-box');
+                if (btnBox && btnBox.style.display !== 'block') {
+                    btnBox.style.display = 'block';
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 70,
+                            spread: 65,
+                            origin: { y: 0.55 },
+                            colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff']
+                        });
+                    }
+                }
+            }
+        }
+
+        function startBloomingFlowers() {
+            animStarted = true;
+            animProgress = 0;
+            renderFrame();
+        }
+
+        // ==========================================
+        // PERMISSION POPUP ACTION
         // ==========================================
         function grantAudioPermission(allow) {
             isAudioAllowed = allow;
@@ -1187,27 +1339,11 @@
                 document.getElementById('music-pill').style.display = 'none';
             }
 
-            // Start Blooming SVG Flowers
-            const flowersStage = document.getElementById('flowers-stage');
-            flowersStage.classList.add('blossom-active');
-
-            // Show "Abrir Carta" button when flowers finish blooming
-            setTimeout(() => {
-                const btnBox = document.getElementById('see-letter-box');
-                if (btnBox) btnBox.style.display = 'block';
-
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 75,
-                        spread: 65,
-                        origin: { y: 0.55 },
-                        colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff']
-                    });
-                }
-            }, 4500);
+            // Start Canvas Flower Growth
+            startBloomingFlowers();
         }
 
-        // Transition from Flowers to Main Envelope Card
+        // Transition from Flowers to Main Letter
         function transitionToLetter() {
             const flowersStage = document.getElementById('flowers-stage');
             const surpriseWrapper = document.getElementById('surprise-wrapper');
@@ -1216,7 +1352,7 @@
             setTimeout(() => {
                 flowersStage.style.display = 'none';
                 surpriseWrapper.classList.add('visible');
-            }, 700);
+            }, 600);
         }
 
         // Open Envelope -> Reveal Letter & Ticket
