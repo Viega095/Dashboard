@@ -19,7 +19,7 @@
 
     <style>
         :root {
-            --bg-dark: #090910;
+            --bg-dark: #080811;
             --rose-gold: #f472b6;
             --rose-glow: #fb7185;
             --gold-shine: #fbbf24;
@@ -48,7 +48,7 @@
             padding: 1.5rem 1rem 3.5rem 1rem;
         }
 
-        /* Ambient Glow & Floating Hearts Background */
+        /* Ambient Glow & Starry Background */
         .ambient-bg {
             position: fixed;
             top: 0;
@@ -58,13 +58,27 @@
             pointer-events: none;
             z-index: 0;
             overflow: hidden;
+            background: radial-gradient(circle at 50% 100%, #171026 0%, #080811 100%);
+        }
+
+        .night-star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle 3s infinite ease-in-out alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 0.9; transform: scale(1.3); }
         }
 
         .glow-sphere {
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
-            opacity: 0.28;
+            opacity: 0.25;
             animation: pulseGlow 8s ease-in-out infinite alternate;
         }
 
@@ -85,16 +99,6 @@
             animation-delay: 4s;
         }
 
-        .glow-3 {
-            width: 250px;
-            height: 250px;
-            background: #f59e0b;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.15;
-        }
-
         @keyframes pulseGlow {
             0% { transform: scale(1) translate(0, 0); }
             100% { transform: scale(1.15) translate(20px, 15px); }
@@ -109,16 +113,10 @@
         }
 
         @keyframes floatUp {
-            0% {
-                transform: translateY(100vh) rotate(0deg) scale(0.8);
-                opacity: 0;
-            }
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
             15% { opacity: 0.6; }
             85% { opacity: 0.6; }
-            100% {
-                transform: translateY(-10vh) rotate(360deg) scale(1.2);
-                opacity: 0;
-            }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
         /* Floating Music Player Pill */
@@ -189,10 +187,131 @@
             line-height: 1.1;
         }
 
-        .music-skip-hint {
-            font-size: 0.62rem;
-            color: var(--text-dim);
-            opacity: 0.8;
+        /* ==========================================
+           ANIMATED GROWING & BLOOMING FLOWERS (INTRO)
+           ========================================== */
+        .flowers-intro-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: auto;
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            padding-bottom: 2rem;
+        }
+
+        .flowers-intro-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
+        }
+
+        .flowers-tap-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(8, 8, 17, 0.85);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: opacity 0.6s ease;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .flowers-tap-btn {
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: #fff;
+            border: none;
+            padding: 1rem 2.2rem;
+            border-radius: 99px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            box-shadow: 0 0 35px rgba(244, 63, 94, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            animation: heartBeat 1.8s infinite;
+            cursor: pointer;
+        }
+
+        .flowers-svg-stage {
+            width: 100%;
+            max-width: 480px;
+            height: 80vh;
+            max-height: 600px;
+            overflow: visible;
+        }
+
+        /* Flower animation classes */
+        .flower-stem {
+            stroke-dasharray: 600;
+            stroke-dashoffset: 600;
+            transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flower-leaf {
+            transform-origin: center;
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+        }
+
+        .flower-head {
+            transform-origin: center;
+            transform: scale(0) rotate(-45deg);
+            opacity: 0;
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s ease;
+        }
+
+        .flower-petal {
+            transform-origin: center;
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .flowers-active .flower-stem {
+            stroke-dashoffset: 0;
+        }
+
+        .flowers-active .stem-1 { transition-delay: 0.2s; }
+        .flowers-active .stem-2 { transition-delay: 0.6s; }
+        .flowers-active .stem-3 { transition-delay: 1.0s; }
+        .flowers-active .stem-4 { transition-delay: 1.3s; }
+        .flowers-active .stem-5 { transition-delay: 1.6s; }
+
+        .flowers-active .flower-leaf {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .flowers-active .leaf-d1 { transition-delay: 1.2s; }
+        .flowers-active .leaf-d2 { transition-delay: 1.6s; }
+        .flowers-active .leaf-d3 { transition-delay: 2.0s; }
+        .flowers-active .leaf-d4 { transition-delay: 2.3s; }
+
+        .flowers-active .flower-head {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+        .flowers-active .head-1 { transition-delay: 2.2s; }
+        .flowers-active .head-2 { transition-delay: 2.7s; }
+        .flowers-active .head-3 { transition-delay: 3.1s; }
+        .flowers-active .head-4 { transition-delay: 3.5s; }
+        .flowers-active .head-5 { transition-delay: 3.9s; }
+
+        .flower-glow-filter {
+            filter: drop-shadow(0 0 12px rgba(244, 114, 182, 0.6)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.3));
         }
 
         /* Container */
@@ -205,6 +324,14 @@
             flex-direction: column;
             align-items: center;
             margin-top: 1.8rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .surprise-wrapper.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Step 1: Interactive Envelope / Sealed Letter */
@@ -270,60 +397,6 @@
             color: var(--text-dim);
             line-height: 1.55;
             margin-bottom: 1.6rem;
-        }
-
-        /* Sound permission choice box inside envelope */
-        .sound-prompt-box {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(244, 114, 182, 0.25);
-            border-radius: 16px;
-            padding: 0.9rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .sound-prompt-text {
-            font-size: 0.85rem;
-            color: #f1f5f9;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .sound-prompt-actions {
-            display: flex;
-            gap: 0.6rem;
-            width: 100%;
-        }
-
-        .btn-sound-opt {
-            flex: 1;
-            padding: 0.65rem 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 99px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.35rem;
-            transition: all 0.2s;
-        }
-
-        .btn-sound-yes {
-            background: linear-gradient(135deg, #f472b6, #ec4899);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
-        }
-
-        .btn-sound-no {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-dim);
-            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .open-btn {
@@ -746,11 +819,10 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Spheres -->
+    <!-- Ambient Glowing Spheres & Twinkling Stars -->
     <div class="ambient-bg" id="ambient-bg">
         <div class="glow-sphere glow-1"></div>
         <div class="glow-sphere glow-2"></div>
-        <div class="glow-sphere glow-3"></div>
     </div>
 
     <!-- Floating Music Player for The Strokes Playlist -->
@@ -764,37 +836,117 @@
         </div>
     </div>
 
-    <!-- Audio Element -->
-    <audio id="bg-audio" preload="auto"></audio>
+    <!-- Audio Element with Fallbacks -->
+    <audio id="bg-audio" preload="auto" playsinline></audio>
 
-    <main class="surprise-wrapper">
+    <!-- ==========================================
+         STAGE 0: ANIMATED GROWING & BLOOMING FLOWERS
+         ========================================== -->
+    <div class="flowers-intro-container" id="flowers-intro">
+        <!-- Tap overlay to start animation & unlock audio on mobile -->
+        <div class="flowers-tap-overlay" id="tap-overlay" onclick="startFlowerBloom()">
+            <div style="font-size:3.5rem; margin-bottom:1rem; animation:heartBeat 1.5s infinite;">💐</div>
+            <h2 style="font-family:'Playfair Display', serif; font-size:1.8rem; color:#fff; margin-bottom:0.6rem;">Una sorpresa para vos...</h2>
+            <p style="color:var(--text-dim); font-size:0.95rem; margin-bottom:1.5rem; max-width:280px;">Tocá la pantalla para hacer florecer tu regalo ✨</p>
+            <button class="flowers-tap-btn">
+                <i class="ph-fill ph-sparkle"></i> Ver Sorpresa
+            </button>
+        </div>
+
+        <!-- SVG Glowing Flowers Bouquet -->
+        <svg class="flowers-svg-stage flower-glow-filter" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Stems -->
+            <path class="flower-stem stem-1" d="M200 480 Q190 350 140 220" stroke="#15803d" stroke-width="6" stroke-linecap="round"/>
+            <path class="flower-stem stem-2" d="M200 480 Q210 320 200 150" stroke="#16a34a" stroke-width="7" stroke-linecap="round"/>
+            <path class="flower-stem stem-3" d="M200 480 Q230 360 270 200" stroke="#15803d" stroke-width="6" stroke-linecap="round"/>
+            <path class="flower-stem stem-4" d="M200 480 Q170 380 90 290" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
+            <path class="flower-stem stem-5" d="M200 480 Q240 390 320 280" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
+
+            <!-- Leaves -->
+            <path class="flower-leaf leaf-d1" d="M185 360 Q130 330 110 350 Q145 385 185 360Z" fill="#166534"/>
+            <path class="flower-leaf leaf-d2" d="M210 330 Q270 300 290 320 Q255 355 210 330Z" fill="#15803d"/>
+            <path class="flower-leaf leaf-d3" d="M195 270 Q140 240 120 260 Q160 290 195 270Z" fill="#15803d"/>
+            <path class="flower-leaf leaf-d4" d="M205 240 Q260 210 280 230 Q245 260 205 240Z" fill="#166534"/>
+
+            <!-- Left Pink Rose/Lily Bud -->
+            <g class="flower-head head-4" transform="translate(90, 290)">
+                <circle cx="0" cy="0" r="14" fill="#fb7185"/>
+                <path d="M-10 0 C-15 -18 15 -18 10 0 C15 15 -15 15 -10 0Z" fill="#f43f5e"/>
+                <circle cx="0" cy="0" r="6" fill="#fef08a"/>
+            </g>
+
+            <!-- Right Orange/Red Blossom -->
+            <g class="flower-head head-5" transform="translate(320, 280)">
+                <circle cx="0" cy="0" r="16" fill="#f97316"/>
+                <path d="M0 -22 C12 -10 12 10 0 22 C-12 10 -12 -10 0 -22Z" fill="#ea580c"/>
+                <path d="M-22 0 C-10 12 10 12 22 0 C10 -12 -10 -12 -22 0Z" fill="#ea580c"/>
+                <circle cx="0" cy="0" r="7" fill="#fde047"/>
+            </g>
+
+            <!-- Left Glowing White/Pink Lily -->
+            <g class="flower-head head-1" transform="translate(140, 220)">
+                <!-- 6 Petals -->
+                <path class="flower-petal" d="M0 0 C-12 -35 12 -35 0 0Z" fill="#fff" stroke="#fbcfe8" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C30 -20 30 10 0 0Z" fill="#fff" stroke="#fbcfe8" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C30 20 5 35 0 0Z" fill="#fff" stroke="#fbcfe8" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-12 35 12 35 0 0Z" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-30 20 -5 35 0 0Z" fill="#fff" stroke="#fbcfe8" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-30 -20 -30 10 0 0Z" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="1.5"/>
+                <!-- Center Stamens -->
+                <circle cx="0" cy="0" r="6" fill="#facc15"/>
+                <circle cx="-3" cy="-3" r="2" fill="#e11d48"/>
+                <circle cx="3" cy="-3" r="2" fill="#e11d48"/>
+                <circle cx="0" cy="4" r="2" fill="#e11d48"/>
+            </g>
+
+            <!-- Center Royal Majestic White Lily -->
+            <g class="flower-head head-2" transform="translate(200, 150)">
+                <!-- Grand Petals -->
+                <path class="flower-petal" d="M0 0 C-18 -48 18 -48 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
+                <path class="flower-petal" d="M0 0 C42 -25 42 15 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
+                <path class="flower-petal" d="M0 0 C38 30 10 48 0 0Z" fill="#fff1f2" stroke="#f472b6" stroke-width="2"/>
+                <path class="flower-petal" d="M0 0 C-18 48 18 48 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
+                <path class="flower-petal" d="M0 0 C-38 30 -10 48 0 0Z" fill="#fff1f2" stroke="#f472b6" stroke-width="2"/>
+                <path class="flower-petal" d="M0 0 C-42 -25 -42 15 0 0Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
+                <!-- Golden Pistils -->
+                <circle cx="0" cy="0" r="8" fill="#fef08a"/>
+                <circle cx="-4" cy="-5" r="3" fill="#f59e0b"/>
+                <circle cx="4" cy="-5" r="3" fill="#f59e0b"/>
+                <circle cx="0" cy="5" r="3" fill="#f59e0b"/>
+            </g>
+
+            <!-- Right White/Magenta Lily -->
+            <g class="flower-head head-3" transform="translate(270, 200)">
+                <path class="flower-petal" d="M0 0 C-14 -38 14 -38 0 0Z" fill="#fff" stroke="#fb7185" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C32 -18 32 12 0 0Z" fill="#fff" stroke="#fb7185" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C28 25 8 38 0 0Z" fill="#fdf2f8" stroke="#fb7185" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-14 38 14 38 0 0Z" fill="#fff" stroke="#fb7185" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-28 25 -8 38 0 0Z" fill="#fdf2f8" stroke="#fb7185" stroke-width="1.5"/>
+                <path class="flower-petal" d="M0 0 C-32 -18 -32 12 0 0Z" fill="#fff" stroke="#fb7185" stroke-width="1.5"/>
+                <circle cx="0" cy="0" r="6" fill="#fde047"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- ==========================================
+         MAIN SURPRISE CONTENT CONTAINER
+         ========================================== -->
+    <main class="surprise-wrapper" id="surprise-wrapper">
 
         <!-- ==========================================
              PASO 1: SOBRE CERRADO / SELLO DE CORAZÓN
              ========================================== -->
         <div class="envelope-card" id="envelope-card">
-            <button class="envelope-seal-btn" onclick="requestOpen(true)" aria-label="Abrir sorpresa">
+            <button class="envelope-seal-btn" onclick="openSurprise()" aria-label="Abrir sorpresa">
                 <i class="ph-fill ph-heart"></i>
             </button>
             <h1 class="envelope-title">Hola, Mels ✨</h1>
             <p class="envelope-subtitle">
                 Te dejé un mini mensaje para vos, con mucho amor. Tocá el corazón para abrir tu sorpresa.
             </p>
-
-            <!-- Permiso para Activar Sonido -->
-            <div class="sound-prompt-box">
-                <span class="sound-prompt-text">
-                    <i class="ph-fill ph-headphones" style="color:var(--rose-gold);"></i> ¿Querés escuchar a The Strokes de fondo?
-                </span>
-                <div class="sound-prompt-actions">
-                    <button type="button" class="btn-sound-opt btn-sound-yes" onclick="requestOpen(true)">
-                        <i class="ph ph-speaker-high"></i> Sí, con música 🎧
-                    </button>
-                    <button type="button" class="btn-sound-opt btn-sound-no" onclick="requestOpen(false)">
-                        <i class="ph ph-speaker-slash"></i> Sin sonido
-                    </button>
-                </div>
-            </div>
+            <button class="open-btn" onclick="openSurprise()">
+                <i class="ph ph-sparkle"></i> Abrir Carta
+            </button>
         </div>
 
         <!-- ==========================================
@@ -946,6 +1098,22 @@
     </main>
 
     <script>
+        // Starry Night Generator
+        function createStars() {
+            const container = document.getElementById('ambient-bg');
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                star.className = 'night-star';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 80 + 'vh';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
         // Floating Hearts Background Generator
         function createFloatingHearts() {
             const container = document.getElementById('ambient-bg');
@@ -964,7 +1132,7 @@
         }
         createFloatingHearts();
 
-        // The Strokes / Julian Casablancas Romantic Playlist
+        // The Strokes / Julian Casablancas Romantic Playlist (Reliable CDNs)
         const playlist = [
             {
                 title: "Selfless",
@@ -998,7 +1166,6 @@
         const musicPill = document.getElementById('music-pill');
         const musicTitle = document.getElementById('music-title');
         const musicArtist = document.getElementById('music-artist');
-        let soundEnabled = true;
 
         function loadSong(index) {
             if (!audio) return;
@@ -1009,22 +1176,22 @@
             musicArtist.textContent = song.artist;
         }
 
-        // Initialize with first song
+        // Initialize with first song (Selfless)
         loadSong(0);
 
         function playMusic() {
-            if (!soundEnabled || !audio) return;
+            if (!audio) return;
             audio.play().then(() => {
                 musicPill.classList.add('playing');
-            }).catch(() => {});
+            }).catch(e => {
+                console.log('Audio autoplay prevented, awaiting user interaction:', e);
+            });
         }
 
         function nextSong() {
             if (!audio) return;
             loadSong(currentSongIndex + 1);
-            if (soundEnabled) {
-                playMusic();
-            }
+            playMusic();
         }
 
         // Auto-advance when song ends
@@ -1034,17 +1201,49 @@
             });
         }
 
-        // Step 1 -> Step 2 Reveal with Sound Permission Choice
-        function requestOpen(withSound) {
-            soundEnabled = withSound;
+        // ==========================================
+        // STAGE 0: FLOWER BLOOMING SEQUENCE
+        // ==========================================
+        function startFlowerBloom() {
+            // 1. Play audio immediately on tap interaction
+            playMusic();
+
+            // 2. Hide tap overlay
+            const tapOverlay = document.getElementById('tap-overlay');
+            if (tapOverlay) {
+                tapOverlay.style.opacity = '0';
+                setTimeout(() => { tapOverlay.style.display = 'none'; }, 600);
+            }
+
+            // 3. Trigger SVG Flower Stem Growth & Blossom
+            const intro = document.getElementById('flowers-intro');
+            intro.classList.add('flowers-active');
+
+            // 4. Confetti when flowers finish blooming (~4.5s)
+            setTimeout(() => {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 70,
+                        spread: 60,
+                        origin: { y: 0.5 },
+                        colors: ['#f472b6', '#fb7185', '#fbbf24', '#ffffff']
+                    });
+                }
+            }, 4200);
+
+            // 5. Smoothly transition to the "Hola, Mels ✨" card
+            setTimeout(() => {
+                intro.classList.add('hidden');
+                const wrapper = document.getElementById('surprise-wrapper');
+                wrapper.classList.add('visible');
+            }, 5200);
+        }
+
+        // Step 1 -> Step 2 Reveal (Open Letter)
+        function openSurprise() {
+            playMusic();
             const envelope = document.getElementById('envelope-card');
             const content = document.getElementById('revealed-content');
-
-            if (soundEnabled) {
-                playMusic();
-            } else {
-                musicPill.style.display = 'none';
-            }
 
             envelope.style.opacity = '0';
             envelope.style.transform = 'scale(0.85) translateY(-20px)';
